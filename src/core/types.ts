@@ -24,5 +24,6 @@ export interface GameState {
   readonly edges: readonly Edge[];
   readonly currentPlayer: Player;
   readonly coinsRemaining: number;
+  readonly passCount: number;
   readonly lastAction: Action | null;
 }

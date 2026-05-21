@@ -1,3 +1,19 @@
 export type * from "./types";
-export { createInitialState, placeCoin, joinCoins, canJoin } from "./game";
-export { isQueenLine, areEdgesEqual, edgeIntersects } from "./geometry";
+export {
+  areEdgesEqual,
+  edgeIntersects,
+  isQueenLine,
+} from "./geometry";
+export {
+  GRID_SIZE,
+  TOTAL_COINS,
+  canJoin,
+  createInitialState,
+  isLegalJoin,
+  joinCoins,
+  legalJoins,
+  legalPlacements,
+  placeCoin,
+  positionKey,
+  passesThroughCoin,
+} from "./state";

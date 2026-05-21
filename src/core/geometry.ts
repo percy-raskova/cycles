@@ -57,7 +57,33 @@ function segmentsIntersect(a1: Position, a2: Position, b1: Position, b2: Positio
     return true;
   }
 
+  return hasCollinearIntersection(a1, a2, b1, b2, d1, d2, d3, d4);
+}
+
+function hasCollinearIntersection(
+  a1: Position,
+  a2: Position,
+  b1: Position,
+  b2: Position,
+  d1: number,
+  d2: number,
+  d3: number,
+  d4: number,
+): boolean {
+  if (d1 === 0 && onSegment(b1, b2, a1)) return true;
+  if (d2 === 0 && onSegment(b1, b2, a2)) return true;
+  if (d3 === 0 && onSegment(a1, a2, b1)) return true;
+  if (d4 === 0 && onSegment(a1, a2, b2)) return true;
   return false;
+}
+
+function onSegment(a: Position, b: Position, c: Position): boolean {
+  return (
+    Math.min(a.row, b.row) <= c.row &&
+    c.row <= Math.max(a.row, b.row) &&
+    Math.min(a.col, b.col) <= c.col &&
+    c.col <= Math.max(a.col, b.col)
+  );
 }
 
 function direction(a: Position, b: Position, c: Position): number {

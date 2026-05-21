@@ -19,9 +19,9 @@
 
 **Purpose**: Consolidate existing scaffold code into the planned structure
 
-- [ ] T001 Remove `src/core/board.ts` and `src/core/game.ts` after extracting reusable logic into `src/core/state.ts`
-- [ ] T002 Update `src/core/types.ts` to add `passCount: number` to `GameState`
-- [ ] T003 Update `src/core/index.ts` to export `legalPlacements` and `legalJoins` from the new `state.ts`
+- [X] T001 Remove `src/core/board.ts` and `src/core/game.ts` after extracting reusable logic into `src/core/state.ts`
+- [X] T002 Update `src/core/types.ts` to add `passCount: number` to `GameState`
+- [X] T003 Update `src/core/index.ts` to export `legalPlacements` and `legalJoins` from the new `state.ts`
 
 ---
 
@@ -31,9 +31,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Update `src/core/geometry.ts` — verify `isQueenLine`, `areEdgesEqual`, `edgeIntersects` handle collinear non-intersecting segments correctly
-- [ ] T005 [P] Add adversarial property tests for `edgeIntersects` in `src/core/__tests__/geometry.test.ts` using fast-check (random segment pairs on the 7×7 grid)
-- [ ] T006 Create `src/core/state.ts` with `createInitialState` (merged from old `board.ts`) and helper `positionKey(pos)`
+- [X] T004 [P] Update `src/core/geometry.ts` — verify `isQueenLine`, `areEdgesEqual`, `edgeIntersects` handle collinear non-intersecting segments correctly
+- [X] T005 [P] Add adversarial property tests for `edgeIntersects` in `src/core/__tests__/geometry.test.ts` using fast-check (random segment pairs on the 7×7 grid)
+- [X] T006 Create `src/core/state.ts` with `createInitialState` (merged from old `board.ts`) and helper `positionKey(pos)`
 
 **Checkpoint**: Foundation ready — `createInitialState` works, geometry primitives are property-tested, and the module compiles. User story implementation can now begin.
 
@@ -49,12 +49,9 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T007 [P] [US1] Write example tests in `src/core/__tests__/state.test.ts` for `legalPlacements`: empty board → 49 positions, full board → empty, partial board → excludes occupied
-- [ ] T008 [P] [US1] Write fast-check property test in `src/core/__tests__/oracle.test.ts`: for any random board state, every position returned by `legalPlacements` is within bounds and unoccupied
-
-### Implementation for User Story 1
-
-- [ ] T009 [US1] Implement `legalPlacements(state)` in `src/core/state.ts` (returns readonly Position[])
+- [X] T007 [P] [US1] Write example tests in `src/core/__tests__/state.test.ts` for `legalPlacements`: empty board → 49 positions, full board → empty, partial board → excludes occupied
+- [X] T008 [P] [US1] Write fast-check property test in `src/core/__tests__/oracle.test.ts`: for any random board state, every position returned by `legalPlacements` is within bounds and unoccupied
+- [X] T009 [US1] Implement `legalPlacements(state)` in `src/core/state.ts` (returns readonly Position[])
 
 **Checkpoint**: `legalPlacements` is implemented, all US1 tests pass, and `bun run test:run` is green.
 
@@ -70,14 +67,14 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T010 [P] [US2] Write example tests in `src/core/__tests__/state.test.ts` for `legalJoins`: aligned with no block → included, blocked by coin → excluded, already connected → excluded, would cross existing edge → excluded, not queen-line → excluded
-- [ ] T011 [P] [US2] Write hand-written oracle functions in `src/core/state.ts` (or a `__tests__/helpers.ts`): `oracleIsQueenLine`, `oracleNotBlocked`, `oracleNotDuplicate`, `oracleNotCrossing`
-- [ ] T012 [P] [US2] Write fast-check property test in `src/core/__tests__/oracle.test.ts`: for any random board state with coins and edges, every pair returned by `legalJoins` passes all four oracle checks
+- [X] T010 [P] [US2] Write example tests in `src/core/__tests__/state.test.ts` for `legalJoins`: aligned with no block → included, blocked by coin → excluded, already connected → excluded, would cross existing edge → excluded, not queen-line → excluded
+- [X] T011 [P] [US2] Write hand-written oracle functions in `src/core/state.ts` (or a `__tests__/helpers.ts`): `oracleIsQueenLine`, `oracleNotBlocked`, `oracleNotDuplicate`, `oracleNotCrossing`
+- [X] T012 [P] [US2] Write fast-check property test in `src/core/__tests__/oracle.test.ts`: for any random board state with coins and edges, every pair returned by `legalJoins` passes all four oracle checks
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Implement `legalJoins(state)` in `src/core/state.ts` (returns readonly [Position, Position][])
-- [ ] T014 [US2] Implement helper `passesThroughCoin(from, to, coins)` in `src/core/state.ts` (or reuse from old `game.ts` if correct)
+- [X] T013 [US2] Implement `legalJoins(state)` in `src/core/state.ts` (returns readonly [Position, Position][])
+- [X] T014 [US2] Implement helper `passesThroughCoin(from, to, coins)` in `src/core/state.ts` (or reuse from old `game.ts` if correct)
 
 **Checkpoint**: `legalJoins` is implemented, all US2 tests pass, edge cases from spec are covered, and `bun run test:run` is green.
 
@@ -93,13 +90,10 @@
 
 > **NOTE: Property tests can be written incrementally alongside US1/US2, but must be hardened in this phase**
 
-- [ ] T015 [P] [US3] Harden `src/core/__tests__/geometry.test.ts` with fast-check property: for any two segments on the 7×7 grid, `edgeIntersects` matches the mathematical ground truth (no false negatives, no false positives)
-- [ ] T016 [P] [US3] Harden `src/core/__tests__/oracle.test.ts` with fast-check property: generate random board states (0–12 coins, random edges), assert `legalJoins` returns only pairs that pass the hand-written oracle
-- [ ] T017 [P] [US3] Add coverage property in `src/core/__tests__/oracle.test.ts`: for small fully-populated boards, `legalJoins` must return at least as many pairs as a brute-force enumeration (sanity check against over-filtering)
-
-### Implementation for User Story 3
-
-- [ ] T018 [US3] Add `isLegalJoin(state, a, b)` helper in `src/core/state.ts` — a public, independently testable decomposition of `legalJoins` that the oracle can call
+- [X] T015 [P] [US3] Harden `src/core/__tests__/geometry.test.ts` with fast-check property: for any two segments on the 7×7 grid, `edgeIntersects` matches the mathematical ground truth (no false negatives, no false positives)
+- [X] T016 [P] [US3] Harden `src/core/__tests__/oracle.test.ts` with fast-check property: generate random board states (0–12 coins, random edges), assert `legalJoins` returns only pairs that pass the hand-written oracle
+- [X] T017 [P] [US3] Add coverage property in `src/core/__tests__/oracle.test.ts`: for small fully-populated boards, `legalJoins` must return exactly the same set as a brute-force enumeration under the oracle (sanity check against over-filtering)
+- [X] T018 [US3] Add `isLegalJoin(state, a, b)` helper in `src/core/state.ts` — a public, independently testable decomposition of `legalJoins` that the oracle can call
 
 **Checkpoint**: All property tests pass with the default fast-check numRuns (100). No flakiness. Planarity checker survives adversarial grid-segment input.
 
@@ -109,11 +103,11 @@
 
 **Purpose**: Ensure the module is clean, well-documented, and meets project quality gates
 
-- [ ] T019 [P] Run `bun run lint:write` to auto-fix any formatting drift in new/modified files
-- [ ] T020 Run `bun run typecheck` to verify zero TypeScript errors across `src/core/`
-- [ ] T021 [P] Verify test coverage ≥ 90% on `src/core/` by running `bun run test:run -- --coverage`
-- [ ] T022 Delete any dead code left over from the old `board.ts` / `game.ts` consolidation
-- [ ] T023 Update `src/core/index.ts` to ensure the public API surface is minimal and correct
+- [X] T019 [P] Run `bun run lint:write` to auto-fix any formatting drift in new/modified files
+- [X] T020 Run `bun run typecheck` to verify zero TypeScript errors across `src/core/`
+- [X] T021 [P] Verify test coverage ≥ 90% on `src/core/` by running `bun run test:run -- --coverage`
+- [X] T022 Delete any dead code left over from the old `board.ts` / `game.ts` consolidation
+- [X] T023 Update `src/core/index.ts` to ensure the public API surface is minimal and correct
 
 ---
 

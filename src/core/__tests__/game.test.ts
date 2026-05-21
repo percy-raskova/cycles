@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canJoin, createInitialState, joinCoins, placeCoin } from "../game";
+import { canJoin, createInitialState, joinCoins, placeCoin } from "../state";
 
 describe("game rules", () => {
   describe("canJoin", () => {

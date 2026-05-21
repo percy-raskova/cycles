@@ -31,6 +31,6 @@
     }
   },
   "files": {
-    "ignore": ["node_modules", "dist", ".specify", ".opencode"]
+    "ignore": ["node_modules", "dist", ".specify", ".opencode", "coverage"]
   }
 }

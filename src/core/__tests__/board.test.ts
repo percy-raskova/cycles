@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createInitialState, placeCoin } from "../board";
+import { createInitialState, placeCoin } from "../state";
 
 describe("board", () => {
   describe("createInitialState", () => {

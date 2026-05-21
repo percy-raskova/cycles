@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { createInitialState, placeCoin } from "../board";
+import { createInitialState, placeCoin } from "../state";
 
 describe("property-based invariants", () => {
   it("coin count never exceeds 12", () => {
