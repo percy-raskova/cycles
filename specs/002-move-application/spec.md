@@ -5,6 +5,17 @@
 **Status**: Draft  
 **Input**: User description: "Sprint 2: Move application — flips and encirclement. Implement applyMove(state, move) → state. The simple cases first (PLACE, JOIN with no cycle closure), then the encirclement detector. Cycle detection is the hard part: when JOIN connects two coins already in the same component, you've created a cycle, and you need to identify which coins are inside the new bounded region. Approach: find the cycle via BFS/DFS on the graph, then do a point-in-polygon test for every coin not on the cycle. Exit criteria: property test asserts coin count is conserved, parity invariants hold, and a handful of hand-constructed encirclement scenarios produce the expected flips."
 
+## Clarifications
+
+### Session 2026-05-21
+
+- **Q**: Should `applyMove` enforce that a PLACE move's coin face matches the current player?  
+  **A**: No — the caller specifies any face, and `applyMove` does not enforce player-face alignment. Face validity is the caller's responsibility.
+- **Q**: For a cyclic JOIN, should the spec require extracting the full simple cycle path?  
+  **A**: Yes — the full simple cycle must be extracted as a closed polygon boundary to perform the interior-coin detection.
+- **Q**: For a JOIN move, does the order of the two Position values in the payload matter?  
+  **A**: No — the two positions form an unordered pair. The engine treats both orders identically and normalizes before processing.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 — Apply Simple Moves (Priority: P1) 🎯 MVP
@@ -72,7 +83,7 @@ Move application must preserve fundamental game invariants regardless of move se
 - **FR-001**: The system MUST expose an `applyMove(state, move)` function that accepts a `GameState` and a `Move`, and returns a new immutable `GameState`.
 - **FR-002**: For a PLACE move, the system MUST place the specified coin face at the target position, decrement `coinsRemaining` by 1, switch `currentPlayer`, reset `passCount` to 0, and set `lastAction` to PLACE.
 - **FR-003**: For a JOIN move that does not create a cycle, the system MUST add the new edge to `state.edges`, flip the face of both endpoint coins, switch `currentPlayer`, reset `passCount` to 0, and set `lastAction` to JOIN.
-- **FR-004**: For a JOIN move that creates a cycle, the system MUST identify all coins strictly inside the newly enclosed planar region and flip their faces in addition to flipping the two endpoint coins. All other state updates (edge addition, player switch, passCount reset, lastAction) follow FR-003.
+- **FR-004**: For a JOIN move that creates a cycle, the system MUST extract the full simple cycle path (closed polygon boundary), identify all coins strictly inside that enclosed planar region, and flip their faces in addition to flipping the two endpoint coins. All other state updates (edge addition, player switch, passCount reset, lastAction) follow FR-003.
 - **FR-005**: For a PASS move, the system MUST increment `passCount` by 1, switch `currentPlayer`, and set `lastAction` to PASS. `coinsRemaining` and `coins` remain unchanged; `edges` remains unchanged.
 - **FR-006**: `applyMove` MUST validate that the move is legal before applying it. If the move is illegal, it MUST throw a descriptive error.
 - **FR-007**: The coin-count invariant (`coins.size + coinsRemaining === 12`) MUST hold for every state returned by `applyMove`.
@@ -82,7 +93,7 @@ Move application must preserve fundamental game invariants regardless of move se
 
 - **Move**: A discriminated union representing a player action.
   - `PLACE`: Contains target `Position` and `CoinFace`.
-  - `JOIN`: Contains two `Position` values representing the coins to connect.
+  - `JOIN`: Contains two `Position` values representing the coins to connect, treated as an unordered pair.
   - `PASS`: Contains no payload.
 - **GameState**: Inherited from Sprint 1. Complete game snapshot including coins, edges, supply, player, pass count, and last action.
 - **Enclosed Region**: The set of grid points (and coins occupying them) strictly inside the simple polygon formed by a newly created cycle.
@@ -105,4 +116,5 @@ Move application must preserve fundamental game invariants regardless of move se
 - Coins lying exactly on cycle edges (other than endpoints) cannot exist because the "no coin blocking" rule from Sprint 1 prevents coins on the straight segment between joined coins, and cycle edges are a subset of such segments.
 - The point-in-polygon test operates on the planar embedding of the cycle edges using integer grid coordinates. Coins at integer grid intersections inside the polygon are considered enclosed.
 - Game-end detection (win/loss/draw) is out of scope for this sprint.
+- The engine does not validate that a PLACE move's face matches the current player; the caller is responsible for face validity.
 - Move history or undo functionality is out of scope for this sprint.
