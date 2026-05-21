@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Current plan: [path will be inserted here by /speckit.plan]
+Current plan: [specs/001-core-engine-state/plan.md](specs/001-core-engine-state/plan.md)
 <!-- SPECKIT END -->
 
 ## Repo purpose
