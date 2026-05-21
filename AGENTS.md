@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Current plan: [specs/001-core-engine-state/plan.md](specs/001-core-engine-state/plan.md)
+Current plan: [specs/002-move-application/plan.md](specs/002-move-application/plan.md)
 <!-- SPECKIT END -->
 
 ## Repo purpose
