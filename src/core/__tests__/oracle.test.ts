@@ -1,6 +1,7 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import { areEdgesEqual, edgeIntersects, isQueenLine } from "../geometry";
+import { applyMove } from "../move";
 import { createInitialState, legalJoins, legalPlacements, placeCoin, positionKey } from "../state";
 import type { GameState, Position } from "../types";
 
@@ -177,4 +178,74 @@ describe("oracle property tests", () => {
       );
     });
   });
+
+  describe("applyMove invariants", () => {
+    it("preserves coin count across random legal move sequences", () => {
+      fc.assert(
+        fc.property(fc.array(positionTupleArb, { maxLength: 20 }), checkCoinCountInvariant),
+        {
+          numRuns: 200,
+        },
+      );
+    });
+
+    it("preserves face parity across random legal move sequences", () => {
+      fc.assert(fc.property(fc.array(positionTupleArb, { maxLength: 20 }), checkFaceParity), {
+        numRuns: 200,
+      });
+    });
+
+    it("keeps legalPlacements and legalJoins valid after every move", () => {
+      fc.assert(
+        fc.property(fc.array(positionTupleArb, { maxLength: 20 }), checkLegalityAfterMoves),
+        {
+          numRuns: 200,
+        },
+      );
+    });
+  });
 });
+
+function checkCoinCountInvariant(positions: [number, number][]): boolean {
+  let state = createInitialState();
+  for (const [row, col] of positions) {
+    if (state.coinsRemaining <= 0) break;
+    const key = `${row},${col}`;
+    if (state.coins.has(key)) continue;
+    state = applyMove(state, { type: "PLACE", position: { row, col }, face: "heads" });
+    if (state.coins.size + state.coinsRemaining !== 12) return false;
+  }
+  return true;
+}
+
+function checkFaceParity(positions: [number, number][]): boolean {
+  let state = createInitialState();
+  for (const [row, col] of positions) {
+    if (state.coinsRemaining <= 0) break;
+    const key = `${row},${col}`;
+    if (state.coins.has(key)) continue;
+    state = applyMove(state, { type: "PLACE", position: { row, col }, face: "heads" });
+  }
+  const totalCoins = state.coins.size;
+  const heads = Array.from(state.coins.values()).filter((c) => c.face === "heads").length;
+  const tails = Array.from(state.coins.values()).filter((c) => c.face === "tails").length;
+  return heads + tails === totalCoins;
+}
+
+function checkLegalityAfterMoves(positions: [number, number][]): boolean {
+  let state = createInitialState();
+  for (const [row, col] of positions) {
+    if (state.coinsRemaining <= 0) break;
+    const key = `${row},${col}`;
+    if (state.coins.has(key)) continue;
+    state = applyMove(state, { type: "PLACE", position: { row, col }, face: "heads" });
+
+    const placements = legalPlacements(state);
+    const joins = legalJoins(state);
+
+    if (!placements.every((p) => !state.coins.has(positionKey(p)))) return false;
+    if (!joins.every(([a, b]) => oracleIsQueenLine(a, b) && oracleNotBlocked(a, b, state)))
+      return false;
+  }
+  return true;
+}

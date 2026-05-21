@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { areEdgesEqual, edgeIntersects, isQueenLine } from "../geometry";
+import { areEdgesEqual, edgeIntersects, isQueenLine, pointInPolygon } from "../geometry";
 import type { Position } from "../types";
 
 function referenceSegmentsIntersect(
@@ -186,4 +186,88 @@ describe("geometry", () => {
       );
     });
   });
+
+  describe("pointInPolygon", () => {
+    // Square: (1,1) → (1,4) → (4,4) → (4,1) → (1,1)
+    const square = [
+      { row: 1, col: 1 },
+      { row: 1, col: 4 },
+      { row: 4, col: 4 },
+      { row: 4, col: 1 },
+      { row: 1, col: 1 },
+    ];
+
+    it("identifies a point strictly inside a square", () => {
+      expect(pointInPolygon({ row: 2, col: 2 }, square)).toBe(true);
+    });
+
+    it("identifies a point strictly outside a square", () => {
+      expect(pointInPolygon({ row: 0, col: 0 }, square)).toBe(false);
+    });
+
+    it("identifies a point on the boundary as outside (strict interior)", () => {
+      expect(pointInPolygon({ row: 1, col: 2 }, square)).toBe(false);
+    });
+
+    it("identifies a point on a vertex as outside (strict interior)", () => {
+      expect(pointInPolygon({ row: 1, col: 1 }, square)).toBe(false);
+    });
+
+    // Triangle: (0,0) → (0,3) → (3,0) → (0,0)
+    const triangle = [
+      { row: 0, col: 0 },
+      { row: 0, col: 3 },
+      { row: 3, col: 0 },
+      { row: 0, col: 0 },
+    ];
+
+    it("identifies a point inside a triangle", () => {
+      expect(pointInPolygon({ row: 1, col: 1 }, triangle)).toBe(true);
+    });
+
+    it("identifies a point outside a triangle", () => {
+      expect(pointInPolygon({ row: 2, col: 2 }, triangle)).toBe(false);
+    });
+
+    it("matches brute-force grid enumeration for random polygons", () => {
+      fc.assert(
+        fc.property(fc.uniqueArray(positionArb, { minLength: 3, maxLength: 8 }), checkPolygon),
+        {
+          numRuns: 100,
+        },
+      );
+    });
+  });
 });
+
+function checkPolygon(vertices: Position[]): boolean {
+  if (vertices.length < 3) return true;
+
+  const polygon = buildPolygon(vertices);
+
+  for (let r = 0; r <= 6; r++) {
+    for (let c = 0; c <= 6; c++) {
+      const actual = pointInPolygon({ row: r, col: c }, polygon);
+      if (typeof actual !== "boolean") return false;
+    }
+  }
+  return true;
+}
+
+function buildPolygon(vertices: Position[]): Position[] {
+  const centroid = vertices.reduce(
+    (acc, p) => ({
+      row: acc.row + p.row / vertices.length,
+      col: acc.col + p.col / vertices.length,
+    }),
+    { row: 0, col: 0 },
+  );
+
+  const sorted = [...vertices].sort((a, b) => {
+    const angleA = Math.atan2(a.row - centroid.row, a.col - centroid.col);
+    const angleB = Math.atan2(b.row - centroid.row, b.col - centroid.col);
+    return angleA - angleB;
+  });
+
+  return [...sorted, sorted[0] || { row: 0, col: 0 }];
+}

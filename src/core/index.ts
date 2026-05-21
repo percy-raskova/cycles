@@ -17,3 +17,4 @@ export {
   positionKey,
   passesThroughCoin,
 } from "./state";
+export { applyMove, coinsInsideCycle, findCycle, isValidState } from "./move";

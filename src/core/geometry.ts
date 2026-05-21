@@ -89,3 +89,40 @@ function onSegment(a: Position, b: Position, c: Position): boolean {
 function direction(a: Position, b: Position, c: Position): number {
   return (c.row - a.row) * (b.col - a.col) - (b.row - a.row) * (c.col - a.col);
 }
+
+function pointOnSegment(p: Position, a: Position, b: Position): boolean {
+  const cross = (p.row - a.row) * (b.col - a.col) - (p.col - a.col) * (b.row - a.row);
+  if (cross !== 0) return false;
+  return (
+    Math.min(a.row, b.row) <= p.row &&
+    p.row <= Math.max(a.row, b.row) &&
+    Math.min(a.col, b.col) <= p.col &&
+    p.col <= Math.max(a.col, b.col)
+  );
+}
+
+export function pointInPolygon(point: Position, polygon: readonly Position[]): boolean {
+  // Check if point lies exactly on any edge — strict interior means boundary is outside
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const pi = polygon[i];
+    const pj = polygon[j];
+    if (!pi || !pj) continue;
+    if (pointOnSegment(point, pi, pj)) return false;
+  }
+
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const pi = polygon[i];
+    const pj = polygon[j];
+    if (!pi || !pj) continue;
+
+    const intersects =
+      pi.col > point.col !== pj.col > point.col &&
+      point.row < ((pj.row - pi.row) * (point.col - pi.col)) / (pj.col - pi.col) + pi.row;
+
+    if (intersects) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}

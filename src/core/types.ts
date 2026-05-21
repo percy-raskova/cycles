@@ -27,3 +27,21 @@ export interface GameState {
   readonly passCount: number;
   readonly lastAction: Action | null;
 }
+
+export interface PlaceMove {
+  readonly type: "PLACE";
+  readonly position: Position;
+  readonly face: CoinFace;
+}
+
+export interface JoinMove {
+  readonly type: "JOIN";
+  readonly a: Position;
+  readonly b: Position;
+}
+
+export interface PassMove {
+  readonly type: "PASS";
+}
+
+export type Move = PlaceMove | JoinMove | PassMove;

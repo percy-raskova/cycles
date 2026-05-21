@@ -19,8 +19,8 @@
 
 **Purpose**: Prepare the project for Sprint 2 development
 
-- [ ] T001 Update `src/core/types.ts` to add `Move` discriminated union (`PlaceMove`, `JoinMove`, `PassMove`)
-- [ ] T002 Update `src/core/index.ts` to export `Move` types and `applyMove` (stub export initially)
+- [X] T001 Update `src/core/types.ts` to add `Move` discriminated union (`PlaceMove`, `JoinMove`, `PassMove`)
+- [X] T002 Update `src/core/index.ts` to export `Move` types and `applyMove` (stub export initially)
 
 ---
 
@@ -30,11 +30,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] Add `pointInPolygon(point, polygon)` to `src/core/geometry.ts` using ray-casting algorithm for integer grid coordinates
-- [ ] T004 [P] Write example tests in `src/core/__tests__/geometry.test.ts` for `pointInPolygon`: square, triangle, point on boundary, point outside
-- [ ] T005 [P] Write fast-check property test in `src/core/__tests__/geometry.test.ts`: for any simple polygon on the 7×7 grid, `pointInPolygon` matches brute-force grid enumeration
-- [ ] T006 Add `findCycle(state, a, b)` to `src/core/move.ts` using BFS shortest path on existing edges to find the cycle path when JOIN(a,b) closes a cycle; returns `null` if no cycle
-- [ ] T007 Add `coinsInsideCycle(state, cyclePath)` to `src/core/move.ts` using `pointInPolygon` to test every coin not on the cycle boundary
+- [X] T003 [P] Add `pointInPolygon(point, polygon)` to `src/core/geometry.ts` using ray-casting algorithm for integer grid coordinates
+- [X] T004 [P] Write example tests in `src/core/__tests__/geometry.test.ts` for `pointInPolygon`: square, triangle, point on boundary, point outside
+- [X] T005 [P] Write fast-check property test in `src/core/__tests__/geometry.test.ts`: for any simple polygon on the 7×7 grid, `pointInPolygon` matches brute-force grid enumeration
+- [X] T006 Add `findCycle(state, a, b)` to `src/core/move.ts` using BFS shortest path on existing edges to find the cycle path when JOIN(a,b) closes a cycle; returns `null` if no cycle
+- [X] T007 Add `coinsInsideCycle(state, cyclePath)` to `src/core/move.ts` using `pointInPolygon` to test every coin not on the cycle boundary
 
 **Checkpoint**: Foundation ready — `pointInPolygon` is tested, `findCycle` and `coinsInsideCycle` compile, and geometry primitives are property-tested. User story implementation can now begin.
 
@@ -50,16 +50,13 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T008 [P] [US1] Write example tests in `src/core/__tests__/move.test.ts` for PLACE: coin appears, supply decreases, player switches, passCount resets, lastAction set
-- [ ] T009 [P] [US1] Write example tests in `src/core/__tests__/move.test.ts` for simple JOIN: edge added, endpoints flip, player switches, passCount resets
-- [ ] T010 [P] [US1] Write example tests in `src/core/__tests__/move.test.ts` for PASS: passCount increments, player switches, lastAction set, no other state changes
-- [ ] T011 [P] [US1] Write example tests in `src/core/__tests__/move.test.ts` for illegal move rejection: occupied PLACE throws, blocked JOIN throws, duplicate JOIN throws
-
-### Implementation for User Story 1
-
-- [ ] T012 [US1] Implement `applyMove(state, move)` in `src/core/move.ts` for PLACE variant — delegate to `placeCoin` from `state.ts`
-- [ ] T013 [US1] Implement `applyMove` JOIN variant (simple, no cycle) in `src/core/move.ts` — delegate to `joinCoins` from `state.ts`
-- [ ] T014 [US1] Implement `applyMove` PASS variant in `src/core/move.ts` — update passCount, switch player, set lastAction
+- [X] T008 [P] [US1] Write example tests in `src/core/__tests__/move.test.ts` for PLACE: coin appears, supply decreases, player switches, passCount resets, lastAction set
+- [X] T009 [P] [US1] Write example tests in `src/core/__tests__/move.test.ts` for simple JOIN: edge added, endpoints flip, player switches, passCount resets
+- [X] T010 [P] [US1] Write example tests in `src/core/__tests__/move.test.ts` for PASS: passCount increments, player switches, lastAction set, no other state changes
+- [X] T011 [P] [US1] Write example tests in `src/core/__tests__/move.test.ts` for illegal move rejection: occupied PLACE throws, blocked JOIN throws, duplicate JOIN throws
+- [X] T012 [US1] Implement `applyMove(state, move)` in `src/core/move.ts` for PLACE variant — delegate to `placeCoin` from `state.ts`
+- [X] T013 [US1] Implement `applyMove` JOIN variant (simple, no cycle) in `src/core/move.ts` — delegate to `joinCoins` from `state.ts`
+- [X] T014 [US1] Implement `applyMove` PASS variant in `src/core/move.ts` — update passCount, switch player, set lastAction
 
 **Checkpoint**: `applyMove` works for all simple moves, all US1 tests pass, and `bun run test:run` is green.
 
@@ -75,15 +72,12 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T015 [P] [US2] Write example tests in `src/core/__tests__/move.test.ts` for cyclic JOIN rectangle: 4 boundary coins + 1 interior → interior flips
-- [ ] T016 [P] [US2] Write example tests in `src/core/__tests__/move.test.ts` for cyclic JOIN empty interior: only endpoints flip
-- [ ] T017 [P] [US2] Write example tests in `src/core/__tests__/move.test.ts` for cyclic JOIN multiple interior coins: all interior coins flip
-- [ ] T018 [P] [US2] Write example tests in `src/core/__tests__/move.test.ts` for non-cyclic JOIN: endpoints flip, no interior detection performed
-
-### Implementation for User Story 2
-
-- [ ] T019 [US2] Extend `applyMove` JOIN variant in `src/core/move.ts` to detect cycles: call `findCycle`, and if a cycle is found, flip all interior coins via `coinsInsideCycle` in addition to endpoints
-- [ ] T020 [US2] Verify `findCycle` returns the correct closed polygon path for rectangular, triangular, and irregular cycles in example tests
+- [X] T015 [P] [US2] Write example tests in `src/core/__tests__/move.test.ts` for cyclic JOIN rectangle: 4 boundary coins + 1 interior → interior flips
+- [X] T016 [P] [US2] Write example tests in `src/core/__tests__/move.test.ts` for cyclic JOIN empty interior: only endpoints flip
+- [X] T017 [P] [US2] Write example tests in `src/core/__tests__/move.test.ts` for cyclic JOIN multiple interior coins: all interior coins flip
+- [X] T018 [P] [US2] Write example tests in `src/core/__tests__/move.test.ts` for non-cyclic JOIN: endpoints flip, no interior detection performed
+- [X] T019 [US2] Extend `applyMove` JOIN variant in `src/core/move.ts` to detect cycles: call `findCycle`, and if a cycle is found, flip all interior coins via `coinsInsideCycle` in addition to endpoints
+- [X] T020 [US2] Verify `findCycle` returns the correct closed polygon path for rectangular, triangular, and irregular cycles in example tests
 
 **Checkpoint**: Cyclic JOINs flip exactly the right coins, all US2 tests pass, and `bun run test:run` is green.
 
@@ -99,13 +93,10 @@
 
 > **NOTE: Property tests can be written incrementally alongside US1/US2, but must be hardened in this phase**
 
-- [ ] T021 [P] [US3] Add fast-check property test in `src/core/__tests__/oracle.test.ts`: generate random legal move sequences from initial state, assert `coins.size + coinsRemaining === 12` at every step
-- [ ] T022 [P] [US3] Add fast-check property test in `src/core/__tests__/oracle.test.ts`: generate random legal move sequences, assert face parity (heads + tails = total placed coins) holds at every step
-- [ ] T023 [P] [US3] Add fast-check property test in `src/core/__tests__/oracle.test.ts`: after every `applyMove`, `legalPlacements` and `legalJoins` return valid results for the new state
-
-### Implementation for User Story 3
-
-- [ ] T024 [US3] Add `isValidState(state)` helper in `src/core/move.ts` or `src/core/state.ts` — a public, independently testable invariant checker that validates coin count, face consistency, and edge validity
+- [X] T021 [P] [US3] Add fast-check property test in `src/core/__tests__/oracle.test.ts`: generate random legal move sequences from initial state, assert `coins.size + coinsRemaining === 12` at every step
+- [X] T022 [P] [US3] Add fast-check property test in `src/core/__tests__/oracle.test.ts`: generate random legal move sequences, assert face parity (heads + tails = total placed coins) holds at every step
+- [X] T023 [P] [US3] Add fast-check property test in `src/core/__tests__/oracle.test.ts`: after every `applyMove`, `legalPlacements` and `legalJoins` return valid results for the new state
+- [X] T024 [US3] Add `isValidState(state)` helper in `src/core/move.ts` or `src/core/state.ts` — a public, independently testable invariant checker that validates coin count, face consistency, and edge validity
 
 **Checkpoint**: All property tests pass with default fast-check numRuns (100). No flakiness. Invariant checker survives adversarial move sequences.
 
@@ -115,11 +106,11 @@
 
 **Purpose**: Ensure the module is clean, well-documented, and meets project quality gates
 
-- [ ] T025 [P] Run `bun run lint:write` to auto-fix any formatting drift in new/modified files
-- [ ] T026 Run `bun run typecheck` to verify zero TypeScript errors across `src/core/`
-- [ ] T027 [P] Verify test coverage ≥ 90% on `src/core/` by running `bun run test:run -- --coverage`
-- [ ] T028 Update `src/core/index.ts` to ensure the public API surface is minimal and correct (no internal helpers exported unless needed for tests)
-- [ ] T029 [P] Verify `applyMove` cognitive complexity ≤ 15 per Biome rule; extract sub-functions if needed
+- [X] T025 [P] Run `bun run lint:write` to auto-fix any formatting drift in new/modified files
+- [X] T026 Run `bun run typecheck` to verify zero TypeScript errors across `src/core/`
+- [X] T027 [P] Verify test coverage ≥ 90% on `src/core/` by running `bun run test:run -- --coverage`
+- [X] T028 Update `src/core/index.ts` to ensure the public API surface is minimal and correct (no internal helpers exported unless needed for tests)
+- [X] T029 [P] Verify `applyMove` cognitive complexity ≤ 15 per Biome rule; extract sub-functions if needed
 
 ---
 
