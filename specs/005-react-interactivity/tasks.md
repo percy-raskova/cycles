@@ -15,8 +15,8 @@
 
 **Purpose**: CSS foundations and animation framework for interactive states
 
-- [ ] T001 [P] Add CSS transition keyframes and interactive state classes to `src/ui/App.css` (coin-selected ring, coin-flipping transition, dot-hover highlight, preview-line style)
-- [ ] T002 [P] Add global keyboard handler for Escape key cancellation in `src/ui/App.css` or `src/ui/pages/GamePage.tsx`
+- [X] T001 [P] Add CSS transition keyframes and interactive state classes to `src/ui/App.css` (coin-selected ring, coin-flipping transition, dot-hover highlight, preview-line style)
+- [X] T002 [P] Add global keyboard handler for Escape key cancellation in `src/ui/App.css` or `src/ui/pages/GamePage.tsx`
 
 ---
 
@@ -26,9 +26,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Extend `GridView` in `src/ui/components/GridView.tsx` with `onIntersectionClick`, `onIntersectionHover`, `hoveredPosition`, and `legalPlacements` props; make dots clickable and hoverable
-- [ ] T004 Extend `CoinView` in `src/ui/components/CoinView.tsx` with `onClick`, `isSelected`, `isHighlighted`, and `isFlipping` props; add gold ring for selected state, CSS transition for flipping
-- [ ] T005 Extend `BoardView` in `src/ui/components/BoardView.tsx` with `onCoinClick`, `onIntersectionClick`, `onIntersectionHover`, `selectedCoin`, `hoveredPosition`, `previewEdge`, `legalPlacements`, and `flippingCoins` props; wire down to children
+- [X] T003 Extend `GridView` in `src/ui/components/GridView.tsx` with `onIntersectionClick`, `onIntersectionHover`, `hoveredPosition`, and `legalPlacements` props; make dots clickable and hoverable
+- [X] T004 Extend `CoinView` in `src/ui/components/CoinView.tsx` with `onClick`, `isSelected`, `isHighlighted`, and `isFlipping` props; add gold ring for selected state, CSS transition for flipping
+- [X] T005 Extend `BoardView` in `src/ui/components/BoardView.tsx` with `onCoinClick`, `onIntersectionClick`, `onIntersectionHover`, `selectedCoin`, `hoveredPosition`, `previewEdge`, `legalPlacements`, and `flippingCoins` props; wire down to children
 
 **Checkpoint**: Foundation ready — GridView, CoinView, and BoardView are interactive shells
 
@@ -42,15 +42,15 @@
 
 ### Tests for User Story 1
 
-- [ ] T006 [P] [US1] Write `FaceSelector.test.tsx` asserting face selector renders H/T buttons and calls `onSelect`/`onCancel`
-- [ ] T007 [P] [US1] Write `GridView.test.tsx` update asserting clickable dots call `onIntersectionClick` with correct position
-- [ ] T008 [P] [US1] Write `GamePage.test.tsx` test asserting clicking an empty intersection opens face selector, selecting face places coin
+- [X] T006 [P] [US1] Write `FaceSelector.test.tsx` asserting face selector renders H/T buttons and calls `onSelect`/`onCancel`
+- [X] T007 [P] [US1] Write `GridView.test.tsx` update asserting clickable dots call `onIntersectionClick` with correct position
+- [X] T008 [P] [US1] Write `GamePage.test.tsx` test asserting clicking an empty intersection opens face selector, selecting face places coin
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] [US1] Implement `FaceSelector` in `src/ui/components/FaceSelector.tsx` (inline H/T choice, positioned near clicked intersection)
-- [ ] T010 [US1] Implement PLACE move construction in `src/ui/pages/GamePage.tsx`: click empty intersection → SELECTING_FACE → select face → `step(session, PlaceMove)` → back to IDLE
-- [ ] T011 [US1] Wire `FaceSelector` into `GamePage` conditionally when `movePhase.kind === "SELECTING_FACE"`
+- [X] T009 [P] [US1] Implement `FaceSelector` in `src/ui/components/FaceSelector.tsx` (inline H/T choice, positioned near clicked intersection)
+- [X] T010 [US1] Implement PLACE move construction in `src/ui/pages/GamePage.tsx`: click empty intersection → SELECTING_FACE → select face → `step(session, PlaceMove)` → back to IDLE
+- [X] T011 [US1] Wire `FaceSelector` into `GamePage` conditionally when `movePhase.kind === "SELECTING_FACE"`
 
 **Checkpoint**: At this point, `bun run dev` shows a board where clicking empty intersections lets you place coins. User Story 1 is independently testable.
 
@@ -64,15 +64,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T012 [P] [US2] Write `CoinView.test.tsx` update asserting `isSelected` prop renders gold ring
-- [ ] T013 [P] [US2] Write `BoardView.test.tsx` update asserting preview line renders when `previewEdge` prop is provided
-- [ ] T014 [P] [US2] Write `GamePage.test.tsx` update asserting JOIN flow: select first coin, select second, edge appears; illegal join shows feedback; Escape cancels
+- [X] T012 [P] [US2] Write `CoinView.test.tsx` update asserting `isSelected` prop renders gold ring
+- [X] T013 [P] [US2] Write `BoardView.test.tsx` update asserting preview line renders when `previewEdge` prop is provided
+- [X] T014 [P] [US2] Write `GamePage.test.tsx` update asserting JOIN flow: select first coin, select second, edge appears; illegal join shows feedback; Escape cancels
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Implement JOIN move construction in `src/ui/pages/GamePage.tsx`: click coin → SELECTING_SECOND_COIN → click second coin → `step(session, JoinMove)` → back to IDLE; handle illegal move error feedback
-- [ ] T016 [US2] Add Escape key handler and same-coin-click cancellation in `GamePage` to exit SELECTING_SECOND_COIN
-- [ ] T017 [US2] Add brief illegal-move visual feedback (e.g., shake animation on rejected coin) in `CoinView.tsx` or `App.css`
+- [X] T015 [US2] Implement JOIN move construction in `src/ui/pages/GamePage.tsx`: click coin → SELECTING_SECOND_COIN → click second coin → `step(session, JoinMove)` → back to IDLE; handle illegal move error feedback
+- [X] T016 [US2] Add Escape key handler and same-coin-click cancellation in `GamePage` to exit SELECTING_SECOND_COIN
+- [X] T017 [US2] Add brief illegal-move visual feedback (e.g., shake animation on rejected coin) in `CoinView.tsx` or `App.css`
 
 **Checkpoint**: At this point, coins can be joined. User Story 2 is independently testable.
 
@@ -86,15 +86,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T018 [P] [US3] Write `GridView.test.tsx` update asserting legal placement dots are highlighted on hover
-- [ ] T019 [P] [US3] Write `BoardView.test.tsx` update asserting preview line appears only when `previewEdge` is provided
+- [X] T018 [P] [US3] Write `GridView.test.tsx` update asserting legal placement dots are highlighted on hover
+- [X] T019 [P] [US3] Write `BoardView.test.tsx` update asserting preview line appears only when `previewEdge` is provided
 
 ### Implementation for User Story 3
 
-- [ ] T020 [P] [US3] In `GamePage.tsx`, pre-compute `legalPlacements` set and pass to `BoardView`/`GridView`; implement `onIntersectionHover` to update hover state
-- [ ] T021 [US3] In `GamePage.tsx`, when `movePhase.kind === "SELECTING_SECOND_COIN"`, compute whether hovered coin is a legal JOIN target and set `previewEdge` accordingly
-- [ ] T022 [US3] In `GridView.tsx`, render hover highlight (larger dot + light green ring) for legal placements
-- [ ] T023 [US3] In `CoinView.tsx`, render hover highlight for legal JOIN targets when a first coin is selected
+- [X] T020 [P] [US3] In `GamePage.tsx`, pre-compute `legalPlacements` set and pass to `BoardView`/`GridView`; implement `onIntersectionHover` to update hover state
+- [X] T021 [US3] In `GamePage.tsx`, when `movePhase.kind === "SELECTING_SECOND_COIN"`, compute whether hovered coin is a legal JOIN target and set `previewEdge` accordingly
+- [X] T022 [US3] In `GridView.tsx`, render hover highlight (larger dot + light green ring) for legal placements
+- [X] T023 [US3] In `CoinView.tsx`, render hover highlight for legal JOIN targets when a first coin is selected
 
 **Checkpoint**: At this point, hover feedback works. User Story 3 is independently testable.
 
@@ -108,15 +108,15 @@
 
 ### Tests for User Story 4
 
-- [ ] T024 [P] [US4] Write `CoinView.test.tsx` update asserting `isFlipping` prop applies CSS transition class
-- [ ] T025 [P] [US4] Write `GamePage.test.tsx` update asserting after a cycle-closing PLACE, `flippingCoins` set contains captured coin positions
+- [X] T024 [P] [US4] Write `CoinView.test.tsx` update asserting `isFlipping` prop applies CSS transition class
+- [X] T025 [P] [US4] Write `GamePage.test.tsx` update asserting after a cycle-closing PLACE, `flippingCoins` set contains captured coin positions
 
 ### Implementation for User Story 4
 
-- [ ] T026 [P] [US4] In `CoinView.tsx`, add CSS transition class when `isFlipping` is true (`transition: fill 500ms ease, stroke 500ms ease`)
-- [ ] T027 [US4] In `GamePage.tsx`, after each successful `step`, diff `previousSession.state.coins` with `newSession.state.coins` to find flipped positions; populate `flippingCoins` set
-- [ ] T028 [US4] In `GamePage.tsx`, block new move input while `flippingCoins` is non-empty (set `isAnimating` flag); clear `flippingCoins` after 500ms timeout
-- [ ] T029 [US4] Verify `App.css` contains `.coin-flipping` class with correct `transition` properties
+- [X] T026 [P] [US4] In `CoinView.tsx`, add CSS transition class when `isFlipping` is true (`transition: fill 500ms ease, stroke 500ms ease`)
+- [X] T027 [US4] In `GamePage.tsx`, after each successful `step`, diff `previousSession.state.coins` with `newSession.state.coins` to find flipped positions; populate `flippingCoins` set
+- [X] T028 [US4] In `GamePage.tsx`, block new move input while `flippingCoins` is non-empty (set `isAnimating` flag); clear `flippingCoins` after 500ms timeout
+- [X] T029 [US4] Verify `App.css` contains `.coin-flipping` class with correct `transition` properties
 
 **Checkpoint**: At this point, coin flip animations work. User Story 4 is independently testable.
 
@@ -130,18 +130,18 @@
 
 ### Tests for User Story 5
 
-- [ ] T030 [P] [US5] Write `TurnIndicator.test.tsx` asserting it displays current player, coins remaining, and notice text
-- [ ] T031 [P] [US5] Write `GameOverPanel.test.tsx` asserting it displays score and calls `onNewGame`
-- [ ] T032 [P] [US5] Write `GamePage.test.tsx` update asserting auto-pass triggers when no legal moves, terminal state shows GameOverPanel, New Game resets session
+- [X] T030 [P] [US5] Write `TurnIndicator.test.tsx` asserting it displays current player, coins remaining, and notice text
+- [X] T031 [P] [US5] Write `GameOverPanel.test.tsx` asserting it displays score and calls `onNewGame`
+- [X] T032 [P] [US5] Write `GamePage.test.tsx` update asserting auto-pass triggers when no legal moves, terminal state shows GameOverPanel, New Game resets session
 
 ### Implementation for User Story 5
 
-- [ ] T033 [P] [US5] Implement `TurnIndicator` in `src/ui/components/TurnIndicator.tsx` (player name, coins remaining, auto-pass notice)
-- [ ] T034 [P] [US5] Implement `GameOverPanel` in `src/ui/components/GameOverPanel.tsx` (final score heads/tails/winner, New Game button)
-- [ ] T035 [US5] In `GamePage.tsx`, add `useEffect` for auto-pass: when `!hasLegalMoves(session) && !session.isTerminal`, show notice, delay 1s, call `step(session, PASS)`
-- [ ] T036 [US5] In `GamePage.tsx`, when `session.isTerminal`, disable all input handlers and render `GameOverPanel`
-- [ ] T037 [US5] In `GamePage.tsx`, implement `onNewGame` handler that calls `createSession()` to reset state
-- [ ] T038 [US5] Wire `GamePage` into `src/ui/App.tsx` replacing `DevPage` as the default route
+- [X] T033 [P] [US5] Implement `TurnIndicator` in `src/ui/components/TurnIndicator.tsx` (player name, coins remaining, auto-pass notice)
+- [X] T034 [P] [US5] Implement `GameOverPanel` in `src/ui/components/GameOverPanel.tsx` (final score heads/tails/winner, New Game button)
+- [X] T035 [US5] In `GamePage.tsx`, add `useEffect` for auto-pass: when `!hasLegalMoves(session) && !session.isTerminal`, show notice, delay 1s, call `step(session, PASS)`
+- [X] T036 [US5] In `GamePage.tsx`, when `session.isTerminal`, disable all input handlers and render `GameOverPanel`
+- [X] T037 [US5] In `GamePage.tsx`, implement `onNewGame` handler that calls `createSession()` to reset state
+- [X] T038 [US5] Wire `GamePage` into `src/ui/App.tsx` replacing `DevPage` as the default route
 
 **Checkpoint**: At this point, a full game can be played in the browser. This is the sprint exit criteria.
 
@@ -151,10 +151,10 @@
 
 **Purpose**: Quality gate, dev page preservation, documentation
 
-- [ ] T039 [P] Ensure `src/ui/pages/DevPage.tsx` from Sprint 4 is preserved and accessible (either as separate route or commented import in App.tsx)
-- [ ] T040 [P] Run full quality gate: `bun run lint && bun run typecheck && bun run test:run` — fix any issues
-- [ ] T041 Validate `quickstart.md` by playing a full game in the browser and confirming all scenarios work
-- [ ] T042 Verify no new exports needed in `src/core/index.ts` for the UI layer (should use existing `createSession`, `step`, `hasLegalMoves`, `computeFinalScore`, `applyMove`, types)
+- [X] T039 [P] Ensure `src/ui/pages/DevPage.tsx` from Sprint 4 is preserved and accessible (either as separate route or commented import in App.tsx)
+- [X] T040 [P] Run full quality gate: `bun run lint && bun run typecheck && bun run test:run` — fix any issues
+- [X] T041 Validate `quickstart.md` by playing a full game in the browser and confirming all scenarios work
+- [X] T042 Verify no new exports needed in `src/core/index.ts` for the UI layer (should use existing `createSession`, `step`, `hasLegalMoves`, `computeFinalScore`, `applyMove`, types)
 
 ---
 
