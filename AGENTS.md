@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Current plan: [specs/004-react-readonly-render/plan.md](specs/004-react-readonly-render/plan.md)
+Current plan: [specs/005-react-interactivity/plan.md](specs/005-react-interactivity/plan.md)
 <!-- SPECKIT END -->
 
 ## Repo purpose
