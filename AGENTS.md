@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Current plan: [specs/003-game-loop-cli/plan.md](specs/003-game-loop-cli/plan.md)
+Current plan: [specs/004-react-readonly-render/plan.md](specs/004-react-readonly-render/plan.md)
 <!-- SPECKIT END -->
 
 ## Repo purpose
