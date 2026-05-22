@@ -12,6 +12,7 @@ type MovePhase =
 export function GamePage() {
   const [session, setSession] = useState<GameSession>(() => createSession());
   const [movePhase, setMovePhase] = useState<MovePhase>({ kind: "IDLE" });
+  const [illegalMoveCoin, setIllegalMoveCoin] = useState<Position | null>(null);
 
   const performStep = useCallback((move: Move) => {
     setSession((prev) => {
@@ -34,8 +35,21 @@ export function GamePage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Clear illegal-move feedback after animation duration
+  useEffect(() => {
+    if (illegalMoveCoin) {
+      const timer = setTimeout(() => setIllegalMoveCoin(null), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [illegalMoveCoin]);
+
   const handleIntersectionClick = useCallback(
     (position: Position) => {
+      if (movePhase.kind === "SELECTING_SECOND_COIN") {
+        // Clicking empty intersection cancels JOIN selection
+        setMovePhase({ kind: "IDLE" });
+        return;
+      }
       if (movePhase.kind !== "IDLE") return;
 
       const key = positionKey(position);
@@ -46,9 +60,37 @@ export function GamePage() {
     [movePhase.kind, session.state.coins],
   );
 
-  const handleCoinClick = useCallback((_position: Position) => {
-    // JOIN logic will be implemented in US2
-  }, []);
+  const handleCoinClick = useCallback(
+    (position: Position) => {
+      if (movePhase.kind === "SELECTING_SECOND_COIN") {
+        if (movePhase.first.row === position.row && movePhase.first.col === position.col) {
+          // Click same coin → cancel
+          setMovePhase({ kind: "IDLE" });
+          return;
+        }
+
+        const move: Move = {
+          type: "JOIN",
+          a: movePhase.first,
+          b: position,
+        };
+        const result = step(session, move);
+        if (result.kind === "ok") {
+          setSession(result.session);
+          setMovePhase({ kind: "IDLE" });
+        } else {
+          setIllegalMoveCoin(position);
+        }
+        return;
+      }
+
+      if (movePhase.kind !== "IDLE") return;
+
+      // Start JOIN selection
+      setMovePhase({ kind: "SELECTING_SECOND_COIN", first: position });
+    },
+    [movePhase, session],
+  );
 
   const handleFaceSelect = useCallback(
     (face: CoinFace) => {
@@ -68,6 +110,9 @@ export function GamePage() {
     setMovePhase({ kind: "IDLE" });
   }, []);
 
+  const selectedCoin: Position | null =
+    movePhase.kind === "SELECTING_SECOND_COIN" ? movePhase.first : null;
+
   const legalPlacementSet = new Set(legalPlacements(session.state).map((p) => positionKey(p)));
 
   return (
@@ -77,11 +122,12 @@ export function GamePage() {
           state={session.state}
           onCoinClick={handleCoinClick}
           onIntersectionClick={handleIntersectionClick}
-          selectedCoin={null}
+          selectedCoin={selectedCoin}
           hoveredPosition={null}
           previewEdge={null}
           legalPlacements={legalPlacementSet}
           flippingCoins={new Set()}
+          illegalMoveCoin={illegalMoveCoin}
         />
         {movePhase.kind === "SELECTING_FACE" && (
           <FaceSelector

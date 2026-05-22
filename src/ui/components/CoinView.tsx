@@ -8,18 +8,36 @@ interface CoinViewProps {
   readonly isSelected: boolean;
   readonly isHighlighted: boolean;
   readonly isFlipping: boolean;
+  readonly isIllegal: boolean;
 }
 
-export function CoinView({ coin, onClick, isSelected, isHighlighted, isFlipping }: CoinViewProps) {
+function buildClassName(
+  isSelected: boolean,
+  isHighlighted: boolean,
+  isFlipping: boolean,
+  isIllegal: boolean,
+): string {
+  const parts: string[] = [];
+  if (isSelected) parts.push("coin-selected");
+  else if (isHighlighted) parts.push("coin-highlighted");
+  if (isFlipping) parts.push("coin-flipping");
+  if (isIllegal) parts.push("coin-illegal");
+  return parts.join(" ");
+}
+
+export function CoinView({
+  coin,
+  onClick,
+  isSelected,
+  isHighlighted,
+  isFlipping,
+  isIllegal,
+}: CoinViewProps) {
   const { x, y } = positionToSvg(coin.position);
   const label = coin.face === "heads" ? "H" : "T";
   const fill = coin.face === "heads" ? "#FFB6E6" : "#B6E6FF";
   const stroke = coin.face === "heads" ? "#FF1493" : "#00BFFF";
-
-  let className = "";
-  if (isSelected) className = "coin-selected";
-  else if (isHighlighted) className = "coin-highlighted";
-  if (isFlipping) className += className ? " coin-flipping" : "coin-flipping";
+  const className = buildClassName(isSelected, isHighlighted, isFlipping, isIllegal);
 
   function handleClick() {
     onClick?.(coin.position);

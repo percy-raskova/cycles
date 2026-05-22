@@ -14,6 +14,7 @@ function renderBoardView(state: GameState) {
       previewEdge={null}
       legalPlacements={new Set()}
       flippingCoins={new Set()}
+      illegalMoveCoin={null}
     />,
   );
 }
@@ -117,6 +118,7 @@ describe("BoardView — with coins", () => {
         previewEdge={null}
         legalPlacements={new Set()}
         flippingCoins={new Set()}
+        illegalMoveCoin={null}
       />,
     );
 
@@ -181,6 +183,27 @@ describe("BoardView — with edges", () => {
     // Both edges should have the correct dark orchid stroke
     expect(edge1.getAttribute("stroke")).toBe("#9932CC");
     expect(edge2.getAttribute("stroke")).toBe("#9932CC");
+  });
+});
+
+describe("BoardView — preview edge", () => {
+  it("renders preview line when previewEdge prop is provided", () => {
+    const state = createInitialState();
+    render(
+      <BoardView
+        state={state}
+        selectedCoin={null}
+        hoveredPosition={null}
+        previewEdge={{ from: { row: 0, col: 0 }, to: { row: 1, col: 1 } }}
+        legalPlacements={new Set()}
+        flippingCoins={new Set()}
+        illegalMoveCoin={null}
+      />,
+    );
+
+    const previewLine = screen.getByTestId("preview-edge");
+    expect(previewLine).toBeDefined();
+    expect(previewLine.getAttribute("class")).toContain("preview-line");
   });
 });
 

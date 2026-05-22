@@ -135,6 +135,7 @@ export function DevPage() {
           previewEdge={null}
           legalPlacements={new Set()}
           flippingCoins={new Set()}
+          illegalMoveCoin={null}
         />
       </div>
     </div>

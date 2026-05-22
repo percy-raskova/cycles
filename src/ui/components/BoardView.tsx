@@ -15,6 +15,7 @@ interface BoardViewProps {
   readonly previewEdge: { readonly from: Position; readonly to: Position } | null;
   readonly legalPlacements: ReadonlySet<string>;
   readonly flippingCoins: ReadonlySet<string>;
+  readonly illegalMoveCoin: Position | null;
 }
 
 export function BoardView({
@@ -27,6 +28,7 @@ export function BoardView({
   previewEdge,
   legalPlacements,
   flippingCoins,
+  illegalMoveCoin,
 }: BoardViewProps) {
   return (
     <svg
@@ -68,6 +70,7 @@ export function BoardView({
         const pos = coin.position;
         const posKey = `${pos.row},${pos.col}`;
         const isSelected = selectedCoin?.row === pos.row && selectedCoin?.col === pos.col;
+        const isIllegal = illegalMoveCoin?.row === pos.row && illegalMoveCoin?.col === pos.col;
         return (
           <CoinView
             key={`coin-${pos.row}-${pos.col}`}
@@ -76,6 +79,7 @@ export function BoardView({
             isSelected={isSelected}
             isHighlighted={false}
             isFlipping={flippingCoins.has(posKey)}
+            isIllegal={isIllegal}
           />
         );
       })}
