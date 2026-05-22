@@ -63,7 +63,8 @@
 ### Tests for User Story 2
 
 - [ ] T010 [P] [US2] Write `CoinView.test.tsx` asserting a single coin renders a circle at the correct SVG coordinates with the correct text label
-- [ ] T011 [P] [US2] Write `BoardView.test.tsx` update asserting a GameState with multiple coins renders the correct count of CoinView elements
+- [ ] T011 [P] [US2] Update existing `BoardView.test.tsx` (from T007) to assert a GameState with multiple coins renders the correct count of CoinView elements
+- [ ] T029 [P] [US2] Write reactive removal test: render `BoardView` with a coin, then re-render with the same `GameState` minus that coin, assert the circle is absent and no phantom elements remain
 
 ### Implementation for User Story 2
 
@@ -83,7 +84,8 @@
 ### Tests for User Story 3
 
 - [ ] T014 [P] [US3] Write `EdgeView.test.tsx` asserting a single edge renders a line from the correct start coordinate to the correct end coordinate
-- [ ] T015 [P] [US3] Write `BoardView.test.tsx` update asserting edges are rendered below coins (z-order check)
+- [ ] T015 [P] [US3] Update existing `BoardView.test.tsx` to assert edges are rendered below coins (z-order check)
+- [ ] T027 [P] [US3] Write `BoardView.test.tsx` test asserting crossing edges (e.g., A1↔G7 and A7↔G1) are both rendered without structural omission
 
 ### Implementation for User Story 3
 
@@ -117,9 +119,10 @@
 
 - [ ] T022 [P] Add dev page layout styles in `src/ui/App.css` (side-by-side flex layout, textarea sizing, board container)
 - [ ] T023 [P] Add a "Max Density" button to `DevPage` that fills all 49 positions and renders all legal edges; log render timing to console
+- [ ] T028 [P] Write automated performance test in `src/ui/components/__tests__/BoardView.test.tsx` asserting max-density board (49 coins + all legal edges) mounts in under 100ms
 - [ ] T024 Run full quality gate: `bun run lint && bun run typecheck && bun run test:run` — fix any issues
 - [ ] T025 Validate `quickstart.md` by pasting a real `GameState` from `src/core/__tests__/session.test.ts` into the dev page and confirming visual correctness
-- [ ] T026 Update `src/core/index.ts` exports if any new public API is needed for the UI layer (should not be necessary — existing types suffice)
+- [ ] T026 [P] Verify no new exports are needed in `src/core/index.ts` for the UI layer; if any are needed, add them
 
 ---
 

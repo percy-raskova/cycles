@@ -31,9 +31,9 @@ BoardView (props: { state: GameState })
 ├── GridView (props: { gridSize: number })
 │   └── 7 horizontal lines + 7 vertical lines + 49 intersection dots
 ├── EdgeView[] (props: { from: Position; to: Position })
-│   └── One <line> per edge in state.board.edges
+│   └── One <line> per edge in state.edges
 └── CoinView[] (props: { coin: Coin })
-    └── One <g> containing <circle> + <text> per coin in state.board.coins
+    └── One <g> containing <circle> + <text> per coin in state.coins
 ```
 
 **Render order (z-index)**:
@@ -44,6 +44,27 @@ BoardView (props: { state: GameState })
 ## State Transitions
 
 The renderer is stateless. When the `GameState` prop changes, React re-renders the entire SVG tree. No diffing or incremental update logic is required — the DOM is small enough (max ~200 SVG elements) that full re-renders are trivial.
+
+## Visual Styling Constants
+
+These are ad-hoc choices for the developer-facing renderer; end-user theming is out of scope.
+
+| Element | SVG Attribute | Suggested Value |
+|---|---|---|
+| Grid lines | stroke | `#ddd` (light gray) |
+| Grid lines | strokeWidth | 1 |
+| Intersection dots | fill | `#bbb` |
+| Intersection dots | r | 3 |
+| Coin (heads) | fill | `#e3f2fd` (light blue) |
+| Coin (tails) | fill | `#fff3e0` (light orange) |
+| Coin | stroke | `#333` |
+| Coin | strokeWidth | 2 |
+| Coin label | fill | `#333` |
+| Coin label | fontSize | 24 |
+| Coin label | fontFamily | `system-ui, sans-serif` |
+| Coin label | fontWeight | `bold` |
+| Edge | stroke | `#555` |
+| Edge | strokeWidth | 2 |
 
 ## Validation Rules
 

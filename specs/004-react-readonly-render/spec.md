@@ -83,9 +83,9 @@ As a developer, I want a simple dev page where I can paste a `GameState` object 
 
 - **FR-001**: The renderer MUST accept a `GameState` object as its sole input and produce an SVG representation without modifying the input state.
 - **FR-002**: The renderer MUST draw a 7×7 grid of intersection points as the background of the SVG.
-- **FR-003**: The renderer MUST draw each coin in `GameState.board.coins` as a circle positioned at the corresponding grid intersection.
+- **FR-003**: The renderer MUST draw each coin in `GameState.coins` as a circle positioned at the corresponding grid intersection.
 - **FR-004**: Each coin circle MUST display a text label showing "H" for heads or "T" for tails based on `coin.face`.
-- **FR-005**: The renderer MUST draw each edge in `GameState.board.edges` as a straight line segment connecting the two corresponding coin positions.
+- **FR-005**: The renderer MUST draw each edge in `GameState.edges` as a straight line segment connecting the two corresponding coin positions.
 - **FR-006**: The renderer MUST update its visual output when the `GameState` prop changes (reactive rendering).
 - **FR-007**: The renderer MUST be usable in a plain Vite dev page without requiring Storybook or any additional story tooling.
 
