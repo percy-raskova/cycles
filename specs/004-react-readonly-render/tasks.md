@@ -15,9 +15,9 @@
 
 **Purpose**: Project initialization and basic structure for the rendering layer
 
-- [ ] T001 [P] Create `src/ui/components/` and `src/ui/pages/` directories
-- [ ] T002 [P] Add `@/ui` path alias to `vite.config.ts` and `tsconfig.json` for clean component imports
-- [ ] T003 Install `@testing-library/react` and `jsdom` (or `happy-dom`) as dev dependencies for component testing, and configure Vitest environment
+- [x] T001 [P] Create `src/ui/components/` and `src/ui/pages/` directories
+- [x] T002 [P] Add `@/ui` path alias to `vite.config.ts` and `tsconfig.json` for clean component imports
+- [x] T003 Install `@testing-library/react` and `jsdom` (or `happy-dom`) as dev dependencies for component testing, and configure Vitest environment
 
 ---
 
@@ -27,8 +27,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Create `src/ui/lib/coordinates.ts` with `positionToSvg(position: Position) → { x: number, y: number }` mapping using CELL_SIZE and MARGIN
-- [ ] T005 Create `src/ui/lib/constants.ts` exporting `CELL_SIZE=100`, `MARGIN=50`, `VIEWBOX_SIZE=800`, `COIN_RADIUS=35`, `GRID_SIZE=7`
+- [x] T004 Create `src/ui/lib/coordinates.ts` with `positionToSvg(position: Position) → { x: number, y: number }` mapping using CELL_SIZE and MARGIN
+- [x] T005 Create `src/ui/lib/constants.ts` exporting `CELL_SIZE=100`, `MARGIN=50`, `VIEWBOX_SIZE=800`, `COIN_RADIUS=35`, `GRID_SIZE=7`
 
 **Checkpoint**: Foundation ready — coordinate mapping and visual constants are defined and tested
 
@@ -42,13 +42,13 @@
 
 ### Tests for User Story 1
 
-- [ ] T006 [P] [US1] Write `GridView.test.tsx` asserting 7 horizontal lines, 7 vertical lines, and 49 intersection dots
-- [ ] T007 [P] [US1] Write `BoardView.test.tsx` asserting empty GameState renders GridView but no CoinView or EdgeView elements
+- [x] T006 [P] [US1] Write `GridView.test.tsx` asserting 7 horizontal lines, 7 vertical lines, and 49 intersection dots
+- [x] T007 [P] [US1] Write `BoardView.test.tsx` asserting empty GameState renders GridView but no CoinView or EdgeView elements
 
 ### Implementation for User Story 1
 
-- [ ] T008 [P] [US1] Implement `GridView` in `src/ui/components/GridView.tsx` (horizontal/vertical lines + intersection dots using constants)
-- [ ] T009 [US1] Implement `BoardView` skeleton in `src/ui/components/BoardView.tsx` (SVG root with viewBox, renders GridView only for now)
+- [x] T008 [P] [US1] Implement `GridView` in `src/ui/components/GridView.tsx` (horizontal/vertical lines + intersection dots using constants)
+- [x] T009 [US1] Implement `BoardView` skeleton in `src/ui/components/BoardView.tsx` (SVG root with viewBox, renders GridView only for now)
 
 **Checkpoint**: At this point, `bun run dev` shows an empty 7×7 grid. User Story 1 is independently testable.
 
@@ -62,14 +62,14 @@
 
 ### Tests for User Story 2
 
-- [ ] T010 [P] [US2] Write `CoinView.test.tsx` asserting a single coin renders a circle at the correct SVG coordinates with the correct text label
-- [ ] T011 [P] [US2] Update existing `BoardView.test.tsx` (from T007) to assert a GameState with multiple coins renders the correct count of CoinView elements
-- [ ] T029 [P] [US2] Write reactive removal test: render `BoardView` with a coin, then re-render with the same `GameState` minus that coin, assert the circle is absent and no phantom elements remain
+- [x] T010 [P] [US2] Write `CoinView.test.tsx` asserting a single coin renders a circle at the correct SVG coordinates with the correct text label
+- [x] T011 [P] [US2] Update existing `BoardView.test.tsx` (from T007) to assert a GameState with multiple coins renders the correct count of CoinView elements
+- [x] T029 [P] [US2] Write reactive removal test: render `BoardView` with a coin, then re-render with the same `GameState` minus that coin, assert the circle is absent and no phantom elements remain
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] Implement `CoinView` in `src/ui/components/CoinView.tsx` (SVG `<g>` with `<circle>` + `<text>` label "H"/"T")
-- [ ] T013 [US2] Update `BoardView` in `src/ui/components/BoardView.tsx` to map `GameState.coins` values to `CoinView` instances (rendered above GridView in z-order)
+- [x] T012 [P] [US2] Implement `CoinView` in `src/ui/components/CoinView.tsx` (SVG `<g>` with `<circle>` + `<text>` label "H"/"T")
+- [x] T013 [US2] Update `BoardView` in `src/ui/components/BoardView.tsx` to map `GameState.coins` values to `CoinView` instances (rendered above GridView in z-order)
 
 **Checkpoint**: At this point, coins render correctly. User Story 2 is independently testable.
 
@@ -83,14 +83,14 @@
 
 ### Tests for User Story 3
 
-- [ ] T014 [P] [US3] Write `EdgeView.test.tsx` asserting a single edge renders a line from the correct start coordinate to the correct end coordinate
-- [ ] T015 [P] [US3] Update existing `BoardView.test.tsx` to assert edges are rendered below coins (z-order check)
-- [ ] T027 [P] [US3] Write `BoardView.test.tsx` test asserting crossing edges (e.g., A1↔G7 and A7↔G1) are both rendered without structural omission
+- [x] T014 [P] [US3] Write `EdgeView.test.tsx` asserting a single edge renders a line from the correct start coordinate to the correct end coordinate
+- [x] T015 [P] [US3] Update existing `BoardView.test.tsx` to assert edges are rendered below coins (z-order check)
+- [x] T027 [P] [US3] Write `BoardView.test.tsx` test asserting crossing edges (e.g., A1↔G7 and A7↔G1) are both rendered without structural omission
 
 ### Implementation for User Story 3
 
-- [ ] T016 [P] [US3] Implement `EdgeView` in `src/ui/components/EdgeView.tsx` (SVG `<line>` from mapped start to mapped end)
-- [ ] T017 [US3] Update `BoardView` in `src/ui/components/BoardView.tsx` to map `GameState.edges` to `EdgeView` instances (rendered between GridView and CoinView in z-order)
+- [x] T016 [P] [US3] Implement `EdgeView` in `src/ui/components/EdgeView.tsx` (SVG `<line>` from mapped start to mapped end)
+- [x] T017 [US3] Update `BoardView` in `src/ui/components/BoardView.tsx` to map `GameState.edges` to `EdgeView` instances (rendered between GridView and CoinView in z-order)
 
 **Checkpoint**: At this point, edges render between coins. User Story 3 is independently testable.
 
@@ -104,10 +104,10 @@
 
 ### Implementation for User Story 4
 
-- [ ] T018 [US4] Implement `gameStateToJson` and `jsonToGameState` serialization helpers in `src/ui/pages/DevPage.tsx` (handles `Map` → array-of-pairs → `Map` round-trip)
-- [ ] T019 [US4] Implement `DevPage` component in `src/ui/pages/DevPage.tsx` (textarea left, `BoardView` right, empty board by default, reactive re-render on paste)
-- [ ] T020 [US4] Wire `DevPage` into `src/ui/App.tsx` replacing the current interactive placeholder board
-- [ ] T021 [US4] Add sample `GameState` JSON presets (empty board, a few coins, a small cycle) as buttons in `DevPage` for quick testing
+- [x] T018 [US4] Implement `gameStateToJson` and `jsonToGameState` serialization helpers in `src/ui/pages/DevPage.tsx` (handles `Map` → array-of-pairs → `Map` round-trip)
+- [x] T019 [US4] Implement `DevPage` component in `src/ui/pages/DevPage.tsx` (textarea left, `BoardView` right, empty board by default, reactive re-render on paste)
+- [x] T020 [US4] Wire `DevPage` into `src/ui/App.tsx` replacing the current interactive placeholder board
+- [x] T021 [US4] Add sample `GameState` JSON presets (empty board, a few coins, a small cycle) as buttons in `DevPage` for quick testing
 
 **Checkpoint**: At this point, the dev page is functional. User Story 4 is independently testable.
 
@@ -117,12 +117,12 @@
 
 **Purpose**: Visual polish, performance validation, and cross-story cleanup
 
-- [ ] T022 [P] Add dev page layout styles in `src/ui/App.css` (side-by-side flex layout, textarea sizing, board container)
-- [ ] T023 [P] Add a "Max Density" button to `DevPage` that fills all 49 positions and renders all legal edges; log render timing to console
-- [ ] T028 [P] Write automated performance test in `src/ui/components/__tests__/BoardView.test.tsx` asserting max-density board (49 coins + all legal edges) mounts in under 100ms
-- [ ] T024 Run full quality gate: `bun run lint && bun run typecheck && bun run test:run` — fix any issues
-- [ ] T025 Validate `quickstart.md` by pasting a real `GameState` from `src/core/__tests__/session.test.ts` into the dev page and confirming visual correctness
-- [ ] T026 [P] Verify no new exports are needed in `src/core/index.ts` for the UI layer; if any are needed, add them
+- [x] T022 [P] Add dev page layout styles in `src/ui/App.css` (side-by-side flex layout, textarea sizing, board container)
+- [x] T023 [P] Add a "Max Density" button to `DevPage` that fills all 49 positions and renders all legal edges; log render timing to console
+- [x] T028 [P] Write automated performance test in `src/ui/components/__tests__/BoardView.test.tsx` asserting max-density board (49 coins + all legal edges) mounts in under 100ms
+- [x] T024 Run full quality gate: `bun run lint && bun run typecheck && bun run test:run` — fix any issues
+- [x] T025 Validate `quickstart.md` by pasting a real `GameState` from `src/core/__tests__/session.test.ts` into the dev page and confirming visual correctness
+- [x] T026 [P] Verify no new exports are needed in `src/core/index.ts` for the UI layer; if any are needed, add them
 
 ---
 

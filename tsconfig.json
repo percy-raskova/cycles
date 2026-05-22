@@ -17,7 +17,9 @@
     "baseUrl": ".",
     "paths": {
       "@core": ["src/core/index"],
-      "@core/*": ["src/core/*"]
+      "@core/*": ["src/core/*"],
+      "@ui": ["src/ui/index"],
+      "@ui/*": ["src/ui/*"]
     }
   },
   "include": ["src"]

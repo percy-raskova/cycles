@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@core": path.resolve(__dirname, "./src/core"),
+      "@ui": path.resolve(__dirname, "./src/ui"),
     },
   },
   build: {
