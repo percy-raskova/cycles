@@ -29,6 +29,10 @@
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
 
+## Clarifications Applied
+
+- **2026-05-22**: PASS behavior clarified → Auto-pass with notice (no PASS button). Updated US5, FR-009, Key Entities, Edge Cases.
+
 ## Notes
 
-- All checklist items pass. Specification is ready for `/speckit.clarify` or `/speckit.plan`.
+- All checklist items pass. Specification is ready for `/speckit.plan`.

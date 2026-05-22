@@ -5,6 +5,12 @@
 **Status**: Draft
 **Input**: User description: "Sprint 5: React interactivity — input and move construction. Click an empty intersection to PLACE (with a face selector), click two coins in sequence to JOIN. Hover states showing legal moves. Animate flips. This is where most projects sprawl; resist. The engine already knows what's legal — the UI's only job is to call applyMove and re-render. Exit criteria: a human can play a full game in the browser."
 
+## Clarifications
+
+### Session 2026-05-22
+
+- **Q**: When the current player has no legal moves, should the UI auto-pass them automatically (like the Sprint 3 CLI does), or show a PASS button that the player must manually click? → **A**: Auto-pass with notice. The UI automatically passes when no legal moves exist, showing a brief message like "HEADS has no legal moves — passing." No PASS button is needed. This aligns with Sprint 3 CLI behavior and reduces UI complexity.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Place a Coin (Priority: P1)
@@ -83,10 +89,9 @@ As a player, I want the game to handle turns, passes, and terminal detection aut
 
 **Acceptance Scenarios**:
 
-1. **Given** a game in progress, **When** the current player has no legal moves, **Then** a PASS button appears (or the turn is auto-passed) and the player indicator updates.
-2. **Given** the current player has legal moves, **When** they attempt to click the PASS button, **Then** the pass is rejected with feedback that legal moves are still available.
-3. **Given** two consecutive passes have occurred, **When** the second pass is applied, **Then** the game ends, the board is locked from further input, and the final score (heads count, tails count, winner/draw) is displayed.
-4. **Given** the game has ended, **When** the player clicks a "New Game" button, **Then** a fresh board is initialized and play restarts.
+1. **Given** a game in progress, **When** the current player has no legal moves, **Then** the turn is automatically passed, a brief notice is shown (e.g., "HEADS has no legal moves — passing"), and the player indicator updates to the next player.
+2. **Given** two consecutive passes have occurred, **When** the second pass is applied, **Then** the game ends, the board is locked from further input, and the final score (heads count, tails count, winner/draw) is displayed.
+3. **Given** the game has ended, **When** the player clicks a "New Game" button, **Then** a fresh board is initialized and play restarts.
 
 ---
 
@@ -95,7 +100,7 @@ As a player, I want the game to handle turns, passes, and terminal detection aut
 - What happens when the player clicks rapidly during an animation? → Input is ignored or queued until animation completes.
 - What happens when the player refreshes the page mid-game? → The game state is lost; no persistence is required for this sprint.
 - What happens when a coin is placed on a touch device? → Tap behaves the same as click; face selector appears on tap.
-- What happens when the board is completely filled with coins but no edges? → JOIN moves are impossible; the player must PASS.
+- What happens when the board is completely filled with coins but no edges? → JOIN moves are impossible; the UI auto-passes the player.
 
 ## Requirements *(mandatory)*
 
@@ -109,7 +114,7 @@ As a player, I want the game to handle turns, passes, and terminal detection aut
 - **FR-006**: Hovering over an empty intersection that is a legal placement MUST highlight the intersection.
 - **FR-007**: Hovering over a coin when a first coin is selected for JOIN MUST show a preview line if the join is legal.
 - **FR-008**: When a PLACE move closes a cycle, coins inside the cycle MUST briefly animate to show their face flipping.
-- **FR-009**: A PASS button MUST be available when the current player has no legal moves, and MUST be disabled when legal moves exist.
+- **FR-009**: When the current player has no legal moves, the UI MUST automatically pass for them and MUST show a brief notice before switching players.
 - **FR-010**: After two consecutive passes, the game MUST end, input MUST be disabled, and the final score MUST be displayed.
 - **FR-011**: A "New Game" button MUST reset the board to initial state.
 
@@ -120,7 +125,7 @@ As a player, I want the game to handle turns, passes, and terminal detection aut
 - **CoinView** (extended): Accepts `onClick`, `isSelected`, `isHighlighted`, and `isFlipping` props.
 - **FaceSelector**: A small modal or inline component for choosing heads/tails when placing a coin.
 - **MoveBuilder**: Internal state machine tracking the current move construction phase (IDLE, SELECTING_FACE, SELECTING_SECOND_COIN).
-- **TurnIndicator**: Displays current player, coins remaining, and pass button state.
+- **TurnIndicator**: Displays current player, coins remaining, and auto-pass notice when applicable.
 - **GameOverPanel**: Displays final score and "New Game" button when terminal.
 
 ## Success Criteria *(mandatory)*
