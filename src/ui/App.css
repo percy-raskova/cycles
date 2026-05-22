@@ -183,6 +183,13 @@
   z-index: 10;
 }
 
+.face-selector-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  background: transparent;
+}
+
 .face-selector button {
   width: 40px;
   height: 40px;

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { GridView } from "../GridView";
 
 describe("GridView", () => {
@@ -49,5 +50,54 @@ describe("GridView", () => {
       expect(dot.getAttribute("fill")).toBe("#C8A2C8");
       expect(dot.getAttribute("r")).toBe("3");
     }
+  });
+
+  it("calls onIntersectionClick with correct position when a dot is clicked", async () => {
+    const onIntersectionClick = vi.fn();
+    render(
+      <GridView
+        gridSize={7}
+        cellSize={100}
+        margin={50}
+        hoveredPosition={null}
+        legalPlacements={new Set()}
+        onIntersectionClick={onIntersectionClick}
+      />,
+    );
+
+    const grid = screen.getByTestId("grid-view");
+    const dots = grid.querySelectorAll("circle");
+    // Click the dot at row=1, col=1 -> cx=150, cy=150
+    const targetDot = Array.from(dots).find(
+      (c) => c.getAttribute("cx") === "150" && c.getAttribute("cy") === "150",
+    );
+    expect(targetDot).toBeDefined();
+    if (targetDot) {
+      await userEvent.click(targetDot);
+    }
+
+    expect(onIntersectionClick).toHaveBeenCalledTimes(1);
+    expect(onIntersectionClick).toHaveBeenCalledWith({ row: 1, col: 1 });
+  });
+
+  it("highlights legal placement dots with larger radius", () => {
+    render(
+      <GridView
+        gridSize={7}
+        cellSize={100}
+        margin={50}
+        hoveredPosition={{ row: 0, col: 0 }}
+        legalPlacements={new Set(["0,0"])}
+      />,
+    );
+
+    const grid = screen.getByTestId("grid-view");
+    const dots = Array.from(grid.querySelectorAll("circle"));
+    const legalDot = dots.find(
+      (c) => c.getAttribute("cx") === "50" && c.getAttribute("cy") === "50",
+    );
+    expect(legalDot).toBeDefined();
+    expect(legalDot?.getAttribute("r")).toBe("6");
+    expect(legalDot?.getAttribute("class")).toContain("grid-dot-legal");
   });
 });
