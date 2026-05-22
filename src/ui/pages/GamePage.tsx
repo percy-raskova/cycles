@@ -9,21 +9,45 @@ type MovePhase =
   | { readonly kind: "SELECTING_FACE"; readonly position: Position }
   | { readonly kind: "SELECTING_SECOND_COIN"; readonly first: Position };
 
+function findFlippedCoins(previous: GameSession, current: GameSession): ReadonlySet<string> {
+  const flipped = new Set<string>();
+  for (const [key, prevCoin] of previous.state.coins) {
+    const newCoin = current.state.coins.get(key);
+    if (newCoin && newCoin.face !== prevCoin.face) {
+      flipped.add(key);
+    }
+  }
+  return flipped;
+}
+
 export function GamePage() {
   const [session, setSession] = useState<GameSession>(() => createSession());
   const [movePhase, setMovePhase] = useState<MovePhase>({ kind: "IDLE" });
   const [illegalMoveCoin, setIllegalMoveCoin] = useState<Position | null>(null);
   const [hoveredPosition, setHoveredPosition] = useState<Position | null>(null);
+  const [flippingCoins, setFlippingCoins] = useState<ReadonlySet<string>>(new Set());
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const performStep = useCallback((move: Move) => {
-    setSession((prev) => {
-      const result = step(prev, move);
+  const applyMove = useCallback(
+    (move: Move) => {
+      const result = step(session, move);
       if (result.kind === "ok") {
-        return result.session;
+        const flipped = findFlippedCoins(session, result.session);
+        setSession(result.session);
+        if (flipped.size > 0) {
+          setFlippingCoins(flipped);
+          setIsAnimating(true);
+          setTimeout(() => {
+            setFlippingCoins(new Set());
+            setIsAnimating(false);
+          }, 500);
+        }
+        return true;
       }
-      return prev;
-    });
-  }, []);
+      return false;
+    },
+    [session],
+  );
 
   // Global Escape key handler
   useEffect(() => {
@@ -50,26 +74,26 @@ export function GamePage() {
 
   const handleIntersectionClick = useCallback(
     (position: Position) => {
+      if (isAnimating) return;
       if (movePhase.kind === "SELECTING_SECOND_COIN") {
-        // Clicking empty intersection cancels JOIN selection
         setMovePhase({ kind: "IDLE" });
         return;
       }
       if (movePhase.kind !== "IDLE") return;
 
       const key = positionKey(position);
-      if (session.state.coins.has(key)) return; // occupied, ignore for PLACE
+      if (session.state.coins.has(key)) return;
 
       setMovePhase({ kind: "SELECTING_FACE", position });
     },
-    [movePhase.kind, session.state.coins],
+    [isAnimating, movePhase.kind, session.state.coins],
   );
 
   const handleCoinClick = useCallback(
     (position: Position) => {
+      if (isAnimating) return;
       if (movePhase.kind === "SELECTING_SECOND_COIN") {
         if (movePhase.first.row === position.row && movePhase.first.col === position.col) {
-          // Click same coin → cancel
           setMovePhase({ kind: "IDLE" });
           return;
         }
@@ -79,9 +103,8 @@ export function GamePage() {
           a: movePhase.first,
           b: position,
         };
-        const result = step(session, move);
-        if (result.kind === "ok") {
-          setSession(result.session);
+        const ok = applyMove(move);
+        if (ok) {
           setMovePhase({ kind: "IDLE" });
         } else {
           setIllegalMoveCoin(position);
@@ -91,24 +114,24 @@ export function GamePage() {
 
       if (movePhase.kind !== "IDLE") return;
 
-      // Start JOIN selection
       setMovePhase({ kind: "SELECTING_SECOND_COIN", first: position });
     },
-    [movePhase, session],
+    [isAnimating, movePhase, applyMove],
   );
 
   const handleFaceSelect = useCallback(
     (face: CoinFace) => {
+      if (isAnimating) return;
       if (movePhase.kind !== "SELECTING_FACE") return;
       const move: Move = {
         type: "PLACE",
         position: movePhase.position,
         face,
       };
-      performStep(move);
+      applyMove(move);
       setMovePhase({ kind: "IDLE" });
     },
-    [movePhase, performStep],
+    [isAnimating, movePhase, applyMove],
   );
 
   const handleFaceCancel = useCallback(() => {
@@ -118,7 +141,6 @@ export function GamePage() {
   const selectedCoin: Position | null =
     movePhase.kind === "SELECTING_SECOND_COIN" ? movePhase.first : null;
 
-  // Compute highlighted coins: all legal JOIN targets for the selected first coin
   const highlightedCoins = new Set<string>();
   if (movePhase.kind === "SELECTING_SECOND_COIN") {
     for (const [a, b] of legalJoins(session.state)) {
@@ -131,7 +153,6 @@ export function GamePage() {
     }
   }
 
-  // Compute previewEdge when hovering over a legal JOIN target
   let previewEdge: { readonly from: Position; readonly to: Position } | null = null;
   if (
     movePhase.kind === "SELECTING_SECOND_COIN" &&
@@ -156,7 +177,7 @@ export function GamePage() {
           hoveredPosition={hoveredPosition}
           previewEdge={previewEdge}
           legalPlacements={legalPlacementSet}
-          flippingCoins={new Set()}
+          flippingCoins={flippingCoins}
           illegalMoveCoin={illegalMoveCoin}
           highlightedCoins={highlightedCoins}
         />

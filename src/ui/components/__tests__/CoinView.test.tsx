@@ -94,4 +94,23 @@ describe("CoinView", () => {
     const group = screen.getByTestId("coin-0-0");
     expect(group.getAttribute("class")).toContain("coin-illegal");
   });
+
+  it("applies coin-flipping class when isFlipping is true", () => {
+    const coin = {
+      position: { row: 0, col: 0 },
+      face: "heads" as const,
+    };
+    render(
+      <CoinView
+        coin={coin}
+        isSelected={false}
+        isHighlighted={false}
+        isFlipping={true}
+        isIllegal={false}
+      />,
+    );
+
+    const group = screen.getByTestId("coin-0-0");
+    expect(group.getAttribute("class")).toContain("coin-flipping");
+  });
 });

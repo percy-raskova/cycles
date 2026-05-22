@@ -144,7 +144,7 @@ describe("GamePage — Join Two Coins (US2)", () => {
       await userEvent.click(coin11);
     }
 
-    expect(coin11?.getAttribute("class")).toContain("coin-selected");
+    expect(coin11?.getAttribute("class") ?? "").toContain("coin-selected");
 
     // Click same coin again
     if (coin11) {
@@ -195,5 +195,46 @@ describe("GamePage — Join Two Coins (US2)", () => {
 
     // Illegal join should show feedback on second coin
     expect(coin12?.getAttribute("class") ?? "").toContain("coin-illegal");
+  });
+});
+
+describe("GamePage — Coin Flip Animation (US4)", () => {
+  async function placeCoinAt(row: number, col: number, face: "heads" | "tails") {
+    const dot = getDotAt(row, col);
+    if (dot) {
+      await userEvent.click(dot);
+    }
+    const selector = face === "heads" ? "face-selector-heads" : "face-selector-tails";
+    await userEvent.click(screen.getByTestId(selector));
+  }
+
+  function getCoinAt(row: number, col: number): Element | undefined {
+    try {
+      return screen.getByTestId(`coin-${row}-${col}`);
+    } catch {
+      return undefined;
+    }
+  }
+
+  it("applies coin-flipping class to coins that flipped after a JOIN", async () => {
+    render(<GamePage />);
+
+    // Place two coins and join them — both endpoint coins will flip
+    await placeCoinAt(0, 0, "heads");
+    await placeCoinAt(0, 2, "tails");
+
+    const coin00 = getCoinAt(0, 0);
+    const coin02 = getCoinAt(0, 2);
+
+    if (coin00) {
+      await userEvent.click(coin00);
+    }
+    if (coin02) {
+      await userEvent.click(coin02);
+    }
+
+    // Both coins should have the flipping animation class
+    expect(coin00?.getAttribute("class") ?? "").toContain("coin-flipping");
+    expect(coin02?.getAttribute("class") ?? "").toContain("coin-flipping");
   });
 });
