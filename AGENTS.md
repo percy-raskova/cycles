@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Current plan: [specs/002-move-application/plan.md](specs/002-move-application/plan.md)
+Current plan: [specs/003-game-loop-cli/plan.md](specs/003-game-loop-cli/plan.md)
 <!-- SPECKIT END -->
 
 ## Repo purpose
