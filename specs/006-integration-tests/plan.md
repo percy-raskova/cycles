@@ -17,7 +17,7 @@ Add a comprehensive integration test suite under `tests/integration/` that mount
 **Project Type**: Web application (React frontend + pure TypeScript engine)  
 **Performance Goals**: Full integration suite completes in <30 seconds  
 **Constraints**: No browser automation (Playwright out of scope); fake timers only; no engine modifications  
-**Scale/Scope**: ~10-15 integration test files, each testing a specific user story concern
+**Scale/Scope**: ~8-10 integration test files, each testing a specific user story concern or edge case
 
 ## Constitution Check
 

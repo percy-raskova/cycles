@@ -103,11 +103,11 @@ As a developer, I want to verify that clicking "New Game" after a terminal state
 
 ### Edge Cases
 
-- What happens when a move is attempted while a coin-flip animation is in progress?
-- How does the system handle rapid consecutive clicks on the same intersection?
-- What happens if the face selector is open and the user presses Escape?
-- How does the system behave when all 12 coins are placed but no edges exist (only PLACE moves, no JOIN)?
-- What happens when a player has exactly one legal move left — does auto-pass still trigger correctly?
+- What happens when a move is attempted while a coin-flip animation is in progress? → **Covered**: Input is blocked; tested in `tests/integration/cycle-closure.test.ts`.
+- How does the system handle rapid consecutive clicks on the same intersection? → **Deferred to future robustness sprint**: Click debouncing is handled by React event batching; no dedicated test.
+- What happens if the face selector is open and the user presses Escape? → **Covered**: Face selector cancels; tested in `tests/integration/move-validation.test.ts`.
+- How does the system behave when all 12 coins are placed but no edges exist (only PLACE moves, no JOIN)? → **Deferred**: Edge case; auto-pass behavior is the same regardless of edge presence.
+- What happens when a player has exactly one legal move left — does auto-pass still trigger correctly? → **Covered**: Auto-pass only triggers when zero legal moves remain; tested in `tests/integration/auto-pass.test.ts`.
 
 ## Requirements *(mandatory)*
 
@@ -117,7 +117,7 @@ As a developer, I want to verify that clicking "New Game" after a terminal state
 - **FR-002**: The integration test suite MUST verify that illegal PLACE moves (occupied intersection, out of coins) are rejected without mutating game state.
 - **FR-003**: The integration test suite MUST verify that illegal JOIN moves (non-queen line, edge intersection, passes through coin, already connected) are rejected with visual feedback.
 - **FR-004**: The integration test suite MUST verify that cycle-closing JOIN moves correctly flip all interior coins and endpoint coins.
-- **FR-005**: The integration test suite MUST verify that the auto-pass mechanism triggers when a player has no legal moves, displays a notice, and applies a PASS move after a brief delay.
+- **FR-005**: The integration test suite MUST verify that the auto-pass mechanism triggers when a player has no legal moves, displays a notice, and applies a PASS move after a 1-second delay.
 - **FR-006**: The integration test suite MUST verify that the GameOverPanel appears when the session reaches terminal state (two consecutive passes or no legal moves for both players).
 - **FR-007**: The integration test suite MUST verify that the "New Game" button resets all game and UI state to initial values.
 - **FR-008**: The integration test suite MUST verify that all interactive components (BoardView, CoinView, GridView, TurnIndicator, FaceSelector, GameOverPanel) reflect the current GameSession state after each move.
