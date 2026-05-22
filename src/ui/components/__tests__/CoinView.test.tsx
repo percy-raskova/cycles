@@ -10,7 +10,7 @@ describe("CoinView", () => {
       position: { row: 0, col: 0 },
       face: "heads" as const,
     };
-    render(<CoinView coin={coin} />);
+    render(<CoinView coin={coin} isSelected={false} isHighlighted={false} isFlipping={false} />);
 
     const group = screen.getByTestId("coin-0-0");
     const circle = group.querySelector("circle");
@@ -30,7 +30,7 @@ describe("CoinView", () => {
       position: { row: 1, col: 1 },
       face: "tails" as const,
     };
-    render(<CoinView coin={coin} />);
+    render(<CoinView coin={coin} isSelected={false} isHighlighted={false} isFlipping={false} />);
 
     const group = screen.getByTestId("coin-1-1");
     const circle = group.querySelector("circle");

@@ -1,8 +1,22 @@
 // @vitest-environment jsdom
 import { createInitialState, placeCoin } from "@core";
+import type { GameState } from "@core/types";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { BoardView } from "../BoardView";
+
+function renderBoardView(state: GameState) {
+  return render(
+    <BoardView
+      state={state}
+      selectedCoin={null}
+      hoveredPosition={null}
+      previewEdge={null}
+      legalPlacements={new Set()}
+      flippingCoins={new Set()}
+    />,
+  );
+}
 
 function makeMaxDensityState() {
   let state = createInitialState();
@@ -35,7 +49,7 @@ function makeMaxDensityState() {
 describe("BoardView — empty state", () => {
   it("renders an SVG with the correct viewBox", () => {
     const state = createInitialState();
-    render(<BoardView state={state} />);
+    renderBoardView(state);
 
     const svg = screen.getByTestId("board-view");
     expect(svg.tagName.toLowerCase()).toBe("svg");
@@ -44,7 +58,7 @@ describe("BoardView — empty state", () => {
 
   it("renders GridView but no CoinView or EdgeView elements for empty state", () => {
     const state = createInitialState();
-    render(<BoardView state={state} />);
+    renderBoardView(state);
 
     const grid = screen.getByTestId("grid-view");
     expect(grid).toBeDefined();
@@ -72,7 +86,7 @@ describe("BoardView — with coins", () => {
     state = placeCoin(state, { row: 1, col: 1 }, "tails");
     state = placeCoin(state, { row: 2, col: 2 }, "heads");
 
-    render(<BoardView state={state} />);
+    renderBoardView(state);
 
     const coin0 = screen.getByTestId("coin-0-0");
     const coin1 = screen.getByTestId("coin-1-1");
@@ -91,11 +105,20 @@ describe("BoardView — with coins", () => {
     let stateWithCoin = createInitialState();
     stateWithCoin = placeCoin(stateWithCoin, { row: 0, col: 0 }, "heads");
 
-    const { rerender } = render(<BoardView state={stateWithCoin} />);
+    const { rerender } = renderBoardView(stateWithCoin);
     expect(screen.getByTestId("coin-0-0")).toBeDefined();
 
     const stateWithoutCoin = createInitialState();
-    rerender(<BoardView state={stateWithoutCoin} />);
+    rerender(
+      <BoardView
+        state={stateWithoutCoin}
+        selectedCoin={null}
+        hoveredPosition={null}
+        previewEdge={null}
+        legalPlacements={new Set()}
+        flippingCoins={new Set()}
+      />,
+    );
 
     expect(screen.queryByTestId("coin-0-0")).toBeNull();
 
@@ -117,7 +140,7 @@ describe("BoardView — with edges", () => {
       edges: [{ from: { row: 0, col: 0 }, to: { row: 0, col: 1 } }],
     };
 
-    render(<BoardView state={state} />);
+    renderBoardView(state);
 
     const svg = screen.getByTestId("board-view");
     const children = Array.from(svg.children);
@@ -148,7 +171,7 @@ describe("BoardView — with edges", () => {
       ],
     };
 
-    render(<BoardView state={state} />);
+    renderBoardView(state);
 
     const edge1 = screen.getByTestId("edge-0-0-6-6");
     const edge2 = screen.getByTestId("edge-0-6-6-0");
@@ -165,7 +188,7 @@ describe("BoardView — performance", () => {
   it("renders max-density board in under 100ms", () => {
     const state = makeMaxDensityState();
     const start = performance.now();
-    render(<BoardView state={state} />);
+    renderBoardView(state);
     const elapsed = performance.now() - start;
     expect(elapsed).toBeLessThan(100);
   });

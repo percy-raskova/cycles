@@ -128,7 +128,14 @@ export function DevPage() {
         </div>
       </div>
       <div className="dev-board">
-        <BoardView state={state} />
+        <BoardView
+          state={state}
+          selectedCoin={null}
+          hoveredPosition={null}
+          previewEdge={null}
+          legalPlacements={new Set()}
+          flippingCoins={new Set()}
+        />
       </div>
     </div>
   );

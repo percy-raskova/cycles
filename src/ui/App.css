@@ -81,3 +81,213 @@
   max-width: 100%;
   max-height: 100%;
 }
+
+/* --- Interactive Game Styles --- */
+
+.game-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.game-board-container {
+  width: 600px;
+  height: 600px;
+  border: 2px solid #c8a2c8;
+  border-radius: 8px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.game-board-container svg {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Coin interactive states */
+.coin-selected circle {
+  stroke: #ffd700 !important;
+  stroke-width: 4 !important;
+}
+
+.coin-highlighted circle {
+  stroke-width: 3 !important;
+  filter: brightness(1.15);
+}
+
+.coin-flipping circle {
+  transition: fill 500ms ease, stroke 500ms ease;
+}
+
+.coin-illegal circle {
+  animation: coin-shake 300ms ease-in-out;
+}
+
+@keyframes coin-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+/* Grid dot hover states */
+.grid-dot {
+  cursor: pointer;
+  transition: r 150ms ease, fill 150ms ease;
+}
+
+.grid-dot:hover {
+  fill: #9932cc;
+}
+
+.grid-dot-legal {
+  fill: #90ee90;
+  stroke: #90ee90;
+  stroke-width: 2;
+}
+
+.grid-dot-legal:hover {
+  r: 6;
+}
+
+/* Preview line for JOIN */
+.preview-line {
+  stroke: #ffd700;
+  stroke-width: 3;
+  stroke-dasharray: 8 4;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Face selector */
+.face-selector {
+  position: absolute;
+  display: flex;
+  gap: 0.5rem;
+  background: #fff;
+  border: 2px solid #9932cc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.face-selector button {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #c8a2c8;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.face-selector button:hover {
+  border-color: #9932cc;
+  background: #f5e6f5;
+}
+
+.face-selector-heads {
+  color: #ff1493;
+}
+
+.face-selector-tails {
+  color: #00bfff;
+}
+
+/* Turn indicator */
+.turn-indicator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: #fff;
+  border: 2px solid #c8a2c8;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-height: 3rem;
+}
+
+.turn-indicator-player {
+  font-weight: bold;
+}
+
+.turn-indicator-heads {
+  color: #ff1493;
+}
+
+.turn-indicator-tails {
+  color: #00bfff;
+}
+
+.turn-indicator-notice {
+  color: #666;
+  font-style: italic;
+}
+
+/* Game over panel */
+.game-over-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: #fff;
+  border: 3px solid #9932cc;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.game-over-panel h2 {
+  margin: 0;
+  color: #4a0e4a;
+}
+
+.game-over-score {
+  display: flex;
+  gap: 2rem;
+  font-size: 1.25rem;
+}
+
+.game-over-score-heads {
+  color: #ff1493;
+}
+
+.game-over-score-tails {
+  color: #00bfff;
+}
+
+.game-over-winner {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #9932cc;
+}
+
+.game-over-panel button {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  background: #9932cc;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.game-over-panel button:hover {
+  background: #7a28a3;
+}

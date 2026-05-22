@@ -5,7 +5,15 @@ import { GridView } from "../GridView";
 
 describe("GridView", () => {
   it("renders 7 horizontal lines, 7 vertical lines, and 49 intersection dots", () => {
-    render(<GridView gridSize={7} cellSize={100} margin={50} />);
+    render(
+      <GridView
+        gridSize={7}
+        cellSize={100}
+        margin={50}
+        hoveredPosition={null}
+        legalPlacements={new Set()}
+      />,
+    );
 
     const grid = screen.getByTestId("grid-view");
     expect(grid).toBeDefined();
@@ -18,7 +26,15 @@ describe("GridView", () => {
   });
 
   it("renders grid lines with correct orchid palette", () => {
-    render(<GridView gridSize={7} cellSize={100} margin={50} />);
+    render(
+      <GridView
+        gridSize={7}
+        cellSize={100}
+        margin={50}
+        hoveredPosition={null}
+        legalPlacements={new Set()}
+      />,
+    );
 
     const grid = screen.getByTestId("grid-view");
     const lines = grid.querySelectorAll("line");
