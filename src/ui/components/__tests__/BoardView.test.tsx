@@ -15,6 +15,7 @@ function renderBoardView(state: GameState) {
       legalPlacements={new Set()}
       flippingCoins={new Set()}
       illegalMoveCoin={null}
+      highlightedCoins={new Set()}
     />,
   );
 }
@@ -119,6 +120,7 @@ describe("BoardView — with coins", () => {
         legalPlacements={new Set()}
         flippingCoins={new Set()}
         illegalMoveCoin={null}
+        highlightedCoins={new Set()}
       />,
     );
 
@@ -198,6 +200,7 @@ describe("BoardView — preview edge", () => {
         legalPlacements={new Set()}
         flippingCoins={new Set()}
         illegalMoveCoin={null}
+        highlightedCoins={new Set()}
       />,
     );
 

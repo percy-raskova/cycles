@@ -5,6 +5,7 @@ import { positionToSvg } from "@ui/lib/coordinates";
 interface CoinViewProps {
   readonly coin: Coin;
   readonly onClick?: ((position: Position) => void) | undefined;
+  readonly onHover?: ((position: Position | null) => void) | undefined;
   readonly isSelected: boolean;
   readonly isHighlighted: boolean;
   readonly isFlipping: boolean;
@@ -28,6 +29,7 @@ function buildClassName(
 export function CoinView({
   coin,
   onClick,
+  onHover,
   isSelected,
   isHighlighted,
   isFlipping,
@@ -56,6 +58,8 @@ export function CoinView({
       className={className || undefined}
       onClick={onClick ? handleClick : undefined}
       onKeyDown={onClick ? handleKeyDown : undefined}
+      onMouseEnter={onHover ? () => onHover(coin.position) : undefined}
+      onMouseLeave={onHover ? () => onHover(null) : undefined}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       style={{ cursor: onClick ? "pointer" : "default" }}

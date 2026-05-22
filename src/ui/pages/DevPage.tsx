@@ -136,6 +136,7 @@ export function DevPage() {
           legalPlacements={new Set()}
           flippingCoins={new Set()}
           illegalMoveCoin={null}
+          highlightedCoins={new Set()}
         />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { createSession, legalPlacements, positionKey, step } from "@core";
+import { canJoin, createSession, legalJoins, legalPlacements, positionKey, step } from "@core";
 import type { CoinFace, GameSession, Move, Position } from "@core";
 import { BoardView } from "@ui/components/BoardView";
 import { FaceSelector } from "@ui/components/FaceSelector";
@@ -13,6 +13,7 @@ export function GamePage() {
   const [session, setSession] = useState<GameSession>(() => createSession());
   const [movePhase, setMovePhase] = useState<MovePhase>({ kind: "IDLE" });
   const [illegalMoveCoin, setIllegalMoveCoin] = useState<Position | null>(null);
+  const [hoveredPosition, setHoveredPosition] = useState<Position | null>(null);
 
   const performStep = useCallback((move: Move) => {
     setSession((prev) => {
@@ -42,6 +43,10 @@ export function GamePage() {
       return () => clearTimeout(timer);
     }
   }, [illegalMoveCoin]);
+
+  const handleIntersectionHover = useCallback((position: Position | null) => {
+    setHoveredPosition(position);
+  }, []);
 
   const handleIntersectionClick = useCallback(
     (position: Position) => {
@@ -113,6 +118,29 @@ export function GamePage() {
   const selectedCoin: Position | null =
     movePhase.kind === "SELECTING_SECOND_COIN" ? movePhase.first : null;
 
+  // Compute highlighted coins: all legal JOIN targets for the selected first coin
+  const highlightedCoins = new Set<string>();
+  if (movePhase.kind === "SELECTING_SECOND_COIN") {
+    for (const [a, b] of legalJoins(session.state)) {
+      const first = movePhase.first;
+      if (a.row === first.row && a.col === first.col) {
+        highlightedCoins.add(positionKey(b));
+      } else if (b.row === first.row && b.col === first.col) {
+        highlightedCoins.add(positionKey(a));
+      }
+    }
+  }
+
+  // Compute previewEdge when hovering over a legal JOIN target
+  let previewEdge: { readonly from: Position; readonly to: Position } | null = null;
+  if (
+    movePhase.kind === "SELECTING_SECOND_COIN" &&
+    hoveredPosition &&
+    canJoin(session.state, movePhase.first, hoveredPosition)
+  ) {
+    previewEdge = { from: movePhase.first, to: hoveredPosition };
+  }
+
   const legalPlacementSet = new Set(legalPlacements(session.state).map((p) => positionKey(p)));
 
   return (
@@ -121,13 +149,16 @@ export function GamePage() {
         <BoardView
           state={session.state}
           onCoinClick={handleCoinClick}
+          onCoinHover={handleIntersectionHover}
           onIntersectionClick={handleIntersectionClick}
+          onIntersectionHover={handleIntersectionHover}
           selectedCoin={selectedCoin}
-          hoveredPosition={null}
-          previewEdge={null}
+          hoveredPosition={hoveredPosition}
+          previewEdge={previewEdge}
           legalPlacements={legalPlacementSet}
           flippingCoins={new Set()}
           illegalMoveCoin={illegalMoveCoin}
+          highlightedCoins={highlightedCoins}
         />
         {movePhase.kind === "SELECTING_FACE" && (
           <FaceSelector

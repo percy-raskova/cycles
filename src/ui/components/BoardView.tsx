@@ -10,12 +10,14 @@ interface BoardViewProps {
   readonly onCoinClick?: ((position: Position) => void) | undefined;
   readonly onIntersectionClick?: ((position: Position) => void) | undefined;
   readonly onIntersectionHover?: ((position: Position | null) => void) | undefined;
+  readonly onCoinHover?: ((position: Position | null) => void) | undefined;
   readonly selectedCoin: Position | null;
   readonly hoveredPosition: Position | null;
   readonly previewEdge: { readonly from: Position; readonly to: Position } | null;
   readonly legalPlacements: ReadonlySet<string>;
   readonly flippingCoins: ReadonlySet<string>;
   readonly illegalMoveCoin: Position | null;
+  readonly highlightedCoins: ReadonlySet<string>;
 }
 
 export function BoardView({
@@ -23,12 +25,14 @@ export function BoardView({
   onCoinClick,
   onIntersectionClick,
   onIntersectionHover,
+  onCoinHover,
   selectedCoin,
   hoveredPosition,
   previewEdge,
   legalPlacements,
   flippingCoins,
   illegalMoveCoin,
+  highlightedCoins,
 }: BoardViewProps) {
   return (
     <svg
@@ -71,13 +75,15 @@ export function BoardView({
         const posKey = `${pos.row},${pos.col}`;
         const isSelected = selectedCoin?.row === pos.row && selectedCoin?.col === pos.col;
         const isIllegal = illegalMoveCoin?.row === pos.row && illegalMoveCoin?.col === pos.col;
+        const isHighlighted = highlightedCoins.has(posKey);
         return (
           <CoinView
             key={`coin-${pos.row}-${pos.col}`}
             coin={coin}
             onClick={onCoinClick}
+            onHover={onCoinHover}
             isSelected={isSelected}
-            isHighlighted={false}
+            isHighlighted={isHighlighted}
             isFlipping={flippingCoins.has(posKey)}
             isIllegal={isIllegal}
           />
