@@ -15,9 +15,9 @@
 
 **Purpose**: Create the `tests/` directory structure and verify the test runner picks it up
 
-- [ ] T001 [P] Create `tests/integration/` directory with `tests/integration/helpers/` subdirectory
-- [ ] T002 Verify Vitest discovers tests in `tests/integration/` (run `bun run test:run tests/integration` and confirm it finds files)
-- [ ] T003 [P] Add `@testing-library/user-event` setup configuration for integration tests (already installed; verify cleanup behavior)
+- [X] T001 [P] Create `tests/integration/` directory with `tests/integration/helpers/` subdirectory
+- [X] T002 Verify Vitest discovers tests in `tests/integration/` (run `bun run test:run tests/integration` and confirm it finds files)
+- [X] T003 [P] Add `@testing-library/user-event` setup configuration for integration tests (already installed; verify cleanup behavior)
 
 ---
 
@@ -27,11 +27,11 @@
 
 **⚠️ CRITICAL**: No integration test can be written until this phase is complete
 
-- [ ] T004 [P] Implement `tests/integration/helpers/fixtures.ts` with `makeInitialState`, `makeCycleBoardState`, `makeBlockedBoardState`, `makeFullBoardNoEdgesState`, `makeJoinablePairState`
-- [ ] T005 [P] Implement `tests/integration/helpers/selectors.ts` with `getCoinAt`, `getDotAt`, `getEdgeBetween`, `getFaceSelector`
-- [ ] T006 Extend `GamePage` in `src/ui/pages/GamePage.tsx` with optional `initialSession?: GameSession` prop; use it when provided, otherwise call `createSession()`
-- [ ] T007 Implement `tests/integration/helpers/render-game.tsx` with `renderGame` wrapper that mounts GamePage with optional initial session and returns RTL result + user-event instance
-- [ ] T008 [P] Write tests for `fixtures.ts` in `tests/integration/helpers/__tests__/fixtures.test.ts` asserting each fixture produces valid GameState
+- [X] T004 [P] Implement `tests/integration/helpers/fixtures.ts` with `makeInitialState`, `makeCycleBoardState`, `makeBlockedBoardState`, `makeFullBoardNoEdgesState`, `makeJoinablePairState`
+- [X] T005 [P] Implement `tests/integration/helpers/selectors.ts` with `getCoinAt`, `getDotAt`, `getEdgeBetween`, `getFaceSelector`
+- [X] T006 Extend `GamePage` in `src/ui/pages/GamePage.tsx` with optional `initialSession?: GameSession` prop; use it when provided, otherwise call `createSession()`
+- [X] T007 Implement `tests/integration/helpers/render-game.tsx` with `renderGame` wrapper that mounts GamePage with optional initial session and returns RTL result + user-event instance
+- [X] T008 [P] Write tests for `fixtures.ts` in `tests/integration/helpers/__tests__/fixtures.test.ts` asserting each fixture produces valid GameState
 
 **Checkpoint**: Foundation ready — helpers exist, GamePage accepts initial session, fixtures verified
 
@@ -43,8 +43,8 @@
 
 **Independent Test**: Mount GamePage, programmatically play moves, assert terminal state reached with correct GameOverPanel
 
-- [ ] T009 [P] [US1] Write `tests/integration/game-flow.test.ts` test asserting a sequence of PLACE and JOIN moves reaches terminal state and renders GameOverPanel with correct score
-- [ ] T010 [P] [US1] Write `tests/integration/game-flow.test.ts` test asserting "New Game" button resets to initial state (empty board, TurnIndicator shows 12 coins, no GameOverPanel)
+- [X] T009 [P] [US1] Write `tests/integration/game-flow.test.ts` test asserting a sequence of PLACE and JOIN moves reaches terminal state and renders GameOverPanel with correct score
+- [X] T010 [P] [US1] Write `tests/integration/game-flow.test.ts` test asserting "New Game" button resets to initial state (empty board, TurnIndicator shows 12 coins, no GameOverPanel)
 
 **Checkpoint**: At this point, the most critical integration path works. US1 is independently testable.
 
@@ -56,12 +56,12 @@
 
 **Independent Test**: Mount GamePage, attempt illegal moves, assert rejection; apply legal moves, assert acceptance
 
-- [ ] T011 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting placing a coin on an occupied intersection is rejected (turn does not switch)
-- [ ] T012 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting joining coins not on a queen line is rejected (illegal-move feedback shown)
-- [ ] T013 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting a PASS move is rejected when legal moves exist
-- [ ] T014 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting auto-pass triggers correctly when no legal moves exist (turn passes, pass count increments)
-- [ ] T015 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting placing a coin is rejected when all 12 coins are already placed (board full)
-- [ ] T016 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting pressing Escape while the face selector is open cancels the selector and returns to IDLE state
+- [X] T011 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting placing a coin on an occupied intersection is rejected (turn does not switch)
+- [X] T012 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting joining coins not on a queen line is rejected (illegal-move feedback shown)
+- [X] T013 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting a PASS move is rejected when legal moves exist
+- [X] T014 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting auto-pass triggers correctly when no legal moves exist (turn passes, pass count increments)
+- [X] T015 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting placing a coin is rejected when all 12 coins are already placed (board full)
+- [X] T016 [P] [US2] Write `tests/integration/move-validation.test.ts` test asserting pressing Escape while the face selector is open cancels the selector and returns to IDLE state
 
 **Checkpoint**: At this point, move validation is covered. US2 is independently testable.
 
@@ -73,9 +73,9 @@
 
 **Independent Test**: Build square cycle fixture, close it through GamePage, assert flips
 
-- [ ] T017 [P] [US3] Write `tests/integration/cycle-closure.test.ts` test asserting closing a square cycle creates the edge and flips all interior coins
-- [ ] T018 [P] [US3] Write `tests/integration/cycle-closure.test.ts` test asserting the `coin-flipping` CSS class is applied to flipped coins after a cycle-closing JOIN
-- [ ] T019 [P] [US3] Write `tests/integration/cycle-closure.test.ts` test asserting input is blocked during the 500ms flip animation (clicks on coins/intersections have no effect while `isAnimating` is true)
+- [X] T017 [P] [US3] Write `tests/integration/cycle-closure.test.ts` test asserting closing a square cycle creates the edge and flips all interior coins
+- [X] T018 [P] [US3] Write `tests/integration/cycle-closure.test.ts` test asserting the `coin-flipping` CSS class is applied to flipped coins after a cycle-closing JOIN
+- [X] T019 [P] [US3] Write `tests/integration/cycle-closure.test.ts` test asserting input is blocked during the 500ms flip animation (clicks on coins/intersections have no effect while `isAnimating` is true)
 
 **Checkpoint**: At this point, cycle closure is covered. US3 is independently testable.
 
@@ -87,10 +87,10 @@
 
 **Independent Test**: Build blocked-board fixture, mount GamePage, assert notice then turn switch
 
-- [ ] T020 [P] [US4] Write `tests/integration/auto-pass.test.ts` test asserting the TurnIndicator displays a "no legal moves — passing" notice when no moves exist
-- [ ] T021 [P] [US4] Write `tests/integration/auto-pass.test.ts` test asserting after the auto-pass delay, the turn switches, notice disappears, and pass count increments
-- [ ] T022 [P] [US4] Write `tests/integration/auto-pass.test.ts` test asserting no auto-pass triggers in terminal state (GameOverPanel visible, TurnIndicator hidden)
-- [ ] T023 [P] [US4] Write `tests/integration/auto-pass.test.ts` test asserting auto-pass does NOT trigger when a player has exactly one legal move remaining (only triggers at zero legal moves)
+- [X] T020 [P] [US4] Write `tests/integration/auto-pass.test.ts` test asserting the TurnIndicator displays a "no legal moves — passing" notice when no moves exist
+- [X] T021 [P] [US4] Write `tests/integration/auto-pass.test.ts` test asserting after the auto-pass delay, the turn switches, notice disappears, and pass count increments
+- [X] T022 [P] [US4] Write `tests/integration/auto-pass.test.ts` test asserting no auto-pass triggers in terminal state (GameOverPanel visible, TurnIndicator hidden)
+- [X] T023 [P] [US4] Write `tests/integration/auto-pass.test.ts` test asserting auto-pass does NOT trigger when a player has exactly one legal move remaining (only triggers at zero legal moves)
 
 **Checkpoint**: At this point, auto-pass is covered. US4 is independently testable.
 
@@ -102,10 +102,10 @@
 
 **Independent Test**: Progress through game phases, assert each component renders correct data
 
-- [ ] T024 [P] [US5] Write `tests/integration/component-coordination.test.ts` test asserting TurnIndicator updates current player and decrements coin count after a PLACE move
-- [ ] T025 [P] [US5] Write `tests/integration/component-coordination.test.ts` test asserting selected coin shows `coin-selected` class and legal JOIN targets show `coin-highlighted` class
-- [ ] T026 [P] [US5] Write `tests/integration/component-coordination.test.ts` test asserting hovering over a legal empty intersection applies `grid-dot-legal` class and increases dot radius
-- [ ] T027 [P] [US5] Write `tests/integration/component-coordination.test.ts` test asserting FaceSelector opens on intersection click, disappears on face selection, and the new coin appears with correct label
+- [X] T024 [P] [US5] Write `tests/integration/component-coordination.test.ts` test asserting TurnIndicator updates current player and decrements coin count after a PLACE move
+- [X] T025 [P] [US5] Write `tests/integration/component-coordination.test.ts` test asserting selected coin shows `coin-selected` class and legal JOIN targets show `coin-highlighted` class
+- [X] T026 [P] [US5] Write `tests/integration/component-coordination.test.ts` test asserting hovering over a legal empty intersection applies `grid-dot-legal` class and increases dot radius
+- [X] T027 [P] [US5] Write `tests/integration/component-coordination.test.ts` test asserting FaceSelector opens on intersection click, disappears on face selection, and the new coin appears with correct label
 
 **Checkpoint**: At this point, component coordination is covered. US5 is independently testable.
 
@@ -117,7 +117,7 @@
 
 **Independent Test**: Play to terminal, click New Game, assert clean slate
 
-- [ ] T028 [P] [US6] Write `tests/integration/new-game-reset.test.ts` test asserting after terminal state + New Game click, the board is empty, TurnIndicator shows initial player with 12 coins, GameOverPanel is gone, and no move phase is active
+- [X] T028 [P] [US6] Write `tests/integration/new-game-reset.test.ts` test asserting after terminal state + New Game click, the board is empty, TurnIndicator shows initial player with 12 coins, GameOverPanel is gone, and no move phase is active
 
 **Checkpoint**: At this point, reset is covered. US6 is independently testable.
 
@@ -127,11 +127,11 @@
 
 **Purpose**: Quality gate, performance validation, documentation
 
-- [ ] T029 [P] Run full quality gate: `bun run lint && bun run typecheck && bun run test:run` — fix any issues
-- [ ] T030 Verify all integration tests complete in under 30 seconds total (`bun run test:run tests/integration`)
-- [ ] T031 Verify no new exports are needed in `src/core/index.ts` (tests should use existing public API only)
-- [ ] T032 [P] Update `specs/006-integration-tests/quickstart.md` with final test running instructions if they differ from initial draft
-- [ ] T033 Verify `src/ui/pages/DevPage.tsx` remains unmodified by this sprint
+- [X] T029 [P] Run full quality gate: `bun run lint && bun run typecheck && bun run test:run` — fix any issues
+- [X] T030 Verify all integration tests complete in under 30 seconds total (`bun run test:run tests/integration`)
+- [X] T031 Verify no new exports are needed in `src/core/index.ts` (tests should use existing public API only)
+- [X] T032 [P] Update `specs/006-integration-tests/quickstart.md` with final test running instructions if they differ from initial draft
+- [X] T033 Verify `src/ui/pages/DevPage.tsx` remains unmodified by this sprint
 
 ---
 

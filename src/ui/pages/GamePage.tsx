@@ -63,8 +63,12 @@ function buildPreviewEdge(
   return null;
 }
 
-export function GamePage() {
-  const [session, setSession] = useState<GameSession>(() => createSession());
+export function GamePage({
+  initialSession,
+}: {
+  readonly initialSession?: GameSession;
+}) {
+  const [session, setSession] = useState<GameSession>(() => initialSession ?? createSession());
   const [movePhase, setMovePhase] = useState<MovePhase>({ kind: "IDLE" });
   const [illegalMoveCoin, setIllegalMoveCoin] = useState<Position | null>(null);
   const [hoveredPosition, setHoveredPosition] = useState<Position | null>(null);
