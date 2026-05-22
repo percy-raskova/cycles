@@ -47,23 +47,23 @@ The renderer is stateless. When the `GameState` prop changes, React re-renders t
 
 ## Visual Styling Constants
 
-These are ad-hoc choices for the developer-facing renderer; end-user theming is out of scope.
+Palette inspired by orchid flower tones (fuchsia petals, green stems) combined with bisexual lighting (warm pink vs. cool cyan contrast on the two coin faces).
 
-| Element | SVG Attribute | Suggested Value |
+| Element | SVG Attribute | Value |
 |---|---|---|
-| Grid lines | stroke | `#ddd` (light gray) |
+| Grid lines | stroke | `#F5E6F5` (pale orchid lavender) |
 | Grid lines | strokeWidth | 1 |
-| Intersection dots | fill | `#bbb` |
+| Intersection dots | fill | `#C8A2C8` (orchid) |
 | Intersection dots | r | 3 |
-| Coin (heads) | fill | `#e3f2fd` (light blue) |
-| Coin (tails) | fill | `#fff3e0` (light orange) |
-| Coin | stroke | `#333` |
-| Coin | strokeWidth | 2 |
-| Coin label | fill | `#333` |
+| Coin (heads) | fill | `#FFB6E6` (light hot pink — warm side of bisexual lighting) |
+| Coin (heads) | stroke | `#FF1493` (deep pink) |
+| Coin (tails) | fill | `#B6E6FF` (light cyan — cool side of bisexual lighting) |
+| Coin (tails) | stroke | `#00BFFF` (deep sky blue) |
+| Coin label | fill | `#4A0E4A` (deep purple, readable on both pink and cyan) |
 | Coin label | fontSize | 24 |
 | Coin label | fontFamily | `system-ui, sans-serif` |
 | Coin label | fontWeight | `bold` |
-| Edge | stroke | `#555` |
+| Edge | stroke | `#9932CC` (dark orchid) |
 | Edge | strokeWidth | 2 |
 
 ## Validation Rules
