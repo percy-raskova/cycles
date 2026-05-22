@@ -1,10 +1,10 @@
-import { DevPage } from "@ui/pages/DevPage";
+import { GamePage } from "@ui/pages/GamePage";
 
 function App() {
   return (
     <div className="app">
-      <h1>CYCLES — Dev Renderer</h1>
-      <DevPage />
+      <h1>CYCLES</h1>
+      <GamePage />
     </div>
   );
 }
