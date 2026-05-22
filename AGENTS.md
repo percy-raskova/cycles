@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Current plan: [specs/005-react-interactivity/plan.md](specs/005-react-interactivity/plan.md)
+Current plan: [specs/006-integration-tests/plan.md](specs/006-integration-tests/plan.md)
 <!-- SPECKIT END -->
 
 ## Repo purpose
