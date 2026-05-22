@@ -19,8 +19,8 @@
 
 **Purpose**: Create CLI directory and configure build entry point
 
-- [ ] T001 Create src/cli/ directory with stub files: src/cli/main.ts, src/cli/parser.ts, src/cli/renderer.ts
-- [ ] T002 [P] Add CLI script entry to package.json scripts (e.g., `"cli": "bun run src/cli/main.ts"`)
+- [x] T001 Create src/cli/ directory with stub files: src/cli/main.ts, src/cli/parser.ts, src/cli/renderer.ts
+- [x] T002 [P] Add CLI script entry to package.json scripts (e.g., `"cli": "bun run src/cli/main.ts"`)
 
 ---
 
@@ -30,11 +30,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Define GameSession, TurnResult, FinalScore types and createSession in src/core/session.ts
-- [ ] T004 Implement hasLegalMoves and computeFinalScore in src/core/session.ts
-- [ ] T016 Implement consecutive pass tracking and terminal flag in src/core/session.ts
-- [ ] T017 Implement random first player selection with seedable random source in src/core/session.ts
-- [ ] T005 [P] Write foundational session unit tests in src/core/__tests__/session.test.ts
+- [x] T003 Define GameSession, TurnResult, FinalScore types and createSession in src/core/session.ts
+- [x] T004 Implement hasLegalMoves and computeFinalScore in src/core/session.ts
+- [x] T016 Implement consecutive pass tracking and terminal flag in src/core/session.ts
+- [x] T017 Implement random first player selection with seedable random source in src/core/session.ts
+- [x] T005 [P] Write foundational session unit tests in src/core/__tests__/session.test.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -50,15 +50,15 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T006 [P] [US1] Write parser unit tests in src/cli/__tests__/parser.test.ts
-- [ ] T007 [P] [US1] Write renderer unit tests in src/cli/__tests__/renderer.test.ts
+- [x] T006 [P] [US1] Write parser unit tests in src/cli/__tests__/parser.test.ts
+- [x] T007 [P] [US1] Write renderer unit tests in src/cli/__tests__/renderer.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Implement step function with move application and player alternation in src/core/session.ts
-- [ ] T009 [P] [US1] Implement command parser in src/cli/parser.ts
-- [ ] T010 [P] [US1] Implement ASCII board renderer in src/cli/renderer.ts
-- [ ] T011 [US1] Implement main.ts stdin loop and game orchestration in src/cli/main.ts (responsibilities: random first-player announcement, ASCII board print, turn prompt with player name and coins remaining, read-parse-step loop, invalid-move re-prompt without turn consumption, forced-pass message, terminal score display, and graceful EOF/Ctrl+D exit)
+- [x] T008 [US1] Implement step function with move application and player alternation in src/core/session.ts
+- [x] T009 [P] [US1] Implement command parser in src/cli/parser.ts
+- [x] T010 [P] [US1] Implement ASCII board renderer in src/cli/renderer.ts
+- [x] T011 [US1] Implement main.ts stdin loop and game orchestration in src/cli/main.ts (responsibilities: random first-player announcement, ASCII board print, turn prompt with player name and coins remaining, read-parse-step loop, invalid-move re-prompt without turn consumption, forced-pass message, terminal score display, and graceful EOF/Ctrl+D exit)
 
 **Checkpoint**: At this point, a complete game can be played in the terminal from start to finish.
 
@@ -72,12 +72,9 @@
 
 ### Tests for User Story 2
 
-- [ ] T012 [P] [US2] Write forced pass detection tests in src/core/__tests__/session.test.ts
-
-### Implementation for User Story 2
-
-- [ ] T013 [US2] Implement forced pass auto-detection in src/core/session.ts step function
-- [ ] T014 [US2] Reject voluntary PASS when hasLegalMoves is true in src/core/session.ts step function
+- [x] T012 [P] [US2] Write forced pass detection tests in src/core/__tests__/session.test.ts
+- [x] T013 [US2] Implement forced pass auto-detection in src/core/session.ts step function
+- [x] T014 [US2] Reject voluntary PASS when hasLegalMoves is true in src/core/session.ts step function
 
 **Checkpoint**: At this point, forced passes are enforced and voluntary passes are blocked.
 
@@ -91,7 +88,7 @@
 
 ### Tests for User Story 3
 
-- [ ] T015 [P] [US3] Write terminal detection and scoring tests in src/core/__tests__/session.test.ts
+- [x] T015 [P] [US3] Write terminal detection and scoring tests in src/core/__tests__/session.test.ts
 
 ### Implementation for User Story 3
 
@@ -105,12 +102,12 @@
 
 **Purpose**: Coverage, property tests, API exports, and end-to-end validation
 
-- [ ] T018 [P] Add fast-check property tests for session invariants in src/core/__tests__/session.test.ts
-- [ ] T019 Export session public API from src/core/index.ts
-- [ ] T020 Run full test suite and verify ≥90% coverage on src/core/
-- [ ] T022 [P] Add lightweight performance validation for SC-002 in src/core/__tests__/session.test.ts (simulate terminal-state computation 100× and assert <1s total)
-- [ ] T023 [P] Add EOF graceful exit test in src/cli/__tests__/main.test.ts (simulate Ctrl+D / stdin close and verify process exits 0 without error)
-- [ ] T021 Dogfood: play a complete terminal game and document any rule ambiguities discovered
+- [x] T018 [P] Add fast-check property tests for session invariants in src/core/__tests__/session.test.ts
+- [x] T019 Export session public API from src/core/index.ts
+- [x] T020 Run full test suite and verify ≥90% coverage on src/core/
+- [x] T022 [P] Add lightweight performance validation for SC-002 in src/core/__tests__/session.test.ts (simulate terminal-state computation 100× and assert <1s total)
+- [x] T023 [P] Add EOF graceful exit test in src/cli/__tests__/main.test.ts (simulate Ctrl+D / stdin close and verify process exits 0 without error)
+- [x] T021 Dogfood: play a complete terminal game and document any rule ambiguities discovered
 
 ---
 
