@@ -16,7 +16,7 @@ Current plan: [specs/008-vaporwave-ui-theme/plan.md](specs/008-vaporwave-ui-them
 
 ## Load-bearing files & markers
 - `AGENTS.md` is the speckit **context file** (`"context_file": "AGENTS.md"` in `.specify/init-options.json`). The `<!-- SPECKIT START -->` / `<!-- SPECKIT END -->` markers must remain; `/speckit.plan` writes the current plan path between them.
-- `.specify/memory/constitution.md` is the project constitution template. It is currently unfilled (still contains `[PROJECT_NAME]`, `[PRINCIPLE_1_NAME]`, etc. placeholders).
+- `.specify/memory/constitution.md` is the project constitution, ratified v1.1.0. It defines 7 core principles including Engine Purity, Test-First Discipline, UI/Engine Separation, Pre-Commit Quality Gates, Accessibility by Default, Immutability by Default, and Canonical Rules Fidelity.
 
 ## Dev environment
 - **Package manager**: bun. Run `bun install` after pulling changes.

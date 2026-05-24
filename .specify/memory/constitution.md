@@ -1,20 +1,17 @@
 <!--
 SYNC IMPACT REPORT
-Version change: 0.0.0 (template) → 1.0.0 (initial ratification)
-Modified principles: All 5 placeholders replaced with concrete principles
-Added sections:
-  - Core Principles (all 5)
-  - Technology Stack Requirements
-  - Development Workflow & Quality Gates
-  - Governance (fully specified)
+Version change: 1.0.0 → 1.1.0 (two new principles + expanded workflow section)
+Modified principles: None renamed
+Added principles:
+  - VI. Immutability by Default
+  - VII. Canonical Rules Fidelity
+Expanded sections:
+  - Development Workflow & Quality Gates: added Speckit workflow detail,
+    property-based testing mandate, No-CI / pre-commit-only enforcement
 Removed sections: None
 Templates requiring updates:
-  - .specify/templates/plan-template.md ✅ (Constitution Check section is generic, aligns)
-  - .specify/templates/spec-template.md ✅ (no constitution-specific references)
-  - .specify/templates/tasks-template.md ✅ (no constitution-specific references)
-  - .specify/templates/checklist-template.md ✅ (no constitution-specific references)
-  - .specify/templates/constitution-template.md ✅ (source template, no action needed)
-Deferred items: RATIFICATION_DATE marked TODO — original adoption date unknown
+  - All templates reviewed and verified aligned ✅
+Deferred items: RATIFICATION_DATE still TODO — original adoption date unknown
 -->
 
 # CYCLES Constitution
@@ -76,6 +73,26 @@ The user interface MUST be usable by players with diverse abilities and devices.
 
 **Rationale**: Accessibility is not a feature to add later; it is a constraint on every UI decision. Retro aesthetics (vaporwave, Win95) must not compromise legibility or navigability.
 
+### VI. Immutability by Default
+
+All game state MUST be treated as immutable. Mutating state in-place is forbidden.
+
+- Engine data structures (`GameState`, `Coin`, `Edge`, `Session`) MUST use `readonly` fields, `ReadonlyMap`, and `readonly` arrays.
+- State transition functions MUST return new objects; they MUST NOT modify inputs.
+- UI components MUST NOT mutate engine state directly; all mutations flow through engine action functions.
+
+**Rationale**: Immutability makes state changes explicit, enables cheap undo/redo, prevents React re-render bugs, and allows property-based testing to reason about state transitions as pure functions.
+
+### VII. Canonical Rules Fidelity
+
+The engine implementation MUST match `cycles-spec.md` exactly. The written rules are the single source of truth.
+
+- Any ambiguity in the spec MUST be resolved by consulting `cycles-spec.md` before changing code.
+- New rules discovered during development (e.g., edge blocking placement) MUST be documented in `cycles-spec.md` before being enforced in the engine.
+- The CLI and web UIs MUST present identical game behavior; divergence is treated as a bug in the engine, not a UI variation.
+
+**Rationale**: A board game has no "undefined behavior." If two implementations of CYCLES produce different outcomes for the same sequence of moves, at least one is wrong. The written rules prevent this.
+
 ---
 
 ## Technology Stack Requirements
@@ -92,11 +109,13 @@ The user interface MUST be usable by players with diverse abilities and devices.
 
 ## Development Workflow & Quality Gates
 
-1. **Speckit Workflow**: All features flow through `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`. The active feature directory is tracked in `.specify/feature.json`.
+1. **Speckit Workflow**: All features flow through `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`. The active feature directory is tracked in `.specify/feature.json`. Artifacts (spec, plan, research, data-model, contracts, tasks) live under `specs/NNN-feature-name/`.
 2. **Branching**: Each feature gets a sequentially numbered branch (`NNN-feature-name`).
-3. **Pre-commit**: `simple-git-hooks` → `lint-staged` (Biome) → `tsc --noEmit` → `vitest run`.
-4. **Coverage Gate**: `src/core/` must maintain ≥90% coverage; UI coverage is encouraged but not enforced.
-5. **Complexity Gate**: Cognitive complexity per function SHOULD NOT exceed 15; exemptions MUST be documented inline.
+3. **No CI/CD**: The project intentionally has no GitHub Actions or remote CI. Quality is enforced exclusively through local pre-commit hooks. This is a deliberate constraint, not a gap.
+4. **Pre-commit**: `simple-git-hooks` → `lint-staged` (Biome) → `tsc --noEmit` → `vitest run`.
+5. **Coverage Gate**: `src/core/` must maintain ≥90% coverage; UI coverage is encouraged but not enforced.
+6. **Complexity Gate**: Cognitive complexity per function SHOULD NOT exceed 15; exemptions MUST be documented inline.
+7. **Property-Based Testing**: Invariants (e.g., coin count never exceeds 12, `edgeIntersects` symmetry, `coinsRemaining + placedCoins === 12`) MUST be expressed as `fast-check` property tests in addition to example-based tests.
 
 ---
 
@@ -121,4 +140,4 @@ This Constitution supersedes all other development practices in the CYCLES repos
 
 ---
 
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): Original project start date unknown; set when first contributor confirms | **Last Amended**: 2026-05-24
+**Version**: 1.1.0 | **Ratified**: TODO(RATIFICATION_DATE): Original project start date unknown; set when first contributor confirms | **Last Amended**: 2026-05-24
