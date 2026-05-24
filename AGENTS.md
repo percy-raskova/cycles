@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Current plan: [specs/007-e2e-edge-testing/plan.md](specs/007-e2e-edge-testing/plan.md)
+Current plan: [specs/008-vaporwave-ui-theme/plan.md](specs/008-vaporwave-ui-theme/plan.md)
 <!-- SPECKIT END -->
 
 ## Repo purpose
