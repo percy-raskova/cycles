@@ -196,7 +196,7 @@ As a player with visual sensitivities or using assistive technology, I want the 
 - **SC-015**: The game loads and is playable in standalone PWA mode on a mobile device after being added to the home screen.
 - **SC-016**: Clicking the Reset button returns the game to the initial state within 100ms, with zero coins and zero edges on the board.
 - **SC-017**: Clicking the Undo button correctly reverts the last move, including restoring flipped coins and removing the last-placed edge, within 100ms.
-- **SC-018**: In a user test with 5 participants, zero participants confuse the Reset and Undo buttons or trigger the wrong action on first use.
+- **SC-018**: *(Post-launch validation, not buildable work)* In a user test with 5 participants, zero participants confuse the Reset and Undo buttons or trigger the wrong action on first use. This is a qualitative outcome metric measured after deployment, not a task to implement.
 
 ## Assumptions
 

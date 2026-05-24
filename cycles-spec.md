@@ -64,3 +64,8 @@ Count the coins showing each face. The player whose face appears on more coins w
 - The supply may be exhausted before the game ends; PLACE is then unavailable and only JOIN remains.
 - A coin lying on a queen-line between two others blocks any direct JOIN between them — such an edge would pass through it.
 - When a JOIN closes a cycle, exactly one new bounded region is created (a consequence of planar graph structure). Only the coins in that region flip; coins on prior cycles outside the new region are unaffected.
+
+## UI Conveniences
+
+- **Undo**: A digital implementation may offer an undo control that reverts the most recent move by replaying the game state from the initial position up to (but not including) the last move. Undo is a convenience, not a game rule, and has no effect on scoring or turn order.
+- **Reset**: A digital implementation may offer a reset control that immediately returns the game to the initial empty-board state. This is equivalent to starting a new game.
