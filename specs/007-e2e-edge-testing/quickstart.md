@@ -32,23 +32,35 @@ bun run test
 bun run test:run
 
 # With coverage report
-bun run test:run --coverage
+bun run test:coverage
+
+# Verbose output with per-test timing
+bun run test:verbose
+
+# Open HTML report
+bun run test:report
 ```
 
 ## Run Playwright E2E Tests
 
 ```bash
-# Run all E2E tests (headless)
+# Run all E2E tests (headless, Chromium + Firefox)
 bun run e2e
+
+# Run Chromium only
+bun run e2e -- --project=chromium
 
 # Run with UI mode (for debugging)
 bun run e2e:ui
 
 # Run a specific spec
 bun run e2e -- tests/e2e/specs/place-coin.spec.ts
+
+# Open HTML report
+bun run e2e:report
 ```
 
-The E2E tests automatically start the Vite preview server on `http://localhost:5173` via Playwright's `webServer` config.
+The E2E tests automatically start the Vite preview server on `http://localhost:4173` via Playwright's `webServer` config.
 
 ## Run Dev Server
 
@@ -92,9 +104,9 @@ Check that `src/core/geometry.ts`, `src/core/state.ts`, and `src/core/move.ts` s
 npx playwright install
 ```
 
-### Port 5173 already in use
+### Port 4173 already in use
 
-Either kill the existing process or change the port in `playwright.config.ts`.
+Either kill the existing process or change the port in `playwright.config.ts` and `vite preview --port`. Preview uses 4173 by default; dev server uses 5173.
 
 ### Tests timeout on CI
 

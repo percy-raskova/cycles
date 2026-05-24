@@ -43,12 +43,12 @@ describe("Component Coordination (US5)", () => {
     const dot = getDotAt(1, 1);
 
     // Default radius for legal placement
-    expect(dot.getAttribute("r")).toBe("3");
+    expect(dot.getAttribute("r")).toBe("20");
 
     await user.hover(dot);
 
     // Radius should increase when hovered
-    expect(dot.getAttribute("r")).toBe("6");
+    expect(dot.getAttribute("r")).toBe("36");
   });
 
   it("FaceSelector opens on click, closes on selection, coin appears with correct label", async () => {

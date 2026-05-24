@@ -341,11 +341,11 @@
 }
 
 .face-selector-heads {
-  color: var(--color-fuchsia);
+  color: var(--color-coin-heads);
 }
 
 .face-selector-tails {
-  color: var(--color-hot-pink);
+  color: var(--color-coin-tails);
 }
 
 /* Turn indicator */
@@ -368,11 +368,11 @@
 }
 
 .turn-indicator-heads {
-  color: var(--color-fuchsia);
+  color: var(--color-coin-heads);
 }
 
 .turn-indicator-tails {
-  color: var(--color-hot-pink);
+  color: var(--color-coin-tails);
 }
 
 .turn-indicator-notice {
@@ -407,11 +407,11 @@
 }
 
 .game-over-score-heads {
-  color: var(--color-fuchsia);
+  color: var(--color-coin-heads);
 }
 
 .game-over-score-tails {
-  color: var(--color-hot-pink);
+  color: var(--color-coin-tails);
 }
 
 .game-over-winner {
@@ -739,12 +739,12 @@
 }
 
 .heads-text {
-  color: var(--color-fuchsia);
+  color: var(--color-coin-heads);
   font-weight: bold;
 }
 
 .tails-text {
-  color: var(--color-hot-pink);
+  color: var(--color-coin-tails);
   font-weight: bold;
 }
 
@@ -788,3 +788,243 @@
   font-style: italic;
   margin-top: 1rem;
 }
+
+/* --- Footer --- */
+
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  background: var(--color-surface);
+  border: var(--border-raised);
+  border-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5)
+    rgba(255, 255, 255, 0.15);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-link {
+  color: var(--color-teal);
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: var(--color-teal-light);
+  text-decoration: underline;
+}
+
+.footer-separator {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.footer-credit {
+  color: var(--color-text-secondary);
+}
+
+.footer-donate-label {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.liberapay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.75rem;
+  border: var(--border-raised);
+  border-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5)
+    rgba(255, 255, 255, 0.15);
+  background: var(--color-hot-pink);
+  color: var(--color-bg);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.liberapay-btn:hover {
+  background: #ff85c1;
+}
+
+.liberapay-heart {
+  font-size: 1rem;
+}
+
+/* --- Board Visualization Enhancements --- */
+
+.game-board-container {
+  position: relative;
+  background: radial-gradient(ellipse at center, rgba(255, 0, 255, 0.03) 0%, transparent 70%),
+    var(--color-surface);
+  border: var(--border-raised);
+  border-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5)
+    rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 30px rgba(255, 0, 255, 0.08), inset 0 0 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Grid line glow */
+.game-board-container line {
+  filter: drop-shadow(0 0 1px rgba(230, 230, 250, 0.4));
+}
+
+/* Grid dot enhancements */
+.grid-dot {
+  cursor: pointer;
+  transition: r 150ms ease, fill 150ms ease, filter 150ms ease;
+  filter: drop-shadow(0 0 2px rgba(218, 112, 216, 0.5));
+}
+
+.grid-dot:hover {
+  fill: var(--color-fuchsia);
+  filter: drop-shadow(0 0 4px rgba(255, 0, 255, 0.8));
+}
+
+.grid-dot-legal {
+  fill: var(--color-teal);
+  stroke: var(--color-teal-light);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 3px rgba(32, 178, 170, 0.6));
+  animation: grid-dot-pulse 2s ease-in-out infinite;
+}
+
+.grid-dot-legal:hover {
+  r: 36;
+  filter: drop-shadow(0 0 6px rgba(32, 178, 170, 0.9));
+}
+
+@keyframes grid-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Coin glow and depth */
+.coin-selected circle {
+  stroke: var(--color-fuchsia) !important;
+  stroke-width: 4 !important;
+  filter: drop-shadow(0 0 6px rgba(255, 0, 255, 0.8));
+}
+
+.coin-highlighted circle {
+  stroke-width: 3 !important;
+  filter: brightness(1.15) drop-shadow(0 0 4px rgba(255, 0, 255, 0.5));
+}
+
+.coin-flipping circle {
+  transition: fill 500ms ease, stroke 500ms ease, filter 500ms ease;
+}
+
+.coin-illegal circle {
+  animation: coin-shake 300ms ease-in-out;
+  filter: drop-shadow(0 0 4px rgba(255, 0, 0, 0.6));
+}
+
+/* Edge glow */
+.preview-line {
+  stroke: var(--color-lavender);
+  stroke-width: 3;
+  stroke-dasharray: 8 4;
+  opacity: 0.8;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px rgba(230, 230, 250, 0.5));
+}
+
+/* Face selector enhancements */
+.face-selector {
+  position: absolute;
+  display: flex;
+  gap: 0.5rem;
+  background: var(--color-surface);
+  border: var(--border-raised);
+  border-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5)
+    rgba(255, 255, 255, 0.15);
+  padding: 0.5rem;
+  box-shadow: var(--shadow-raised), 0 0 20px rgba(255, 0, 255, 0.1);
+  z-index: 10;
+}
+
+/* Turn indicator glow */
+.turn-indicator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-surface);
+  border: var(--border-raised);
+  border-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5)
+    rgba(255, 255, 255, 0.15);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  min-height: 3rem;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.05);
+}
+
+/* Game over panel glow */
+.game-over-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--color-surface);
+  border: var(--border-raised);
+  border-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5)
+    rgba(255, 255, 255, 0.15);
+  box-shadow: var(--shadow-raised), 0 0 30px rgba(255, 0, 255, 0.08);
+  text-align: center;
+}
+
+/* Menu bar glow */
+.menu-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: var(--color-surface);
+  border: var(--border-raised);
+  border-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5)
+    rgba(255, 255, 255, 0.15);
+  margin-bottom: 0.5rem;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.05);
+}
+
+/* Footer responsive */
+@media (max-width: 600px) {
+  .app-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .footer-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Remove duplicate modal-body and modal-close blocks */
+/* The original file had duplicate .modal-body and .modal-close selectors */
+/* We consolidated them above so these should be removed if they appear again */

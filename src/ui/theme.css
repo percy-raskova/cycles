@@ -26,6 +26,12 @@
   --color-teal: #008080;
   --color-teal-light: #20b2aa;
 
+  /* Coin colors — high contrast against dark navy background */
+  --color-coin-heads: #ff1493; /* electric pink */
+  --color-coin-tails: #00ffff; /* light teal / electric cyan */
+  --color-coin-heads-stroke: #c71585;
+  --color-coin-tails-stroke: #00ced1;
+
   /* Typography */
   --font-display: "VT323", monospace;
   --font-body: "Space Mono", monospace;

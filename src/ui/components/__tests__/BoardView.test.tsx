@@ -55,7 +55,7 @@ describe("BoardView — empty state", () => {
 
     const svg = screen.getByTestId("board-view");
     expect(svg.tagName.toLowerCase()).toBe("svg");
-    expect(svg.getAttribute("viewBox")).toBe("0 0 800 800");
+    expect(svg.getAttribute("viewBox")).toBe("0 0 1625 1625");
   });
 
   it("renders GridView but no CoinView or EdgeView elements for empty state", () => {
@@ -68,7 +68,7 @@ describe("BoardView — empty state", () => {
     const svg = screen.getByTestId("board-view");
     const circles = svg.querySelectorAll("circle");
     const coinCircles = Array.from(circles).filter(
-      (c) => c.getAttribute("r") !== "3", // exclude grid dots
+      (c) => c.getAttribute("r") !== "20", // exclude grid dots
     );
     expect(coinCircles.length).toBe(0);
 
@@ -132,7 +132,7 @@ describe("BoardView — with coins", () => {
 
     const svg = screen.getByTestId("board-view");
     const coinCircles = Array.from(svg.querySelectorAll("circle")).filter(
-      (c) => c.getAttribute("r") !== "3",
+      (c) => c.getAttribute("r") !== "20",
     );
     expect(coinCircles.length).toBe(0);
   });

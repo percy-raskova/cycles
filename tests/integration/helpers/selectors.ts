@@ -8,8 +8,8 @@ export function getCoinAt(row: number, col: number): HTMLElement {
 
 export function getDotAt(row: number, col: number): HTMLElement {
   const dots = screen.getByTestId("grid-view").querySelectorAll("circle");
-  const x = 50 + col * 100;
-  const y = 50 + row * 100;
+  const x = 25 + col * 225;
+  const y = 25 + row * 225;
   const dot = Array.from(dots).find(
     (c) => c.getAttribute("cx") === `${x}` && c.getAttribute("cy") === `${y}`,
   );

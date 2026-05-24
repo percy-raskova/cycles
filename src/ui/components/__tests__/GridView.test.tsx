@@ -43,12 +43,12 @@ describe("GridView", () => {
 
     for (const line of lines) {
       expect(line.getAttribute("stroke")).toBe("var(--color-lavender)");
-      expect(line.getAttribute("stroke-width")).toBe("1");
+      expect(line.getAttribute("stroke-width")).toBe("2");
     }
 
     for (const dot of dots) {
       expect(dot.getAttribute("fill")).toBe("var(--color-orchid)");
-      expect(dot.getAttribute("r")).toBe("3");
+      expect(dot.getAttribute("r")).toBe("20");
     }
   });
 
@@ -97,7 +97,7 @@ describe("GridView", () => {
       (c) => c.getAttribute("cx") === "50" && c.getAttribute("cy") === "50",
     );
     expect(legalDot).toBeDefined();
-    expect(legalDot?.getAttribute("r")).toBe("6");
+    expect(legalDot?.getAttribute("r")).toBe("36");
     expect(legalDot?.getAttribute("class")).toContain("grid-dot-legal");
   });
 });

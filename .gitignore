@@ -9,3 +9,12 @@ coverage/
 !.env.example
 .vscode/
 .idea/
+
+# Playwright artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Vitest UI / reports
+test-report.html
+vitest-results.json

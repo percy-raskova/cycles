@@ -43,3 +43,7 @@ Current plan: [specs/008-vaporwave-ui-theme/plan.md](specs/008-vaporwave-ui-them
 - **Visual regression**: Snapshot tests are scaffolded in `tests/visual/` and `src/ui/pages/__tests__/GamePage.a11y.test.tsx`. Actual image capture requires `@vitest/browser` + Playwright in browser mode (`bun run test -- --browser`).
 - **Touch targets**: Grid intersections use invisible `<rect>` elements (120×120 SVG units) inside `<g role="button">` to ensure ≥44×44 CSS pixels at all viewport sizes. Menu buttons and face selector buttons are sized to 44×44px in CSS.
 - **Responsive sizing**: The game board container uses `min(600px, 85vmin)` width/height and `@media (orientation: portrait)` with `95vw` to fit mobile viewports.
+- **Playwright E2E**: Browser end-to-end tests live in `tests/e2e/` (specs, page helpers, fixtures). Run with `bun run e2e`. Uses Vite preview server on port 4173. Chromium tests pass; Firefox binary may need updating (`npx playwright install`).
+- **Behavior-first tests**: Core engine tests are organized by game behavior under `src/core/__tests__/behavior/` (placement-rules, join-rules, cycle-closure, move-dispatch, session-lifecycle, terminal-conditions, geometry-basics, geometry-properties) rather than by source module.
+- **Shared fixtures**: Reusable board-state fixtures live in `tests/fixtures/board-states.ts` and are imported by both core and integration test layers.
+- **Woodpecker CI/CD**: Pipeline configuration in `.woodpecker/ci.yml` for Codeberg/Forgejo. Runs lint → typecheck → unit tests → E2E tests → build.

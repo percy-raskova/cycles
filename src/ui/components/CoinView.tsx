@@ -37,8 +37,9 @@ export function CoinView({
 }: CoinViewProps) {
   const { x, y } = positionToSvg(coin.position);
   const label = coin.face === "heads" ? "H" : "T";
-  const fill = coin.face === "heads" ? "var(--color-fuchsia)" : "var(--color-hot-pink)";
-  const stroke = coin.face === "heads" ? "var(--color-magenta)" : "var(--color-orchid)";
+  const fill = coin.face === "heads" ? "var(--color-coin-heads)" : "var(--color-coin-tails)";
+  const stroke =
+    coin.face === "heads" ? "var(--color-coin-heads-stroke)" : "var(--color-coin-tails-stroke)";
   const className = buildClassName(isSelected, isHighlighted, isFlipping, isIllegal);
 
   function handleClick() {

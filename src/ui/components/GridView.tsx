@@ -29,7 +29,7 @@ function GridDot({
   const y = margin + row * cellSize;
   const pos: Position = { row, col };
   const dotClass = isLegal ? "grid-dot grid-dot-legal" : "grid-dot";
-  const r = isLegal && isHovered ? 6 : 3;
+  const r = isLegal && isHovered ? 36 : 20;
 
   function handleClick() {
     onIntersectionClick?.(pos);
@@ -111,7 +111,7 @@ export function GridView({
         x2={maxCoord}
         y2={y}
         stroke="var(--color-lavender)"
-        strokeWidth={1}
+        strokeWidth={2}
       />
     );
   });
@@ -127,7 +127,7 @@ export function GridView({
         x2={x}
         y2={maxCoord}
         stroke="var(--color-lavender)"
-        strokeWidth={1}
+        strokeWidth={2}
       />
     );
   });

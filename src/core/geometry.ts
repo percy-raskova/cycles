@@ -90,7 +90,7 @@ function direction(a: Position, b: Position, c: Position): number {
   return (c.row - a.row) * (b.col - a.col) - (b.row - a.row) * (c.col - a.col);
 }
 
-function pointOnSegment(p: Position, a: Position, b: Position): boolean {
+export function pointOnSegment(p: Position, a: Position, b: Position): boolean {
   const cross = (p.row - a.row) * (b.col - a.col) - (p.col - a.col) * (b.row - a.row);
   if (cross !== 0) return false;
   return (
@@ -99,6 +99,27 @@ function pointOnSegment(p: Position, a: Position, b: Position): boolean {
     Math.min(a.col, b.col) <= p.col &&
     p.col <= Math.max(a.col, b.col)
   );
+}
+
+/**
+ * Check if a position lies strictly between the endpoints of any existing edge.
+ * If the position IS an endpoint of an edge, it is NOT blocked (coins already exist there).
+ */
+export function positionBlockedByEdge(
+  pos: Position,
+  edges: readonly { from: Position; to: Position }[],
+): boolean {
+  for (const edge of edges) {
+    const isEndpoint =
+      (pos.row === edge.from.row && pos.col === edge.from.col) ||
+      (pos.row === edge.to.row && pos.col === edge.to.col);
+    if (isEndpoint) continue;
+
+    if (pointOnSegment(pos, edge.from, edge.to)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function pointInPolygon(point: Position, polygon: readonly Position[]): boolean {
@@ -125,4 +146,75 @@ export function pointInPolygon(point: Position, polygon: readonly Position[]): b
     }
   }
   return inside;
+}
+
+export function squaredDistance(r1: number, c1: number, r2: number, c2: number): number {
+  const dRow = r2 - r1;
+  const dCol = c2 - c1;
+  return dRow * dRow + dCol * dCol;
+}
+
+export function positionsEqual(a: Position, b: Position): boolean {
+  return a.row === b.row && a.col === b.col;
+}
+
+export function isValidPosition(row: number, col: number): boolean {
+  return row >= 0 && row < 7 && col >= 0 && col < 7;
+}
+
+export function getIntersectionPoints(r1: number, c1: number, r2: number, c2: number): Position[] {
+  if (!isValidPosition(r1, c1) || !isValidPosition(r2, c2)) return [];
+
+  const dRow = r2 - r1;
+  const dCol = c2 - c1;
+
+  if (dRow === 0 && dCol === 0) {
+    return [{ row: r1, col: c1 }];
+  }
+
+  if (dRow === 0) {
+    return collectHorizontal(r1, c1, c2);
+  }
+  if (dCol === 0) {
+    return collectVertical(r1, r2, c1);
+  }
+  if (Math.abs(dRow) === Math.abs(dCol)) {
+    return collectDiagonal(r1, c1, dRow, dCol);
+  }
+  return [];
+}
+
+function collectHorizontal(row: number, c1: number, c2: number): Position[] {
+  const points: Position[] = [];
+  const minCol = Math.min(c1, c2);
+  const maxCol = Math.max(c1, c2);
+  for (let col = minCol; col <= maxCol; col++) {
+    points.push({ row, col });
+  }
+  return points;
+}
+
+function collectVertical(r1: number, r2: number, col: number): Position[] {
+  const points: Position[] = [];
+  const minRow = Math.min(r1, r2);
+  const maxRow = Math.max(r1, r2);
+  for (let row = minRow; row <= maxRow; row++) {
+    points.push({ row, col });
+  }
+  return points;
+}
+
+function collectDiagonal(r1: number, c1: number, dRow: number, dCol: number): Position[] {
+  const points: Position[] = [];
+  const steps = Math.abs(dRow);
+  const rowStep = dRow > 0 ? 1 : -1;
+  const colStep = dCol > 0 ? 1 : -1;
+  for (let i = 0; i <= steps; i++) {
+    points.push({ row: r1 + i * rowStep, col: c1 + i * colStep });
+  }
+  return points;
+}
+
+export function collinearityCheck(a: Position, b: Position, c: Position): boolean {
+  return (b.row - a.row) * (c.col - a.col) === (b.col - a.col) * (c.row - a.row);
 }

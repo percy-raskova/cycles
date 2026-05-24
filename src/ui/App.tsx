@@ -1,3 +1,4 @@
+import { Footer } from "@ui/components/Footer";
 import { MenuBar } from "@ui/components/MenuBar";
 import { Modal } from "@ui/components/Modal";
 import { useGameSession } from "@ui/hooks/useGameSession";
@@ -27,6 +28,7 @@ function App() {
         canUndo={canUndo}
       />
       {modal && <Modal initialPanel={modal.panel} onClose={() => setModal(null)} />}
+      <Footer />
     </div>
   );
 }

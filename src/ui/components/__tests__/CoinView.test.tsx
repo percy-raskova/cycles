@@ -23,10 +23,10 @@ describe("CoinView", () => {
     const group = screen.getByTestId("coin-0-0");
     const circle = group.querySelector("circle");
     expect(circle).toBeDefined();
-    expect(circle?.getAttribute("cx")).toBe("50");
-    expect(circle?.getAttribute("cy")).toBe("50");
-    expect(circle?.getAttribute("fill")).toBe("var(--color-fuchsia)");
-    expect(circle?.getAttribute("stroke")).toBe("var(--color-magenta)");
+    expect(circle?.getAttribute("cx")).toBe("25");
+    expect(circle?.getAttribute("cy")).toBe("25");
+    expect(circle?.getAttribute("fill")).toBe("var(--color-coin-heads)");
+    expect(circle?.getAttribute("stroke")).toBe("var(--color-coin-heads-stroke)");
 
     const text = group.querySelector("text");
     expect(text?.textContent).toBe("H");
@@ -50,8 +50,8 @@ describe("CoinView", () => {
 
     const group = screen.getByTestId("coin-1-1");
     const circle = group.querySelector("circle");
-    expect(circle?.getAttribute("fill")).toBe("var(--color-hot-pink)");
-    expect(circle?.getAttribute("stroke")).toBe("var(--color-orchid)");
+    expect(circle?.getAttribute("fill")).toBe("var(--color-coin-tails)");
+    expect(circle?.getAttribute("stroke")).toBe("var(--color-coin-tails-stroke)");
 
     const text = group.querySelector("text");
     expect(text?.textContent).toBe("T");

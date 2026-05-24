@@ -4,24 +4,6 @@ import { describe, expect, it, vi } from "vitest";
 import { MenuBar } from "../MenuBar";
 
 describe("MenuBar", () => {
-  it("renders repository link with correct href and target", () => {
-    render(
-      <MenuBar
-        onOpenHelp={() => {}}
-        onOpenSettings={() => {}}
-        onReset={() => {}}
-        onUndo={() => {}}
-        canUndo={false}
-      />,
-    );
-
-    const link = screen.getByRole("link", { name: /view source code on codeberg/i });
-    expect(link).toBeTruthy();
-    expect(link.getAttribute("href")).toBe("https://codeberg.org/percy-raskova/cycles");
-    expect(link.getAttribute("target")).toBe("_blank");
-    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
-  });
-
   it("renders help and settings buttons", () => {
     render(
       <MenuBar

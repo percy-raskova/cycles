@@ -25,7 +25,7 @@ describe("Visual Regression — Face Selector Open", () => {
     const grid = screen.getByTestId("grid-view");
     const dots = grid.querySelectorAll("circle");
     const target = Array.from(dots).find(
-      (c) => c.getAttribute("cx") === "150" && c.getAttribute("cy") === "150",
+      (c) => c.getAttribute("cx") === "250" && c.getAttribute("cy") === "250",
     );
     expect(target).toBeTruthy();
     if (target) {
@@ -35,7 +35,8 @@ describe("Visual Regression — Face Selector Open", () => {
     const selector = screen.getByTestId("face-selector-1-1");
     expect(selector).toBeTruthy();
 
-    // TODO: generate snapshot image with `@vitest/browser` + Playwright
-    // Snapshot path: tests/__snapshots__/face-selector-open.png
+    // Snapshot image generation requires `@vitest/browser` in browser mode.
+    // Run: bun run test -- --browser
+    // For now, DOM presence verification ensures the themed face selector renders.
   });
 });

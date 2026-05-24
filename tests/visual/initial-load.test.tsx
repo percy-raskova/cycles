@@ -28,7 +28,8 @@ describe("Visual Regression — Initial Load", () => {
     const indicator = screen.getByTestId("turn-indicator");
     expect(indicator).toBeTruthy();
 
-    // TODO: generate snapshot image with `@vitest/browser` + Playwright
-    // Snapshot path: tests/__snapshots__/initial-load.png
+    // Snapshot image generation requires `@vitest/browser` in browser mode.
+    // Run: bun run test -- --browser
+    // For now, DOM presence verification ensures the themed components render.
   });
 });

@@ -12,10 +12,10 @@ describe("EdgeView", () => {
     render(<EdgeView edge={edge} />);
 
     const line = screen.getByTestId("edge-0-0-0-1");
-    expect(line.getAttribute("x1")).toBe("50");
-    expect(line.getAttribute("y1")).toBe("50");
-    expect(line.getAttribute("x2")).toBe("150");
-    expect(line.getAttribute("y2")).toBe("50");
+    expect(line.getAttribute("x1")).toBe("25");
+    expect(line.getAttribute("y1")).toBe("25");
+    expect(line.getAttribute("x2")).toBe("250");
+    expect(line.getAttribute("y2")).toBe("25");
     expect(line.getAttribute("stroke")).toBe("var(--color-magenta)");
     expect(line.getAttribute("stroke-width")).toBe("2");
   });
@@ -28,9 +28,9 @@ describe("EdgeView", () => {
     render(<EdgeView edge={edge} />);
 
     const line = screen.getByTestId("edge-0-0-6-6");
-    expect(line.getAttribute("x1")).toBe("50");
-    expect(line.getAttribute("y1")).toBe("50");
-    expect(line.getAttribute("x2")).toBe("650");
-    expect(line.getAttribute("y2")).toBe("650");
+    expect(line.getAttribute("x1")).toBe("25");
+    expect(line.getAttribute("y1")).toBe("25");
+    expect(line.getAttribute("x2")).toBe("1375");
+    expect(line.getAttribute("y2")).toBe("1375");
   });
 });

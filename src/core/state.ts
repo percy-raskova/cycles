@@ -1,4 +1,4 @@
-import { areEdgesEqual, edgeIntersects, isQueenLine } from "./geometry";
+import { areEdgesEqual, edgeIntersects, isQueenLine, positionBlockedByEdge } from "./geometry";
 import type { Coin, CoinFace, Edge, GameState, Player, Position } from "./types";
 
 export const GRID_SIZE = 7;
@@ -37,6 +37,10 @@ export function placeCoin(state: GameState, position: Position, face: CoinFace):
     throw new Error("No coins remaining");
   }
 
+  if (positionBlockedByEdge(position, state.edges)) {
+    throw new Error("Blocked by existing edge");
+  }
+
   const newCoins = new Map(state.coins);
   newCoins.set(key, { position, face });
 
@@ -60,7 +64,10 @@ export function legalPlacements(state: GameState): readonly Position[] {
     for (let col = 0; col < GRID_SIZE; col++) {
       const key = `${row},${col}`;
       if (!state.coins.has(key)) {
-        placements.push({ row, col });
+        const pos = { row, col };
+        if (!positionBlockedByEdge(pos, state.edges)) {
+          placements.push(pos);
+        }
       }
     }
   }

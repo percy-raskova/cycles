@@ -1,0 +1,37 @@
+# Woodpecker CI/CD pipeline for CYCLES
+# Host: Codeberg / Forgejo
+# Runner: Docker
+
+steps:
+  - name: install
+    image: oven/bun:1
+    commands:
+      - bun install --frozen-lockfile
+
+  - name: lint
+    image: oven/bun:1
+    commands:
+      - bun run lint
+
+  - name: typecheck
+    image: oven/bun:1
+    commands:
+      - bun run typecheck
+
+  - name: test-unit
+    image: oven/bun:1
+    commands:
+      - bun run test:run
+
+  - name: test-e2e
+    image: mcr.microsoft.com/playwright:v1.60.0-jammy
+    commands:
+      - npm install -g bun
+      - bun install --frozen-lockfile
+      - bun run build
+      - bun run e2e
+
+  - name: build
+    image: oven/bun:1
+    commands:
+      - bun run build
