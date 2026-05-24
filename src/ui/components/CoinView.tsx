@@ -37,8 +37,8 @@ export function CoinView({
 }: CoinViewProps) {
   const { x, y } = positionToSvg(coin.position);
   const label = coin.face === "heads" ? "H" : "T";
-  const fill = coin.face === "heads" ? "#FFB6E6" : "#B6E6FF";
-  const stroke = coin.face === "heads" ? "#FF1493" : "#00BFFF";
+  const fill = coin.face === "heads" ? "var(--color-fuchsia)" : "var(--color-hot-pink)";
+  const stroke = coin.face === "heads" ? "var(--color-magenta)" : "var(--color-orchid)";
   const className = buildClassName(isSelected, isHighlighted, isFlipping, isIllegal);
 
   function handleClick() {
@@ -70,9 +70,9 @@ export function CoinView({
         y={y}
         textAnchor="middle"
         dominantBaseline="central"
-        fill="#4A0E4A"
+        fill="var(--color-text-primary)"
         fontSize={24}
-        fontFamily="system-ui, sans-serif"
+        fontFamily="var(--font-body), system-ui, sans-serif"
         fontWeight="bold"
         style={{ pointerEvents: "none" }}
       >

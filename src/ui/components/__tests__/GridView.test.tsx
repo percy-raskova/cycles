@@ -42,12 +42,12 @@ describe("GridView", () => {
     const dots = grid.querySelectorAll("circle");
 
     for (const line of lines) {
-      expect(line.getAttribute("stroke")).toBe("#F5E6F5");
+      expect(line.getAttribute("stroke")).toBe("var(--color-lavender)");
       expect(line.getAttribute("stroke-width")).toBe("1");
     }
 
     for (const dot of dots) {
-      expect(dot.getAttribute("fill")).toBe("#C8A2C8");
+      expect(dot.getAttribute("fill")).toBe("var(--color-orchid)");
       expect(dot.getAttribute("r")).toBe("3");
     }
   });

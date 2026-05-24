@@ -25,12 +25,12 @@ describe("CoinView", () => {
     expect(circle).toBeDefined();
     expect(circle?.getAttribute("cx")).toBe("50");
     expect(circle?.getAttribute("cy")).toBe("50");
-    expect(circle?.getAttribute("fill")).toBe("#FFB6E6");
-    expect(circle?.getAttribute("stroke")).toBe("#FF1493");
+    expect(circle?.getAttribute("fill")).toBe("var(--color-fuchsia)");
+    expect(circle?.getAttribute("stroke")).toBe("var(--color-magenta)");
 
     const text = group.querySelector("text");
     expect(text?.textContent).toBe("H");
-    expect(text?.getAttribute("fill")).toBe("#4A0E4A");
+    expect(text?.getAttribute("fill")).toBe("var(--color-text-primary)");
   });
 
   it("renders tails coin with T label at correct coordinates", () => {
@@ -50,8 +50,8 @@ describe("CoinView", () => {
 
     const group = screen.getByTestId("coin-1-1");
     const circle = group.querySelector("circle");
-    expect(circle?.getAttribute("fill")).toBe("#B6E6FF");
-    expect(circle?.getAttribute("stroke")).toBe("#00BFFF");
+    expect(circle?.getAttribute("fill")).toBe("var(--color-hot-pink)");
+    expect(circle?.getAttribute("stroke")).toBe("var(--color-orchid)");
 
     const text = group.querySelector("text");
     expect(text?.textContent).toBe("T");

@@ -46,7 +46,7 @@ function GridDot({
       cx={x}
       cy={y}
       r={r}
-      fill="#C8A2C8"
+      fill="var(--color-orchid)"
       className={dotClass}
       onClick={onIntersectionClick ? handleClick : undefined}
       onKeyDown={onIntersectionClick ? handleKeyDown : undefined}
@@ -90,7 +90,7 @@ export function GridView({
         y1={y}
         x2={maxCoord}
         y2={y}
-        stroke="#F5E6F5"
+        stroke="var(--color-lavender)"
         strokeWidth={1}
       />
     );
@@ -106,7 +106,7 @@ export function GridView({
         y1={margin}
         x2={x}
         y2={maxCoord}
-        stroke="#F5E6F5"
+        stroke="var(--color-lavender)"
         strokeWidth={1}
       />
     );

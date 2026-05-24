@@ -73,10 +73,14 @@ describe("BoardView — empty state", () => {
     expect(coinCircles.length).toBe(0);
 
     const lines = svg.querySelectorAll("line");
-    const gridLines = Array.from(lines).filter((l) => l.getAttribute("stroke") === "#F5E6F5");
+    const gridLines = Array.from(lines).filter(
+      (l) => l.getAttribute("stroke") === "var(--color-lavender)",
+    );
     expect(gridLines.length).toBe(14);
 
-    const edgeLines = Array.from(lines).filter((l) => l.getAttribute("stroke") === "#9932CC");
+    const edgeLines = Array.from(lines).filter(
+      (l) => l.getAttribute("stroke") === "var(--color-magenta)",
+    );
     expect(edgeLines.length).toBe(0);
   });
 });
@@ -182,9 +186,9 @@ describe("BoardView — with edges", () => {
     expect(edge1).toBeDefined();
     expect(edge2).toBeDefined();
 
-    // Both edges should have the correct dark orchid stroke
-    expect(edge1.getAttribute("stroke")).toBe("#9932CC");
-    expect(edge2.getAttribute("stroke")).toBe("#9932CC");
+    // Both edges should have the correct magenta stroke
+    expect(edge1.getAttribute("stroke")).toBe("var(--color-magenta)");
+    expect(edge2.getAttribute("stroke")).toBe("var(--color-magenta)");
   });
 });
 

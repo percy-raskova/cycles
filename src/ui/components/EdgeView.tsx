@@ -16,7 +16,7 @@ export function EdgeView({ edge }: EdgeViewProps) {
       y1={start.y}
       x2={end.x}
       y2={end.y}
-      stroke="#9932CC"
+      stroke="var(--color-magenta)"
       strokeWidth={2}
     />
   );

@@ -72,21 +72,21 @@
 
 ### Tests for User Story 2
 
-- [ ] T013 [P] [US2] Add visual regression snapshot test for initial load state in `tests/visual/initial-load.test.tsx`
-- [ ] T014 [P] [US2] Add visual regression snapshot test for face selector open state in `tests/visual/face-selector.test.tsx`
+- [X] T013 [P] [US2] Add visual regression snapshot test for initial load state in `tests/visual/initial-load.test.tsx`
+- [X] T014 [P] [US2] Add visual regression snapshot test for face selector open state in `tests/visual/face-selector.test.tsx`
 
 ### Implementation for User Story 2
 
-- [ ] T015 [P] [US2] Apply dark navy background (`--color-bg`) and surface colors to `src/ui/App.css` and `src/ui/App.tsx`
-- [ ] T016 [P] [US2] Recolor game board in `src/ui/components/GridView.tsx`: grid lines in lavender, dots in orchid
-- [ ] T017 [P] [US2] Recolor coins in `src/ui/components/CoinView.tsx`: heads in fuchsia, tails in hot-pink, with face labels
-- [ ] T018 [P] [US2] Recolor edges in `src/ui/components/EdgeView.tsx`: magenta or orchid stroke
-- [ ] T019 [P] [US2] Apply Win95 beveled borders to all existing buttons in `src/ui/components/` (FaceSelector, GameOverPanel, etc.)
-- [ ] T020 [P] [US2] Apply retro typefaces to headings and body text via `src/ui/App.css` (VT323 for display, Space Mono for body)
-- [ ] T021 [P] [US2] Style `src/ui/components/TurnIndicator.tsx` with theme colors and beveled panel
-- [ ] T022 [P] [US2] Style `src/ui/components/GameOverPanel.tsx` with theme colors and beveled panel
-- [ ] T023 [P] [US2] Style `src/ui/components/FaceSelector.tsx` with Win95 window chrome
-- [ ] T023a [P] [US2] Add integration test in `src/ui/pages/__tests__/GamePage.test.tsx` verifying that coins can still be placed and joined after theme CSS is fully applied (FR-010: theme must not interfere with game interaction)
+- [X] T015 [P] [US2] Apply dark navy background (`--color-bg`) and surface colors to `src/ui/App.css` and `src/ui/App.tsx`
+- [X] T016 [P] [US2] Recolor game board in `src/ui/components/GridView.tsx`: grid lines in lavender, dots in orchid
+- [X] T017 [P] [US2] Recolor coins in `src/ui/components/CoinView.tsx`: heads in fuchsia, tails in hot-pink, with face labels
+- [X] T018 [P] [US2] Recolor edges in `src/ui/components/EdgeView.tsx`: magenta or orchid stroke
+- [X] T019 [P] [US2] Apply Win95 beveled borders to all existing buttons in `src/ui/components/` (FaceSelector, GameOverPanel, etc.)
+- [X] T020 [P] [US2] Apply retro typefaces to headings and body text via `src/ui/App.css` (VT323 for display, Space Mono for body)
+- [X] T021 [P] [US2] Style `src/ui/components/TurnIndicator.tsx` with theme colors and beveled panel
+- [X] T022 [P] [US2] Style `src/ui/components/GameOverPanel.tsx` with theme colors and beveled panel
+- [X] T023 [P] [US2] Style `src/ui/components/FaceSelector.tsx` with Win95 window chrome
+- [X] T023a [P] [US2] Add integration test in `src/ui/pages/__tests__/GamePage.test.tsx` verifying that coins can still be placed and joined after theme CSS is fully applied (FR-010: theme must not interfere with game interaction)
 
 **Checkpoint**: At this point, the entire UI should reflect the vaporwave Win95 theme with no unstyled elements and all interactions remain functional
 

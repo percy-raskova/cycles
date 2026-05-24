@@ -16,7 +16,7 @@ describe("EdgeView", () => {
     expect(line.getAttribute("y1")).toBe("50");
     expect(line.getAttribute("x2")).toBe("150");
     expect(line.getAttribute("y2")).toBe("50");
-    expect(line.getAttribute("stroke")).toBe("#9932CC");
+    expect(line.getAttribute("stroke")).toBe("var(--color-magenta)");
     expect(line.getAttribute("stroke-width")).toBe("2");
   });
 

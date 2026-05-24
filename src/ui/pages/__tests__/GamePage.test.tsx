@@ -198,6 +198,39 @@ describe("GamePage — Join Two Coins (US2)", () => {
   });
 });
 
+describe("GamePage — Theme Interaction (US2)", () => {
+  it("coins can still be placed and joined after theme CSS is applied", async () => {
+    render(<GamePage />);
+
+    // Place a coin at (0, 0)
+    const dot00 = getDotAt(0, 0);
+    expect(dot00).toBeDefined();
+    if (dot00) {
+      await userEvent.click(dot00);
+    }
+    await userEvent.click(screen.getByTestId("face-selector-heads"));
+    expect(screen.getByTestId("coin-0-0")).toBeDefined();
+
+    // Place a second coin at (0, 2)
+    const dot02 = getDotAt(0, 2);
+    expect(dot02).toBeDefined();
+    if (dot02) {
+      await userEvent.click(dot02);
+    }
+    await userEvent.click(screen.getByTestId("face-selector-tails"));
+    expect(screen.getByTestId("coin-0-2")).toBeDefined();
+
+    // Join the two coins
+    const coin00 = screen.getByTestId("coin-0-0");
+    const coin02 = screen.getByTestId("coin-0-2");
+    await userEvent.click(coin00);
+    await userEvent.click(coin02);
+
+    // Verify an edge was created
+    expect(screen.getByTestId("edge-0-0-0-2")).toBeDefined();
+  });
+});
+
 describe("GamePage — Coin Flip Animation (US4)", () => {
   async function placeCoinAt(row: number, col: number, face: "heads" | "tails") {
     const dot = getDotAt(row, col);
