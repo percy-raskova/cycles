@@ -37,3 +37,9 @@ Current plan: [specs/008-vaporwave-ui-theme/plan.md](specs/008-vaporwave-ui-them
 - The `.opencode/` directory holds the local `@opencode-ai/plugin` dependency. Its `.gitignore` excludes `node_modules/` and lockfiles; do not commit those.
 - There is no root `.gitignore` for build artifacts beyond what was created for this dev environment.
 - Bash helper scripts in `.specify/scripts/bash/` must be run from the repo root.
+- **jsdom polyfills**: `tests/setup-jsdom.ts` patches `HTMLDialogElement.prototype.showModal` and `.close` because jsdom does not implement the `<dialog>` API. This setup file is referenced in `vitest.config.ts` and runs before all tests.
+- **Accessibility testing**: `axe-core` is installed for automated WCAG audits. Tests live in `tests/a11y/`. The `nested-interactive` rule is disabled for SVG `<g role="button">` structures with `<rect>` hit areas, which is semantically valid for the game board.
+- **PWA manifest**: `vite-plugin-pwa` generates `manifest.json` and a service worker at build time. Icons are in `public/icons/` (192×192 PNG, 512×512 PNG, SVG). Manifest fields (name, display, theme_color, background_color) are configured in `vite.config.ts`.
+- **Visual regression**: Snapshot tests are scaffolded in `tests/visual/` and `src/ui/pages/__tests__/GamePage.a11y.test.tsx`. Actual image capture requires `@vitest/browser` + Playwright in browser mode (`bun run test -- --browser`).
+- **Touch targets**: Grid intersections use invisible `<rect>` elements (120×120 SVG units) inside `<g role="button">` to ensure ≥44×44 CSS pixels at all viewport sizes. Menu buttons and face selector buttons are sized to 44×44px in CSS.
+- **Responsive sizing**: The game board container uses `min(600px, 85vmin)` width/height and `@media (orientation: portrait)` with `95vw` to fit mobile viewports.

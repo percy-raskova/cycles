@@ -247,24 +247,49 @@ export function Modal({ initialPanel, onClose }: ModalProps) {
     { key: "settings", label: "Settings" },
   ];
 
+  const activeLabel = panels.find((p) => p.key === activePanel)?.label ?? "";
+
   return (
-    <dialog ref={dialogRef} className="modal-dialog" onCancel={onClose}>
+    <dialog
+      ref={dialogRef}
+      className="modal-dialog"
+      onCancel={onClose}
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
       <div className="modal-content">
-        <div className="modal-tabs">
+        {/* Win95 title bar */}
+        <div className="modal-title-bar">
+          <span id="modal-title" className="modal-title-text">
+            {activeLabel}
+          </span>
+          <button
+            type="button"
+            className="modal-close"
+            onClick={onClose}
+            aria-label={`Close ${activeLabel} dialog`}
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="modal-tabs" role="tablist">
           {panels.map((p) => (
             <button
               key={p.key}
               type="button"
+              role="tab"
+              aria-selected={activePanel === p.key}
               className={activePanel === p.key ? "modal-tab active" : "modal-tab"}
               onClick={() => setActivePanel(p.key)}
             >
               {p.label}
             </button>
           ))}
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Close">
-            ×
-          </button>
         </div>
+
+        {/* Body */}
         <div className="modal-body">
           {activePanel === "help" && <HelpPanel />}
           {activePanel === "controls" && <ControlsPanel />}

@@ -13,6 +13,8 @@ interface GridDotProps {
   readonly onIntersectionHover?: ((position: Position | null) => void) | undefined;
 }
 
+const TOUCH_TARGET_SIZE = 120;
+
 function GridDot({
   row,
   col,
@@ -40,22 +42,40 @@ function GridDot({
     }
   }
 
+  const halfTouch = TOUCH_TARGET_SIZE / 2;
+
   return (
-    <circle
-      key={`d-${row}-${col}`}
-      cx={x}
-      cy={y}
-      r={r}
-      fill="var(--color-orchid)"
-      className={dotClass}
+    <g
       onClick={onIntersectionClick ? handleClick : undefined}
       onKeyDown={onIntersectionClick ? handleKeyDown : undefined}
-      role={onIntersectionClick ? "button" : undefined}
-      tabIndex={onIntersectionClick ? 0 : undefined}
       onMouseEnter={onIntersectionHover ? () => onIntersectionHover(pos) : undefined}
       onMouseLeave={onIntersectionHover ? () => onIntersectionHover(null) : undefined}
+      role={onIntersectionClick ? "button" : undefined}
+      tabIndex={onIntersectionClick ? 0 : undefined}
       aria-label={`Empty intersection at row ${row + 1}, column ${col + 1}`}
-    />
+      style={{ cursor: onIntersectionClick ? "pointer" : "default" }}
+    >
+      {/* Invisible touch target — ensures ≥44×44 CSS pixels at all viewport sizes */}
+      {onIntersectionClick && (
+        <rect
+          x={x - halfTouch}
+          y={y - halfTouch}
+          width={TOUCH_TARGET_SIZE}
+          height={TOUCH_TARGET_SIZE}
+          fill="transparent"
+        />
+      )}
+      {/* Visible dot */}
+      <circle
+        key={`d-${row}-${col}`}
+        cx={x}
+        cy={y}
+        r={r}
+        fill="var(--color-orchid)"
+        className={dotClass}
+        pointerEvents="none"
+      />
+    </g>
   );
 }
 
