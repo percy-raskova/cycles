@@ -24,11 +24,11 @@
 
 **Purpose**: Install dependencies and prepare project infrastructure
 
-- [ ] T001 Add `vite-plugin-pwa` to `package.json` devDependencies and configure in `vite.config.ts`
-- [ ] T002 Add `@vitest/browser` to `package.json` devDependencies for visual regression testing
-- [ ] T003 [P] Add Google Fonts links (VT323, Space Mono) to `index.html` in `<head>`
-- [ ] T004 [P] Add `public/icons/` directory with PWA icons (192x192 PNG, 512x512 PNG, SVG). Design: stylized "C" letter in fuchsia (#ff00ff) on dark navy (#0a0a1a) background, consistent with the vaporwave palette.
-- [ ] T005 [P] Add `meta name="theme-color"` and `meta name="background-color"` to `index.html`
+- [X] T001 Add `vite-plugin-pwa` to `package.json` devDependencies and configure in `vite.config.ts`
+- [X] T002 Add `@vitest/browser` to `package.json` devDependencies for visual regression testing
+- [X] T003 [P] Add Google Fonts links (VT323, Space Mono) to `index.html` in `<head>`
+- [X] T004 [P] Add `public/icons/` directory with PWA icons (192x192 PNG, 512x512 PNG, SVG). Design: stylized "C" letter in fuchsia (#ff00ff) on dark navy (#0a0a1a) background, consistent with the vaporwave palette.
+- [X] T005 [P] Add `meta name="theme-color"` and `meta name="background-color"` to `index.html`
 
 ---
 
