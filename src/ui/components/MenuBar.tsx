@@ -5,9 +5,18 @@ interface MenuBarProps {
 
 export function MenuBar({ onOpenHelp, onOpenSettings }: MenuBarProps) {
   return (
-    <div className="menu-bar">
+    <div className="menu-bar" role="banner">
       <div className="menu-bar-left">
         <span className="menu-title">CYCLES</span>
+        <a
+          href="https://codeberg.org/percy-raskova/cycles"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="menu-repo-link"
+          aria-label="View source code on Codeberg"
+        >
+          Source Code
+        </a>
       </div>
       <div className="menu-bar-right">
         <button

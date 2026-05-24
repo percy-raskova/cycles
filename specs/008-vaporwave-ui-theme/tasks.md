@@ -56,12 +56,9 @@
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Add test in `src/ui/components/__tests__/MenuBar.test.tsx` asserting repository link is present and has correct `href`
-
-### Implementation for User Story 1
-
-- [ ] T011 [P] [US1] Add Codeberg repository anchor to `src/ui/components/MenuBar.tsx` with `target="_blank"` and `rel="noopener noreferrer"`
-- [ ] T012 [P] [US1] Style repository link in `src/ui/App.css` to match vaporwave palette (teal color, underline on hover)
+- [X] T010 [P] [US1] Add test in `src/ui/components/__tests__/MenuBar.test.tsx` asserting repository link is present and has correct `href`
+- [X] T011 [P] [US1] Add Codeberg repository anchor to `src/ui/components/MenuBar.tsx` with `target="_blank"` and `rel="noopener noreferrer"`
+- [X] T012 [P] [US1] Style repository link in `src/ui/App.css` to match vaporwave palette (teal color, underline on hover)
 
 **Checkpoint**: At this point, the repository link should be visible, clickable, and open the correct URL
 
