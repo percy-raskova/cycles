@@ -4,6 +4,7 @@ import {
   hasLegalMoves,
   legalJoins,
   legalPlacements,
+  positionBlockedByEdge,
   positionKey,
 } from "@core";
 import type { CoinFace, GameSession, Move, Position } from "@core";
@@ -11,7 +12,11 @@ import { BoardView } from "@ui/components/BoardView";
 import { FaceSelector } from "@ui/components/FaceSelector";
 import { GameOverPanel } from "@ui/components/GameOverPanel";
 import { TurnIndicator } from "@ui/components/TurnIndicator";
+import type { ApplyMoveResult } from "@ui/hooks/useGameSession";
+import { createLogger } from "@ui/lib/logger";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+const log = createLogger("ui");
 
 type MovePhase =
   | { readonly kind: "IDLE" }
@@ -52,10 +57,7 @@ function buildPreviewEdge(
 
 export interface GamePageProps {
   readonly session: GameSession;
-  readonly applyMove: (move: Move) => {
-    readonly success: boolean;
-    readonly flipped: ReadonlySet<string>;
-  };
+  readonly applyMove: (move: Move) => ApplyMoveResult;
   readonly onReset: () => void;
   readonly onUndo: () => void;
   readonly canUndo: boolean;
@@ -89,6 +91,7 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
     if (session.isTerminal) return;
     if (!hasLegalMoves(session) && !isAnimating) {
       const player = session.state.currentPlayer;
+      log.debug("auto-pass", player);
       setNotice(`${player} has no legal moves — passing`);
       const timer = setTimeout(() => {
         applyMove({ type: "PASS" });
@@ -134,19 +137,34 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
 
   const handleIntersectionClick = useCallback(
     (position: Position) => {
-      if (session.isTerminal || isAnimating) return;
+      log.debug("intersection click", position);
+      if (session.isTerminal || isAnimating) {
+        log.debug("intersection ignored", { isTerminal: session.isTerminal, isAnimating });
+        return;
+      }
       if (movePhase.kind === "SELECTING_SECOND_COIN") {
+        log.debug("intersection cancels pending join");
         setMovePhase({ kind: "IDLE" });
         return;
       }
-      if (movePhase.kind !== "IDLE") return;
+      if (movePhase.kind !== "IDLE") {
+        log.debug("intersection ignored — busy phase", movePhase.kind);
+        return;
+      }
 
       const key = positionKey(position);
-      if (session.state.coins.has(key)) return;
+      if (session.state.coins.has(key)) {
+        log.debug("intersection ignored — occupied", position);
+        return;
+      }
+      if (positionBlockedByEdge(position, session.state.edges)) {
+        log.debug("intersection ignored — blocked by edge", position);
+        return;
+      }
 
       setMovePhase({ kind: "SELECTING_FACE", position });
     },
-    [session.isTerminal, isAnimating, movePhase.kind, session.state.coins],
+    [session.isTerminal, isAnimating, movePhase.kind, session.state.coins, session.state.edges],
   );
 
   const handleJoinAttempt = useCallback(
@@ -163,6 +181,7 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
         a: movePhase.first,
         b: position,
       };
+      log.debug("join attempt", { from: movePhase.first, to: position });
       const result = applyMove(move);
       if (result.success) {
         setMovePhase({ kind: "IDLE" });
@@ -175,6 +194,7 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
           }, 500);
         }
       } else {
+        log.warn("join rejected", { from: movePhase.first, to: position }, result.error);
         setIllegalMoveCoin(position);
       }
     },
@@ -183,14 +203,21 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
 
   const handleCoinClick = useCallback(
     (position: Position) => {
-      if (session.isTerminal || isAnimating) return;
+      log.debug("coin click", position);
+      if (session.isTerminal || isAnimating) {
+        log.debug("coin ignored", { isTerminal: session.isTerminal, isAnimating });
+        return;
+      }
 
       if (movePhase.kind === "SELECTING_SECOND_COIN") {
         handleJoinAttempt(position);
         return;
       }
 
-      if (movePhase.kind !== "IDLE") return;
+      if (movePhase.kind !== "IDLE") {
+        log.debug("coin ignored — busy phase", movePhase.kind);
+        return;
+      }
 
       setMovePhase({ kind: "SELECTING_SECOND_COIN", first: position });
     },
@@ -206,8 +233,11 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
         position: movePhase.position,
         face,
       };
+      log.debug("place", { position: movePhase.position, face });
       const result = applyMove(move);
-      if (result.success && result.flipped.size > 0) {
+      if (!result.success) {
+        log.warn("place rejected", { position: movePhase.position, face }, result.error);
+      } else if (result.flipped.size > 0) {
         setFlippingCoins(result.flipped);
         setIsAnimating(true);
         setTimeout(() => {

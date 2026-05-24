@@ -1,6 +1,9 @@
 import { canUndo as canUndoFn, computeFinalScore, createSession, reset, step, undo } from "@core";
 import type { GameSession, Move } from "@core";
+import { createLogger } from "@ui/lib/logger";
 import { useCallback, useState } from "react";
+
+const log = createLogger("session");
 
 function findFlippedCoins(previous: GameSession, current: GameSession): ReadonlySet<string> {
   const flipped = new Set<string>();
@@ -16,6 +19,7 @@ function findFlippedCoins(previous: GameSession, current: GameSession): Readonly
 export interface ApplyMoveResult {
   readonly success: boolean;
   readonly flipped: ReadonlySet<string>;
+  readonly error?: string;
 }
 
 export interface UseGameSessionOptions {
@@ -32,21 +36,35 @@ export function useGameSession(options?: UseGameSessionOptions) {
       const result = step(session, move);
       if (result.kind === "ok") {
         const flipped = findFlippedCoins(session, result.session);
+        log.debug("move applied", move, { flipped: [...flipped] });
         setSession(result.session);
         return { success: true, flipped };
       }
-      return { success: false, flipped: new Set<string>() as ReadonlySet<string> };
+      log.warn("move rejected", move, result.error);
+      return {
+        success: false,
+        flipped: new Set<string>() as ReadonlySet<string>,
+        error: result.error,
+      };
     },
     [session],
   );
 
   const handleReset = useCallback(() => {
+    log.debug("reset");
     setSession(reset());
   }, []);
 
   const handleUndo = useCallback(() => {
-    if (canUndoFn(session)) {
+    if (!canUndoFn(session)) {
+      log.debug("undo ignored — nothing to undo");
+      return;
+    }
+    try {
+      log.debug("undo");
       setSession(undo(session));
+    } catch (err) {
+      log.error("undo failed", err);
     }
   }, [session]);
 
