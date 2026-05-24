@@ -2,11 +2,25 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
+import { useGameSession } from "../../src/ui/hooks/useGameSession";
 import { GamePage } from "../../src/ui/pages/GamePage";
+
+function GamePageWrapper() {
+  const { session, applyMove, reset, undo, canUndo } = useGameSession();
+  return (
+    <GamePage
+      session={session}
+      applyMove={applyMove}
+      onReset={reset}
+      onUndo={undo}
+      canUndo={canUndo}
+    />
+  );
+}
 
 describe("Visual Regression — Face Selector Open", () => {
   it("renders the face selector with themed styling", async () => {
-    render(<GamePage />);
+    render(<GamePageWrapper />);
 
     const grid = screen.getByTestId("grid-view");
     const dots = grid.querySelectorAll("circle");

@@ -1,35 +1,22 @@
 import {
   canJoin,
   computeFinalScore,
-  createSession,
   hasLegalMoves,
   legalJoins,
   legalPlacements,
   positionKey,
-  step,
 } from "@core";
 import type { CoinFace, GameSession, Move, Position } from "@core";
 import { BoardView } from "@ui/components/BoardView";
 import { FaceSelector } from "@ui/components/FaceSelector";
 import { GameOverPanel } from "@ui/components/GameOverPanel";
 import { TurnIndicator } from "@ui/components/TurnIndicator";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type MovePhase =
   | { readonly kind: "IDLE" }
   | { readonly kind: "SELECTING_FACE"; readonly position: Position }
   | { readonly kind: "SELECTING_SECOND_COIN"; readonly first: Position };
-
-function findFlippedCoins(previous: GameSession, current: GameSession): ReadonlySet<string> {
-  const flipped = new Set<string>();
-  for (const [key, prevCoin] of previous.state.coins) {
-    const newCoin = current.state.coins.get(key);
-    if (newCoin && newCoin.face !== prevCoin.face) {
-      flipped.add(key);
-    }
-  }
-  return flipped;
-}
 
 function buildHighlightedCoins(
   state: GameSession["state"],
@@ -63,39 +50,39 @@ function buildPreviewEdge(
   return null;
 }
 
-export function GamePage({
-  initialSession,
-}: {
-  readonly initialSession?: GameSession;
-}) {
-  const [session, setSession] = useState<GameSession>(() => initialSession ?? createSession());
+export interface GamePageProps {
+  readonly session: GameSession;
+  readonly applyMove: (move: Move) => {
+    readonly success: boolean;
+    readonly flipped: ReadonlySet<string>;
+  };
+  readonly onReset: () => void;
+  readonly onUndo: () => void;
+  readonly canUndo: boolean;
+}
+
+export function GamePage({ session, applyMove, onReset }: GamePageProps) {
   const [movePhase, setMovePhase] = useState<MovePhase>({ kind: "IDLE" });
   const [illegalMoveCoin, setIllegalMoveCoin] = useState<Position | null>(null);
   const [hoveredPosition, setHoveredPosition] = useState<Position | null>(null);
   const [flippingCoins, setFlippingCoins] = useState<ReadonlySet<string>>(new Set());
   const [isAnimating, setIsAnimating] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const prevHistoryLength = useRef(session.history.length);
 
-  const applyMove = useCallback(
-    (move: Move) => {
-      const result = step(session, move);
-      if (result.kind === "ok") {
-        const flipped = findFlippedCoins(session, result.session);
-        setSession(result.session);
-        if (flipped.size > 0) {
-          setFlippingCoins(flipped);
-          setIsAnimating(true);
-          setTimeout(() => {
-            setFlippingCoins(new Set());
-            setIsAnimating(false);
-          }, 500);
-        }
-        return true;
-      }
-      return false;
-    },
-    [session],
-  );
+  // Reset UI state when session rewinds (undo or reset)
+  useEffect(() => {
+    const current = session.history.length;
+    const previous = prevHistoryLength.current;
+    if (current < previous) {
+      setMovePhase({ kind: "IDLE" });
+      setIllegalMoveCoin(null);
+      setFlippingCoins(new Set());
+      setIsAnimating(false);
+      setNotice(null);
+    }
+    prevHistoryLength.current = current;
+  }, [session.history.length]);
 
   // Auto-pass effect
   useEffect(() => {
@@ -132,14 +119,14 @@ export function GamePage({
   }, [illegalMoveCoin]);
 
   const handleNewGame = useCallback(() => {
-    setSession(createSession());
+    onReset();
     setMovePhase({ kind: "IDLE" });
     setIllegalMoveCoin(null);
     setHoveredPosition(null);
     setFlippingCoins(new Set());
     setIsAnimating(false);
     setNotice(null);
-  }, []);
+  }, [onReset]);
 
   const handleIntersectionHover = useCallback((position: Position | null) => {
     setHoveredPosition(position);
@@ -162,26 +149,44 @@ export function GamePage({
     [session.isTerminal, isAnimating, movePhase.kind, session.state.coins],
   );
 
+  const handleJoinAttempt = useCallback(
+    (position: Position) => {
+      if (movePhase.kind !== "SELECTING_SECOND_COIN") return;
+
+      if (movePhase.first.row === position.row && movePhase.first.col === position.col) {
+        setMovePhase({ kind: "IDLE" });
+        return;
+      }
+
+      const move: Move = {
+        type: "JOIN",
+        a: movePhase.first,
+        b: position,
+      };
+      const result = applyMove(move);
+      if (result.success) {
+        setMovePhase({ kind: "IDLE" });
+        if (result.flipped.size > 0) {
+          setFlippingCoins(result.flipped);
+          setIsAnimating(true);
+          setTimeout(() => {
+            setFlippingCoins(new Set());
+            setIsAnimating(false);
+          }, 500);
+        }
+      } else {
+        setIllegalMoveCoin(position);
+      }
+    },
+    [movePhase, applyMove],
+  );
+
   const handleCoinClick = useCallback(
     (position: Position) => {
       if (session.isTerminal || isAnimating) return;
-      if (movePhase.kind === "SELECTING_SECOND_COIN") {
-        if (movePhase.first.row === position.row && movePhase.first.col === position.col) {
-          setMovePhase({ kind: "IDLE" });
-          return;
-        }
 
-        const move: Move = {
-          type: "JOIN",
-          a: movePhase.first,
-          b: position,
-        };
-        const ok = applyMove(move);
-        if (ok) {
-          setMovePhase({ kind: "IDLE" });
-        } else {
-          setIllegalMoveCoin(position);
-        }
+      if (movePhase.kind === "SELECTING_SECOND_COIN") {
+        handleJoinAttempt(position);
         return;
       }
 
@@ -189,7 +194,7 @@ export function GamePage({
 
       setMovePhase({ kind: "SELECTING_SECOND_COIN", first: position });
     },
-    [session.isTerminal, isAnimating, movePhase, applyMove],
+    [session.isTerminal, isAnimating, movePhase.kind, handleJoinAttempt],
   );
 
   const handleFaceSelect = useCallback(
@@ -201,7 +206,15 @@ export function GamePage({
         position: movePhase.position,
         face,
       };
-      applyMove(move);
+      const result = applyMove(move);
+      if (result.success && result.flipped.size > 0) {
+        setFlippingCoins(result.flipped);
+        setIsAnimating(true);
+        setTimeout(() => {
+          setFlippingCoins(new Set());
+          setIsAnimating(false);
+        }, 500);
+      }
       setMovePhase({ kind: "IDLE" });
     },
     [session.isTerminal, isAnimating, movePhase, applyMove],

@@ -100,21 +100,21 @@
 
 ### Tests for User Story 3
 
-- [ ] T024 [P] [US3] Add undo test in `src/core/__tests__/session.test.ts`: place a coin, undo, verify board is empty
-- [ ] T025 [P] [US3] Add undo-after-join test: join two coins, undo, verify edge removed and coins restored
-- [ ] T026 [P] [US3] Add undo-cycle-closure test: close a cycle, undo, verify flipped coins restored
-- [ ] T027 [P] [US3] Add reset test: place coins, reset, verify empty board and disabled undo
-- [ ] T027a [P] [US3] Add property-based test in `src/core/__tests__/invariants.test.ts` using `fast-check`: for any session with moves, `undo(session)` returns a new object reference and does not mutate the input session (Constitution Principle VI: Immutability by Default)
+- [X] T024 [P] [US3] Add undo test in `src/core/__tests__/session.test.ts`: place a coin, undo, verify board is empty
+- [X] T025 [P] [US3] Add undo-after-join test: join two coins, undo, verify edge removed and coins restored
+- [X] T026 [P] [US3] Add undo-cycle-closure test: close a cycle, undo, verify flipped coins restored
+- [X] T027 [P] [US3] Add reset test: place coins, reset, verify empty board and disabled undo
+- [X] T027a [P] [US3] Add property-based test in `src/core/__tests__/invariants.test.ts` using `fast-check`: for any session with moves, `undo(session)` returns a new object reference and does not mutate the input session (Constitution Principle VI: Immutability by Default)
 
 ### Implementation for User Story 3
 
-- [ ] T028 [P] [US3] Add move history array to `src/core/session.ts` and update `createSession` to track moves
-- [ ] T029 [P] [US3] Implement `undo(session)` in `src/core/session.ts` that replays all moves except the last one
-- [ ] T030 [P] [US3] Implement `reset()` in `src/core/session.ts` that returns a fresh initial session
-- [ ] T031 [P] [US3] Export `canUndo(session)` helper from `src/core/session.ts` (true when history is non-empty)
-- [ ] T032 [P] [US3] Create `src/ui/components/ResetButton.tsx` with `variant="reset"` (hot-pink/magenta, circular-arrow icon)
-- [ ] T033 [P] [US3] Create `src/ui/components/UndoButton.tsx` with `variant="undo"` (teal/orchid, back-arrow icon)
-- [ ] T034 [US3] Integrate Reset and Undo buttons into `src/ui/components/MenuBar.tsx` with `onClick` handlers calling engine
+- [X] T028 [P] [US3] Add move history array to `src/core/session.ts` and update `createSession` to track moves
+- [X] T029 [P] [US3] Implement `undo(session)` in `src/core/session.ts` that replays all moves except the last one
+- [X] T030 [P] [US3] Implement `reset()` in `src/core/session.ts` that returns a fresh initial session
+- [X] T031 [P] [US3] Export `canUndo(session)` helper from `src/core/session.ts` (true when history is non-empty)
+- [X] T032 [P] [US3] Create `src/ui/components/ResetButton.tsx` with `variant="reset"` (hot-pink/magenta, circular-arrow icon)
+- [X] T033 [P] [US3] Create `src/ui/components/UndoButton.tsx` with `variant="undo"` (teal/orchid, back-arrow icon)
+- [X] T034 [US3] Integrate Reset and Undo buttons into `src/ui/components/MenuBar.tsx` with `onClick` handlers calling engine
 
 **Checkpoint**: At this point, Reset and Undo should be fully functional, visually distinct, and correctly disabled/enabled
 

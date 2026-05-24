@@ -19,10 +19,13 @@ export {
 } from "./state";
 export { applyMove, coinsInsideCycle, findCycle, isValidState } from "./move";
 export {
+  canUndo,
   computeFinalScore,
   createSession,
   getTurnPrompt,
   hasLegalMoves,
+  reset,
   step,
+  undo,
 } from "./session";
 export type { FinalScore, GameSession, StepResult } from "./session";

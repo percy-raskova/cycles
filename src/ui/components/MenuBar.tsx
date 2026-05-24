@@ -1,9 +1,15 @@
+import { ResetButton } from "./ResetButton";
+import { UndoButton } from "./UndoButton";
+
 interface MenuBarProps {
   readonly onOpenHelp: () => void;
   readonly onOpenSettings: () => void;
+  readonly onReset: () => void;
+  readonly onUndo: () => void;
+  readonly canUndo: boolean;
 }
 
-export function MenuBar({ onOpenHelp, onOpenSettings }: MenuBarProps) {
+export function MenuBar({ onOpenHelp, onOpenSettings, onReset, onUndo, canUndo }: MenuBarProps) {
   return (
     <div className="menu-bar" role="banner">
       <div className="menu-bar-left">
@@ -19,6 +25,8 @@ export function MenuBar({ onOpenHelp, onOpenSettings }: MenuBarProps) {
         </a>
       </div>
       <div className="menu-bar-right">
+        <ResetButton onClick={onReset} />
+        <UndoButton onClick={onUndo} disabled={!canUndo} />
         <button
           type="button"
           className="menu-btn"

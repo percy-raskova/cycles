@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { computeFinalScore, createSession, getTurnPrompt, hasLegalMoves, step } from "../session";
+import {
+  canUndo,
+  computeFinalScore,
+  createSession,
+  getTurnPrompt,
+  hasLegalMoves,
+  reset,
+  step,
+  undo,
+} from "../session";
 import type { GameSession } from "../session";
 import { joinCoins, legalJoins, placeCoin } from "../state";
 import type { GameState, Move } from "../types";
@@ -309,5 +318,134 @@ describe("session fast-check properties", () => {
       }),
       { numRuns: 200 },
     );
+  });
+});
+
+describe("undo", () => {
+  it("returns empty board after undoing a single PLACE", () => {
+    const session = createSession({ firstPlayer: "HEADS" });
+    const placed = step(session, { type: "PLACE", position: { row: 0, col: 0 }, face: "heads" });
+    expect(placed.kind).toBe("ok");
+    if (placed.kind !== "ok") return;
+
+    const undone = undo(placed.session);
+    expect(undone.state.coins.size).toBe(0);
+    expect(undone.state.edges).toHaveLength(0);
+    expect(undone.history).toHaveLength(0);
+    expect(canUndo(undone)).toBe(false);
+  });
+
+  it("restores board after undoing a JOIN", () => {
+    let session = createSession({ firstPlayer: "HEADS" });
+
+    // Place two coins
+    const r1 = step(session, { type: "PLACE", position: { row: 0, col: 0 }, face: "heads" });
+    expect(r1.kind).toBe("ok");
+    if (r1.kind !== "ok") return;
+    session = r1.session;
+
+    const r2 = step(session, { type: "PLACE", position: { row: 0, col: 2 }, face: "tails" });
+    expect(r2.kind).toBe("ok");
+    if (r2.kind !== "ok") return;
+    session = r2.session;
+
+    // Join them
+    const r3 = step(session, { type: "JOIN", a: { row: 0, col: 0 }, b: { row: 0, col: 2 } });
+    expect(r3.kind).toBe("ok");
+    if (r3.kind !== "ok") return;
+    session = r3.session;
+
+    expect(session.state.edges).toHaveLength(1);
+
+    // Undo the join
+    const undone = undo(session);
+    expect(undone.state.edges).toHaveLength(0);
+    expect(undone.state.coins.size).toBe(2);
+    expect(canUndo(undone)).toBe(true);
+  });
+
+  it("restores flipped coins after undoing a cycle-closing JOIN", () => {
+    let session = createSession({ firstPlayer: "HEADS" });
+
+    // Place coins in a square pattern
+    const positions = [
+      { row: 0, col: 0, face: "heads" as const },
+      { row: 0, col: 2, face: "heads" as const },
+      { row: 2, col: 2, face: "tails" as const },
+      { row: 2, col: 0, face: "tails" as const },
+    ];
+
+    for (const { row, col, face } of positions) {
+      const result = step(session, { type: "PLACE", position: { row, col }, face });
+      expect(result.kind).toBe("ok");
+      if (result.kind !== "ok") return;
+      session = result.session;
+    }
+
+    // Join three edges of the square
+    const edges = [
+      { a: { row: 0, col: 0 }, b: { row: 0, col: 2 } },
+      { a: { row: 0, col: 2 }, b: { row: 2, col: 2 } },
+      { a: { row: 2, col: 2 }, b: { row: 2, col: 0 } },
+    ];
+
+    for (const { a, b } of edges) {
+      const result = step(session, { type: "JOIN", a, b });
+      expect(result.kind).toBe("ok");
+      if (result.kind !== "ok") return;
+      session = result.session;
+    }
+
+    // Record state after 3 joins (before closing cycle)
+    const facesAfter3Joins = {
+      "0,0": session.state.coins.get("0,0")?.face,
+      "0,2": session.state.coins.get("0,2")?.face,
+      "2,2": session.state.coins.get("2,2")?.face,
+      "2,0": session.state.coins.get("2,0")?.face,
+    };
+
+    // Close the cycle with the fourth edge
+    const closeResult = step(session, {
+      type: "JOIN",
+      a: { row: 2, col: 0 },
+      b: { row: 0, col: 0 },
+    });
+    expect(closeResult.kind).toBe("ok");
+    if (closeResult.kind !== "ok") return;
+    session = closeResult.session;
+
+    // After closing the cycle, only the two endpoint coins flip (no interior coins in this 2x2 square).
+    // The other two boundary vertices (0,2) and (2,2) do NOT flip on cycle closure.
+    const beforeUndo = session.state.coins;
+    expect(beforeUndo.get("0,0")?.face).toBe("heads");
+    expect(beforeUndo.get("2,0")?.face).toBe("tails");
+
+    // Undo the cycle-closing join — replay up to 3 edges, restoring pre-close state
+    const undone = undo(session);
+    const afterUndo = undone.state.coins;
+    expect(afterUndo.get("0,0")?.face).toBe(facesAfter3Joins["0,0"]);
+    expect(afterUndo.get("0,2")?.face).toBe(facesAfter3Joins["0,2"]);
+    expect(afterUndo.get("2,2")?.face).toBe(facesAfter3Joins["2,2"]);
+    expect(afterUndo.get("2,0")?.face).toBe(facesAfter3Joins["2,0"]);
+    expect(undone.state.edges).toHaveLength(3);
+  });
+});
+
+describe("reset", () => {
+  it("returns empty board and disables undo after reset", () => {
+    let session = createSession({ firstPlayer: "HEADS" });
+    const result = step(session, { type: "PLACE", position: { row: 0, col: 0 }, face: "heads" });
+    expect(result.kind).toBe("ok");
+    if (result.kind !== "ok") return;
+    session = result.session;
+
+    expect(session.state.coins.size).toBe(1);
+    expect(canUndo(session)).toBe(true);
+
+    const fresh = reset();
+    expect(fresh.state.coins.size).toBe(0);
+    expect(fresh.state.edges).toHaveLength(0);
+    expect(fresh.history).toHaveLength(0);
+    expect(canUndo(fresh)).toBe(false);
   });
 });

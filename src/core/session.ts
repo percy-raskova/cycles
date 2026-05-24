@@ -57,6 +57,44 @@ export function computeFinalScore(session: GameSession): FinalScore {
   return { heads, tails, winner };
 }
 
+export function canUndo(session: GameSession): boolean {
+  return session.history.length > 0;
+}
+
+function oppositePlayer(player: Player): Player {
+  return player === "HEADS" ? "TAILS" : "HEADS";
+}
+
+function inferFirstPlayer(session: GameSession): Player {
+  return session.history.length % 2 === 0
+    ? session.state.currentPlayer
+    : oppositePlayer(session.state.currentPlayer);
+}
+
+export function undo(session: GameSession): GameSession {
+  if (session.history.length === 0) {
+    return session;
+  }
+
+  const firstPlayer = inferFirstPlayer(session);
+  const movesToReplay = session.history.slice(0, -1);
+
+  let newSession = createSession({ firstPlayer });
+  for (const move of movesToReplay) {
+    const result = step(newSession, move);
+    if (result.kind === "error") {
+      throw new Error(`Undo replay failed: ${result.error}`);
+    }
+    newSession = result.session;
+  }
+
+  return newSession;
+}
+
+export function reset(): GameSession {
+  return createSession();
+}
+
 export function step(session: GameSession, move: Move): StepResult {
   if (session.isTerminal) {
     return { kind: "error", error: "Game is already over" };
