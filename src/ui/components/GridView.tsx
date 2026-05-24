@@ -54,6 +54,7 @@ function GridDot({
       tabIndex={onIntersectionClick ? 0 : undefined}
       onMouseEnter={onIntersectionHover ? () => onIntersectionHover(pos) : undefined}
       onMouseLeave={onIntersectionHover ? () => onIntersectionHover(null) : undefined}
+      aria-label={`Empty intersection at row ${row + 1}, column ${col + 1}`}
     />
   );
 }

@@ -1,0 +1,88 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: var(--border-raised);
+  border-color: rgba(255, 255, 255, 0.2) rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5)
+    rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-raised);
+  cursor: pointer;
+  user-select: none;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--color-surface-raised);
+}
+
+.button:active:not(:disabled) {
+  border-color: rgba(0, 0, 0, 0.5) rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.2)
+    rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-sunken);
+}
+
+.button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Primary variant */
+.button--primary {
+  background: var(--color-fuchsia);
+  color: var(--color-bg);
+}
+
+.button--primary:hover:not(:disabled) {
+  background: #ff33ff;
+}
+
+/* Close variant (title bar) */
+.button--close {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  font-size: 12px;
+  line-height: 20px;
+  background: var(--color-surface);
+}
+
+.button--close:hover:not(:disabled) {
+  background: var(--color-hot-pink);
+  color: var(--color-bg);
+}
+
+/* Reset variant */
+.button--reset {
+  background: var(--color-hot-pink);
+  color: var(--color-bg);
+}
+
+.button--reset:hover:not(:disabled) {
+  background: #ff85c1;
+}
+
+/* Undo variant */
+.button--undo {
+  background: var(--color-teal);
+  color: var(--color-bg);
+}
+
+.button--undo:hover:not(:disabled) {
+  background: var(--color-teal-light);
+}
+
+/* Disabled state */
+.button:disabled,
+.button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.05) rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.3)
+    rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+}

@@ -20,7 +20,12 @@ export function GameOverPanel({ score, onNewGame }: GameOverPanelProps) {
       <div data-testid="game-over-winner" className="game-over-winner">
         {score.winner === "draw" ? "It's a draw!" : `${score.winner} wins!`}
       </div>
-      <button data-testid="game-over-new-game" type="button" onClick={onNewGame}>
+      <button
+        data-testid="game-over-new-game"
+        type="button"
+        aria-label="Start new game"
+        onClick={onNewGame}
+      >
         New Game
       </button>
     </div>

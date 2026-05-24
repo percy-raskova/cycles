@@ -39,6 +39,7 @@ export function FaceSelector({ position, onSelect, onCancel }: FaceSelectorProps
           data-testid="face-selector-heads"
           type="button"
           className="face-selector-heads"
+          aria-label="Choose Heads"
           onClick={() => onSelect("heads")}
         >
           H
@@ -47,6 +48,7 @@ export function FaceSelector({ position, onSelect, onCancel }: FaceSelectorProps
           data-testid="face-selector-tails"
           type="button"
           className="face-selector-tails"
+          aria-label="Choose Tails"
           onClick={() => onSelect("tails")}
         >
           T

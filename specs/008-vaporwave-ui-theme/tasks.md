@@ -38,11 +38,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Create `src/ui/theme.css` with CSS custom properties for the 12-token vaporwave palette
-- [ ] T007 [P] Create `src/ui/components/Button.tsx` with Win95 beveled styling and variants (`default`, `primary`, `close`, `reset`, `undo`)
-- [ ] T008 [P] Import `theme.css` and set base styles (background, font-family, color) in `src/ui/App.css`
-- [ ] T009 [P] Add `aria-label` attributes to existing interactive elements: `MenuBar` buttons (`?` → "Open Help", `⚙` → "Open Settings"), `BoardView` intersection dots (`aria-label="Empty intersection at row {r}, column {c}"`), `FaceSelector` buttons ("Choose Heads", "Choose Tails"), `GameOverPanel` "New Game" button, and any modal open triggers.
-- [ ] T009a [P] Add `color-scheme: dark` to `src/ui/theme.css` and an explicit `@media (prefers-color-scheme: light)` override that forces dark palette, preventing OS light mode from flashing unstyled light content.
+- [X] T006 Create `src/ui/theme.css` with CSS custom properties for the 12-token vaporwave palette
+- [X] T007 [P] Create `src/ui/components/Button.tsx` with Win95 beveled styling and variants (`default`, `primary`, `close`, `reset`, `undo`)
+- [X] T008 [P] Import `theme.css` and set base styles (background, font-family, color) in `src/ui/App.css`
+- [X] T009 [P] Add `aria-label` attributes to existing interactive elements: `MenuBar` buttons (`?` → "Open Help", `⚙` → "Open Settings"), `BoardView` intersection dots (`aria-label="Empty intersection at row {r}, column {c}"`), `FaceSelector` buttons ("Choose Heads", "Choose Tails"), `GameOverPanel` "New Game" button, and any modal open triggers.
+- [X] T009a [P] Add `color-scheme: dark` to `src/ui/theme.css` and an explicit `@media (prefers-color-scheme: light)` override that forces dark palette, preventing OS light mode from flashing unstyled light content.
 
 **Checkpoint**: Foundation ready — theme variables exist, Button component is usable, base styles are set, dark mode is locked
 

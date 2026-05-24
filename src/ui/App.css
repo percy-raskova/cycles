@@ -1,8 +1,20 @@
+@import "./theme.css";
+
 .app {
-  font-family: system-ui, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
+  min-height: 100vh;
+}
+
+.app h1,
+.app h2,
+.app h3,
+.app h4 {
+  font-family: var(--font-display), monospace;
 }
 
 .app h1 {
