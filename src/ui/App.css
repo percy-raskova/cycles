@@ -298,3 +298,247 @@
 .game-over-panel button:hover {
   background: #7a28a3;
 }
+
+/* --- Menu Bar --- */
+
+.menu-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border: 2px solid #c8a2c8;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.menu-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4a0e4a;
+  letter-spacing: 0.05em;
+}
+
+.menu-bar-right {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.menu-btn {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #c8a2c8;
+  border-radius: 50%;
+  background: #fff;
+  color: #4a0e4a;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-btn:hover {
+  border-color: #9932cc;
+  background: #f5e6f5;
+}
+
+/* --- Modal --- */
+
+.modal-dialog {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: 100vw;
+  max-height: 100vh;
+  margin: auto;
+}
+
+.modal-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: #fff;
+  border: 3px solid #9932cc;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.modal-tabs {
+  display: flex;
+  border-bottom: 2px solid #c8a2c8;
+  flex-shrink: 0;
+}
+
+.modal-tab {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: #fafafa;
+  color: #4a0e4a;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 150ms ease;
+  border-right: 1px solid #c8a2c8;
+}
+
+.modal-tab:last-of-type {
+  border-right: none;
+}
+
+.modal-tab.active {
+  background: #fff;
+  font-weight: bold;
+  border-bottom: 2px solid #9932cc;
+  margin-bottom: -2px;
+}
+
+.modal-tab:hover {
+  background: #f5e6f5;
+}
+
+.modal-close {
+  width: 44px;
+  border: none;
+  background: #fafafa;
+  color: #4a0e4a;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background 150ms ease;
+  border-left: 1px solid #c8a2c8;
+}
+
+.modal-close:hover {
+  background: #ffe6e6;
+  color: #c00;
+}
+
+.modal-body {
+  overflow-y: auto;
+  padding: 1.25rem;
+  flex: 1;
+}
+
+/* --- Modal Panels --- */
+
+.modal-panel h3 {
+  margin: 0 0 1rem 0;
+  color: #4a0e4a;
+  font-size: 1.2rem;
+  border-bottom: 2px solid #c8a2c8;
+  padding-bottom: 0.5rem;
+}
+
+.modal-panel h4 {
+  margin: 1.25rem 0 0.5rem 0;
+  color: #9932cc;
+  font-size: 1rem;
+}
+
+.modal-panel h5 {
+  margin: 1rem 0 0.25rem 0;
+  color: #4a0e4a;
+  font-size: 0.95rem;
+}
+
+.modal-panel p {
+  margin: 0.5rem 0;
+  line-height: 1.5;
+  color: #333;
+}
+
+.modal-panel ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+  color: #333;
+}
+
+.modal-panel li {
+  margin: 0.25rem 0;
+}
+
+.rule-block {
+  background: #fafafa;
+  border: 1px solid #c8a2c8;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.controls-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+}
+
+.controls-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+.controls-table td:first-child {
+  white-space: nowrap;
+  color: #4a0e4a;
+  font-weight: 500;
+  width: 40%;
+}
+
+.heads-text {
+  color: #ff1493;
+  font-weight: bold;
+}
+
+.tails-text {
+  color: #00bfff;
+  font-weight: bold;
+}
+
+.about-content {
+  line-height: 1.6;
+}
+
+.about-shout {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #9932cc;
+  text-align: center;
+  margin: 1rem 0;
+  letter-spacing: 0.03em;
+}
+
+.setting-row {
+  margin: 0.75rem 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.setting-row label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.setting-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #9932cc;
+}
+
+.settings-note {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+  margin-top: 1rem;
+}

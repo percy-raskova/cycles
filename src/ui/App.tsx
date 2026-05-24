@@ -1,12 +1,21 @@
+import { MenuBar } from "@ui/components/MenuBar";
+import { Modal } from "@ui/components/Modal";
 import { GamePage } from "@ui/pages/GamePage";
-// To use the read-only dev page from Sprint 4, uncomment the next line and replace <GamePage /> with <DevPage />
-// import { DevPage } from "@ui/pages/DevPage";
+import { useState } from "react";
 
 function App() {
+  const [modal, setModal] = useState<null | { panel: "help" | "controls" | "about" | "settings" }>(
+    null,
+  );
+
   return (
     <div className="app">
-      <h1>CYCLES</h1>
+      <MenuBar
+        onOpenHelp={() => setModal({ panel: "help" })}
+        onOpenSettings={() => setModal({ panel: "settings" })}
+      />
       <GamePage />
+      {modal && <Modal initialPanel={modal.panel} onClose={() => setModal(null)} />}
     </div>
   );
 }

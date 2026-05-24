@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Current plan: [specs/006-integration-tests/plan.md](specs/006-integration-tests/plan.md)
+Current plan: [specs/007-e2e-edge-testing/plan.md](specs/007-e2e-edge-testing/plan.md)
 <!-- SPECKIT END -->
 
 ## Repo purpose
