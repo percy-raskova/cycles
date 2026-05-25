@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { positionToSvg } from "@ui/lib/coordinates";
 import { describe, expect, it, vi } from "vitest";
 import { FaceSelector } from "../FaceSelector";
 
@@ -15,6 +16,19 @@ describe("FaceSelector", () => {
     expect(screen.getByTestId("face-selector-heads")).toBeDefined();
     expect(screen.getByTestId("face-selector-tails")).toBeDefined();
     expect(screen.getByTestId("face-selector-backdrop")).toBeDefined();
+  });
+
+  it("positions the panel relative to the intersection's SVG coordinates", () => {
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+    const position = { row: 2, col: 3 };
+    const { x, y } = positionToSvg(position);
+
+    render(<FaceSelector position={position} onSelect={onSelect} onCancel={onCancel} />);
+
+    const panel = screen.getByTestId("face-selector-2-3") as HTMLElement;
+    expect(panel.style.left).toBe(`${x - 45}px`);
+    expect(panel.style.top).toBe(`${y - 55}px`);
   });
 
   it("calls onSelect with heads when H button clicked", async () => {

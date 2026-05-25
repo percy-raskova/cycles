@@ -1,5 +1,5 @@
 import type { CoinFace, Position } from "@core/types";
-import { CELL_SIZE, MARGIN } from "@ui/lib/constants";
+import { positionToSvg } from "@ui/lib/coordinates";
 
 interface FaceSelectorProps {
   readonly position: Position;
@@ -8,8 +8,7 @@ interface FaceSelectorProps {
 }
 
 export function FaceSelector({ position, onSelect, onCancel }: FaceSelectorProps) {
-  const x = MARGIN + position.col * CELL_SIZE;
-  const y = MARGIN + position.row * CELL_SIZE;
+  const { x, y } = positionToSvg(position);
 
   return (
     <>
