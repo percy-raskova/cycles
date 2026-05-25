@@ -6,16 +6,8 @@ import { useGameSession } from "../../src/ui/hooks/useGameSession";
 import { GamePage } from "../../src/ui/pages/GamePage";
 
 function GamePageWrapper() {
-  const { session, applyMove, reset, undo, canUndo } = useGameSession();
-  return (
-    <GamePage
-      session={session}
-      applyMove={applyMove}
-      onReset={reset}
-      onUndo={undo}
-      canUndo={canUndo}
-    />
-  );
+  const { session, applyMove, reset } = useGameSession();
+  return <GamePage session={session} applyMove={applyMove} onReset={reset} />;
 }
 
 describe("Visual Regression — Face Selector Open", () => {

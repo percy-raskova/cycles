@@ -2,11 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 type Panel = "help" | "controls" | "about" | "settings";
 
-interface ModalProps {
-  readonly initialPanel: Panel;
-  readonly onClose: () => void;
-}
-
 function HelpPanel() {
   return (
     <div className="modal-panel">
@@ -17,7 +12,7 @@ function HelpPanel() {
 
       <h4>Components</h4>
       <ul>
-        <li>A 7×7 grid (49 intersections)</li>
+        <li>A 7&#215;7 grid (49 intersections)</li>
         <li>12 coins in a shared supply</li>
         <li>
           Two players: <span className="heads-text">HEADS</span> and{" "}
@@ -43,7 +38,7 @@ function HelpPanel() {
           edge. The edge must:
         </p>
         <ul>
-          <li>Run along a queen-line (same row, column, or 45° diagonal)</li>
+          <li>Run along a queen-line (same row, column, or 45&#176; diagonal)</li>
           <li>Not cross any existing edge</li>
           <li>Not pass through another coin</li>
         </ul>
@@ -116,19 +111,16 @@ function ControlsPanel() {
       <h4>Visual Cues</h4>
       <ul>
         <li>
-          <span style={{ color: "#90ee90" }}>Green dots</span> — legal placements
+          <span style={{ color: "var(--cyan)" }}>Cyan dot</span> — legal placements
         </li>
         <li>
-          <span style={{ color: "#ffd700" }}>Gold outline</span> — selected coin
+          <span style={{ color: "var(--neon-magenta)" }}>Magenta ring</span> — selected coin
         </li>
         <li>
-          <span style={{ color: "#9932cc" }}>Purple glow</span> — legal join targets
+          <span style={{ color: "var(--cyan)" }}>Cyan ring</span> — legal join targets
         </li>
         <li>
-          <span style={{ color: "#c00" }}>Red shake</span> — illegal move attempt
-        </li>
-        <li>
-          <span style={{ color: "#ffd700" }}>Dashed line</span> — join preview on hover
+          <span style={{ color: "var(--neon-magenta)" }}>Dashed line</span> — join preview on hover
         </li>
       </ul>
     </div>
@@ -160,8 +152,8 @@ function AboutPanel() {
         </p>
         <p style={{ marginTop: "1.5rem", fontSize: "0.9rem", opacity: 0.7 }}>
           Repository:{" "}
-          <a href="https://github.com/percy-raskova/cycles" target="_blank" rel="noreferrer">
-            github.com/percy-raskova/cycles
+          <a href="https://codeberg.org/percy-raskova/cycles" target="_blank" rel="noreferrer">
+            codeberg.org/percy-raskova/cycles
           </a>
           <br />
           Deployed on Cloudflare Pages because vibes belong at the edge.
@@ -187,7 +179,7 @@ function SettingsPanel() {
             checked={showHints}
             onChange={(e) => setShowHints(e.target.checked)}
           />
-          Show placement hints (green dots)
+          Show placement hints (cyan dots)
         </label>
       </div>
 
@@ -208,6 +200,11 @@ function SettingsPanel() {
       </p>
     </div>
   );
+}
+
+interface ModalProps {
+  readonly initialPanel: Panel;
+  readonly onClose: () => void;
 }
 
 export function Modal({ initialPanel, onClose }: ModalProps) {
@@ -260,17 +257,22 @@ export function Modal({ initialPanel, onClose }: ModalProps) {
       <div className="modal-content">
         {/* Win95 title bar */}
         <div className="modal-title-bar">
-          <span id="modal-title" className="modal-title-text">
-            {activeLabel}
-          </span>
-          <button
-            type="button"
-            className="modal-close"
-            onClick={onClose}
-            aria-label={`Close ${activeLabel} dialog`}
-          >
-            ×
-          </button>
+          <div className="title-bar-left">
+            <span className="title-icon">?</span>
+            <span id="modal-title" className="title-text">
+              {activeLabel}
+            </span>
+          </div>
+          <div className="title-buttons">
+            <button
+              type="button"
+              className="title-btn danger"
+              onClick={onClose}
+              aria-label={`Close ${activeLabel} dialog`}
+            >
+              &#215;
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}

@@ -13,7 +13,11 @@ export interface Logger {
  * also reachable in the preview/e2e build, which is otherwise production-mode.
  */
 export function isDebugEnabled(): boolean {
-  if (import.meta.env.DEV) return true;
+  try {
+    if (import.meta.env?.DEV) return true;
+  } catch {
+    /* import.meta.env may not be defined in all environments */
+  }
   if (
     typeof localStorage !== "undefined" &&
     typeof localStorage.getItem === "function" &&

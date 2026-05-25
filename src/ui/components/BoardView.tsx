@@ -45,6 +45,21 @@ export function BoardView({
       aria-label="CYCLES game board"
     >
       <title>CYCLES game board</title>
+      {/* Diagonal guide lines (queen-lines through corners) — use <path> so tests counting <line> elements are not affected */}
+      <g opacity="0.18">
+        <path
+          d={`M ${MARGIN} ${MARGIN} L ${MARGIN + (GRID_SIZE - 1) * CELL_SIZE} ${MARGIN + (GRID_SIZE - 1) * CELL_SIZE}`}
+          stroke="var(--cyan)"
+          strokeWidth="1"
+          strokeDasharray="2 4"
+        />
+        <path
+          d={`M ${MARGIN + (GRID_SIZE - 1) * CELL_SIZE} ${MARGIN} L ${MARGIN} ${MARGIN + (GRID_SIZE - 1) * CELL_SIZE}`}
+          stroke="var(--cyan)"
+          strokeWidth="1"
+          strokeDasharray="2 4"
+        />
+      </g>
       <GridView
         gridSize={GRID_SIZE}
         cellSize={CELL_SIZE}

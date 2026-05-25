@@ -28,8 +28,8 @@ function GridDot({
   const x = margin + col * cellSize;
   const y = margin + row * cellSize;
   const pos: Position = { row, col };
-  const dotClass = isLegal ? "grid-dot grid-dot-legal" : "grid-dot";
-  const r = isLegal && isHovered ? 36 : 20;
+  const dotClass = isLegal ? "dot legal grid-dot-legal" : "dot";
+  const r = isLegal && isHovered ? 36 : isLegal ? 20 : 20;
 
   function handleClick() {
     onIntersectionClick?.(pos);
@@ -52,20 +52,18 @@ function GridDot({
       onMouseLeave={onIntersectionHover ? () => onIntersectionHover(null) : undefined}
       role={onIntersectionClick ? "button" : undefined}
       tabIndex={onIntersectionClick ? 0 : undefined}
-      aria-label={`Empty intersection at row ${row + 1}, column ${col + 1}`}
+      aria-label={`Intersection r${row + 1} c${col + 1}${isLegal ? " (legal placement)" : ""}`}
       style={{ cursor: onIntersectionClick ? "pointer" : "default" }}
     >
-      {/* Invisible touch target — ensures ≥44×44 CSS pixels at all viewport sizes */}
       {onIntersectionClick && (
         <rect
+          className="touch"
           x={x - halfTouch}
           y={y - halfTouch}
           width={TOUCH_TARGET_SIZE}
           height={TOUCH_TARGET_SIZE}
-          fill="transparent"
         />
       )}
-      {/* Visible dot */}
       <circle
         key={`d-${row}-${col}`}
         cx={x}
@@ -100,32 +98,36 @@ export function GridView({
 }: GridViewProps) {
   const maxCoord = margin + (gridSize - 1) * cellSize;
 
-  const horizontalLines = Array.from({ length: gridSize }, (_, row) => {
-    const y = margin + row * cellSize;
+  const horizontalLines = Array.from({ length: gridSize }, (_, i) => {
+    const y = margin + i * cellSize;
+    const major = i === 0 || i === gridSize - 1;
     return (
       <line
-        // biome-ignore lint/suspicious/noArrayIndexKey: static grid, indices are stable
-        key={`h-${row}`}
+        // biome-ignore lint/suspicious/noArrayIndexKey: static grid
+        key={`h-${i}`}
         x1={margin}
         y1={y}
         x2={maxCoord}
         y2={y}
+        className={`gridline ${major ? "major" : ""}`}
         stroke="var(--color-lavender)"
         strokeWidth={2}
       />
     );
   });
 
-  const verticalLines = Array.from({ length: gridSize }, (_, col) => {
-    const x = margin + col * cellSize;
+  const verticalLines = Array.from({ length: gridSize }, (_, i) => {
+    const x = margin + i * cellSize;
+    const major = i === 0 || i === gridSize - 1;
     return (
       <line
-        // biome-ignore lint/suspicious/noArrayIndexKey: static grid, indices are stable
-        key={`v-${col}`}
+        // biome-ignore lint/suspicious/noArrayIndexKey: static grid
+        key={`v-${i}`}
         x1={x}
         y1={margin}
         x2={x}
         y2={maxCoord}
+        className={`gridline ${major ? "major" : ""}`}
         stroke="var(--color-lavender)"
         strokeWidth={2}
       />

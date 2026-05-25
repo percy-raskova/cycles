@@ -18,11 +18,22 @@ function buildClassName(
   isFlipping: boolean,
   isIllegal: boolean,
 ): string {
-  const parts: string[] = [];
-  if (isSelected) parts.push("coin-selected");
-  else if (isHighlighted) parts.push("coin-highlighted");
-  if (isFlipping) parts.push("coin-flipping");
-  if (isIllegal) parts.push("coin-illegal");
+  const parts: string[] = ["coin-group"];
+  if (isSelected) {
+    parts.push("selected");
+    parts.push("coin-selected");
+  } else if (isHighlighted) {
+    parts.push("target");
+    parts.push("coin-highlighted");
+  }
+  if (isFlipping) {
+    parts.push("flipping");
+    parts.push("coin-flipping");
+  }
+  if (isIllegal) {
+    parts.push("illegal");
+    parts.push("coin-illegal");
+  }
   return parts.join(" ");
 }
 
@@ -37,9 +48,7 @@ export function CoinView({
 }: CoinViewProps) {
   const { x, y } = positionToSvg(coin.position);
   const label = coin.face === "heads" ? "H" : "T";
-  const fill = coin.face === "heads" ? "var(--color-coin-heads)" : "var(--color-coin-tails)";
-  const stroke =
-    coin.face === "heads" ? "var(--color-coin-heads-stroke)" : "var(--color-coin-tails-stroke)";
+  const bodyClass = `coin-body ${coin.face}`;
   const className = buildClassName(isSelected, isHighlighted, isFlipping, isIllegal);
 
   function handleClick() {
@@ -65,7 +74,20 @@ export function CoinView({
       tabIndex={onClick ? 0 : undefined}
       style={{ cursor: onClick ? "pointer" : "default" }}
     >
-      <circle cx={x} cy={y} r={COIN_RADIUS} fill={fill} stroke={stroke} strokeWidth={2} />
+      <circle
+        cx={x}
+        cy={y}
+        r={COIN_RADIUS}
+        className={bodyClass}
+        fill={coin.face === "heads" ? "var(--color-coin-heads)" : "var(--color-coin-tails)"}
+        stroke={
+          coin.face === "heads"
+            ? "var(--color-coin-heads-stroke)"
+            : "var(--color-coin-tails-stroke)"
+        }
+        strokeWidth={2}
+      />
+      <ellipse cx={x - 6} cy={y - 8} rx="8" ry="4" className="coin-shine" />
       <text
         x={x}
         y={y}

@@ -39,19 +39,17 @@ describe("Session lifecycle", () => {
       expect(session.winner).toBeNull();
     });
 
-    it("uses seeded rng to pick first player deterministically", () => {
-      const alwaysHeads = () => 0.1;
-      const session = createSession({ rng: alwaysHeads });
-      expect(session.state.currentPlayer).toBe("HEADS");
-
-      const alwaysTails = () => 0.9;
-      const session2 = createSession({ rng: alwaysTails });
-      expect(session2.state.currentPlayer).toBe("TAILS");
+    it("defaults to TAILS as first player when no options given", () => {
+      const session = createSession();
+      expect(session.state.currentPlayer).toBe("TAILS");
     });
 
-    it("picks a valid player at random when no options given", () => {
-      const session = createSession();
-      expect(["HEADS", "TAILS"]).toContain(session.state.currentPlayer);
+    it("allows firstPlayer to be overridden via options", () => {
+      const session = createSession({ firstPlayer: "HEADS" });
+      expect(session.state.currentPlayer).toBe("HEADS");
+
+      const session2 = createSession({ firstPlayer: "TAILS" });
+      expect(session2.state.currentPlayer).toBe("TAILS");
     });
   });
 

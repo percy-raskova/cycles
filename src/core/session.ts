@@ -21,12 +21,10 @@ export type StepResult =
 
 export interface CreateSessionOptions {
   readonly firstPlayer?: Player;
-  readonly rng?: () => number;
 }
 
 export function createSession(options?: CreateSessionOptions): GameSession {
-  const rng = options?.rng ?? Math.random;
-  const firstPlayer = options?.firstPlayer ?? (rng() < 0.5 ? "HEADS" : "TAILS");
+  const firstPlayer = options?.firstPlayer ?? "TAILS";
 
   return {
     state: createInitialState(firstPlayer),

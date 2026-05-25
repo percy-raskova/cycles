@@ -1,6 +1,5 @@
 import {
   canJoin,
-  computeFinalScore,
   hasLegalMoves,
   legalJoins,
   legalPlacements,
@@ -11,7 +10,7 @@ import type { CoinFace, GameSession, Move, Position } from "@core";
 import { BoardView } from "@ui/components/BoardView";
 import { FaceSelector } from "@ui/components/FaceSelector";
 import { GameOverPanel } from "@ui/components/GameOverPanel";
-import { TurnIndicator } from "@ui/components/TurnIndicator";
+import { Sidebar } from "@ui/components/Sidebar";
 import type { ApplyMoveResult } from "@ui/hooks/useGameSession";
 import { createLogger } from "@ui/lib/logger";
 import { useCallback, useEffect, useReducer, useRef } from "react";
@@ -54,9 +53,10 @@ export interface GamePageProps {
   readonly session: GameSession;
   readonly applyMove: (move: Move) => ApplyMoveResult;
   readonly onReset: () => void;
+  readonly moveLog?: readonly { readonly action: string; readonly text: string }[];
 }
 
-export function GamePage({ session, applyMove, onReset }: GamePageProps) {
+export function GamePage({ session, applyMove, onReset, moveLog = [] }: GamePageProps) {
   const [ui, dispatch] = useReducer(gamePageReducer, initialGamePageState);
   const { phase: movePhase, hovered: hoveredPosition, illegalMoveCoin, notice } = ui;
   const isAnimating = ui.animation !== null;
@@ -241,34 +241,34 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
   const legalPlacementSet = new Set(legalPlacements(session.state).map((p) => positionKey(p)));
 
   return (
-    <div className="game-page">
-      {!session.isTerminal && <TurnIndicator session={session} notice={notice} />}
-      <div className="game-board-container">
-        <BoardView
-          state={session.state}
-          onCoinClick={handleCoinClick}
-          onCoinHover={handleIntersectionHover}
-          onIntersectionClick={handleIntersectionClick}
-          onIntersectionHover={handleIntersectionHover}
-          selectedCoin={selectedCoin}
-          hoveredPosition={hoveredPosition}
-          previewEdge={previewEdge}
-          legalPlacements={legalPlacementSet}
-          flippingCoins={flippingCoins}
-          illegalMoveCoin={illegalMoveCoin}
-          highlightedCoins={highlightedCoins}
-        />
-        {movePhase.kind === "SELECTING_FACE" && !session.isTerminal && (
-          <FaceSelector
-            position={movePhase.position}
-            onSelect={handleFaceSelect}
-            onCancel={handleFaceCancel}
+    <div className="app-body">
+      <div className="board-pane">
+        <div className="board-frame game-board-container">
+          <BoardView
+            state={session.state}
+            onCoinClick={handleCoinClick}
+            onCoinHover={handleIntersectionHover}
+            onIntersectionClick={handleIntersectionClick}
+            onIntersectionHover={handleIntersectionHover}
+            selectedCoin={selectedCoin}
+            hoveredPosition={hoveredPosition}
+            previewEdge={previewEdge}
+            legalPlacements={legalPlacementSet}
+            flippingCoins={flippingCoins}
+            illegalMoveCoin={illegalMoveCoin}
+            highlightedCoins={highlightedCoins}
           />
-        )}
+          {movePhase.kind === "SELECTING_FACE" && !session.isTerminal && (
+            <FaceSelector
+              position={movePhase.position}
+              onSelect={handleFaceSelect}
+              onCancel={handleFaceCancel}
+            />
+          )}
+          {session.isTerminal && <GameOverPanel session={session} onNewGame={handleNewGame} />}
+        </div>
       </div>
-      {session.isTerminal && (
-        <GameOverPanel score={computeFinalScore(session)} onNewGame={handleNewGame} />
-      )}
+      <Sidebar session={session} moveLog={moveLog} notice={notice} />
     </div>
   );
 }

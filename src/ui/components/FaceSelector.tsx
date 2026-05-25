@@ -1,4 +1,5 @@
 import type { CoinFace, Position } from "@core/types";
+import { VIEWBOX_SIZE } from "@ui/lib/constants";
 import { positionToSvg } from "@ui/lib/coordinates";
 
 interface FaceSelectorProps {
@@ -27,18 +28,19 @@ export function FaceSelector({ position, onSelect, onCancel }: FaceSelectorProps
       />
       <div
         data-testid={`face-selector-${position.row}-${position.col}`}
-        className="face-selector"
+        className="face-popup"
         style={{
           position: "absolute",
           left: x - 45,
           top: y - 55,
         }}
       >
+        <span className="lbl">Choose face</span>
         <button
           data-testid="face-selector-heads"
           type="button"
-          className="face-selector-heads"
-          aria-label="Choose Heads"
+          className="face-choice heads"
+          aria-label="Heads"
           onClick={() => onSelect("heads")}
         >
           H
@@ -46,11 +48,14 @@ export function FaceSelector({ position, onSelect, onCancel }: FaceSelectorProps
         <button
           data-testid="face-selector-tails"
           type="button"
-          className="face-selector-tails"
-          aria-label="Choose Tails"
+          className="face-choice tails"
+          aria-label="Tails"
           onClick={() => onSelect("tails")}
         >
           T
+        </button>
+        <button type="button" className="face-cancel" aria-label="Cancel" onClick={onCancel}>
+          &#215;
         </button>
       </div>
     </>

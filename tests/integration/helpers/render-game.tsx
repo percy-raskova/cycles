@@ -5,17 +5,9 @@ import { useGameSession } from "@ui/hooks/useGameSession";
 import { GamePage } from "@ui/pages/GamePage";
 
 function GamePageWrapper({ initialSession }: { readonly initialSession?: GameSession }) {
-  const { session, applyMove, reset, undo, canUndo } = useGameSession({ initialSession });
+  const { session, applyMove, reset } = useGameSession({ initialSession });
 
-  return (
-    <GamePage
-      session={session}
-      applyMove={applyMove}
-      onReset={reset}
-      onUndo={undo}
-      canUndo={canUndo}
-    />
-  );
+  return <GamePage session={session} applyMove={applyMove} onReset={reset} />;
 }
 
 interface RenderGameOptions {
