@@ -1,5 +1,6 @@
 import type { Position } from "@core/types";
-import { useSvgPosition } from "@ui/hooks/useSvgPosition";
+import { usePopupPosition } from "@ui/hooks/usePopupPosition";
+import { useRef } from "react";
 
 interface MobileFacePopupProps {
   readonly position: Position;
@@ -11,20 +12,18 @@ interface MobileFacePopupProps {
 const M_VIEWBOX = 552;
 const M_CELL = 80;
 const M_MARGIN = 36;
+const M_GRID = 7;
 
 export function MobileFacePopup({ position, svgRef, onSelect, onCancel }: MobileFacePopupProps) {
-  const offset = useSvgPosition(svgRef, position, M_VIEWBOX, M_CELL, M_MARGIN);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const offset = usePopupPosition(svgRef, popupRef, position, M_VIEWBOX, M_CELL, M_MARGIN, M_GRID);
 
-  if (!offset) return null;
+  const style = offset
+    ? { left: offset.left, top: offset.top, visibility: "visible" as const }
+    : { left: 0, top: 0, visibility: "hidden" as const };
 
   return (
-    <div
-      className="m-face-popup"
-      style={{
-        left: offset.left,
-        top: offset.top,
-      }}
-    >
+    <div ref={popupRef} className="m-face-popup" style={style}>
       <span className="lbl">Face?</span>
       <button
         type="button"

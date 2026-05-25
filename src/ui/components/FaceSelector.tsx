@@ -1,6 +1,7 @@
 import type { CoinFace, Position } from "@core/types";
-import { useSvgPosition } from "@ui/hooks/useSvgPosition";
-import { CELL_SIZE, MARGIN, VIEWBOX_SIZE } from "@ui/lib/constants";
+import { usePopupPosition } from "@ui/hooks/usePopupPosition";
+import { CELL_SIZE, GRID_SIZE, MARGIN, VIEWBOX_SIZE } from "@ui/lib/constants";
+import { useRef } from "react";
 
 interface FaceSelectorProps {
   readonly position: Position;
@@ -10,9 +11,20 @@ interface FaceSelectorProps {
 }
 
 export function FaceSelector({ position, onSelect, onCancel, svgRef }: FaceSelectorProps) {
-  const offset = useSvgPosition(svgRef, position, VIEWBOX_SIZE, CELL_SIZE, MARGIN);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const offset = usePopupPosition(
+    svgRef,
+    popupRef,
+    position,
+    VIEWBOX_SIZE,
+    CELL_SIZE,
+    MARGIN,
+    GRID_SIZE,
+  );
 
-  if (!offset) return null;
+  const style = offset
+    ? { left: offset.left, top: offset.top, visibility: "visible" as const }
+    : { left: 0, top: 0, visibility: "hidden" as const };
 
   return (
     <>
@@ -30,12 +42,12 @@ export function FaceSelector({ position, onSelect, onCancel, svgRef }: FaceSelec
         tabIndex={0}
       />
       <div
+        ref={popupRef}
         data-testid={`face-selector-${position.row}-${position.col}`}
         className="face-popup"
         style={{
           position: "absolute",
-          left: offset.left,
-          top: offset.top,
+          ...style,
         }}
       >
         <span className="lbl">Choose face</span>
