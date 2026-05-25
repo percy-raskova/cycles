@@ -1,4 +1,4 @@
-import { pointInPolygon } from "./geometry";
+import { pointInPolygon, pointOnSegment } from "./geometry";
 import {
   GRID_SIZE,
   createInitialState,
@@ -64,18 +64,26 @@ export function coinsInsideCycle(
   state: GameState,
   cyclePath: readonly Position[],
 ): readonly Position[] {
-  const boundarySet = new Set(cyclePath.map((p) => `${p.row},${p.col}`));
-  const interior: Position[] = [];
+  const region: Position[] = [];
 
   for (const coin of state.coins.values()) {
-    const key = `${coin.position.row},${coin.position.col}`;
-    if (boundarySet.has(key)) continue;
-    if (pointInPolygon(coin.position, cyclePath)) {
-      interior.push(coin.position);
+    const pos = coin.position;
+    if (pointInPolygon(pos, cyclePath) || pointOnCycleBoundary(pos, cyclePath)) {
+      region.push(pos);
     }
   }
 
-  return interior;
+  return region;
+}
+
+function pointOnCycleBoundary(point: Position, cyclePath: readonly Position[]): boolean {
+  for (let i = 0, j = cyclePath.length - 1; i < cyclePath.length; j = i++) {
+    const pi = cyclePath[i];
+    const pj = cyclePath[j];
+    if (!pi || !pj) continue;
+    if (pointOnSegment(point, pi, pj)) return true;
+  }
+  return false;
 }
 
 function flipFace(face: CoinFace): CoinFace {
@@ -96,11 +104,13 @@ function applyJoin(state: GameState, move: Move & { type: "JOIN" }): GameState {
 
   const cycle = findCycle(state, move.a, move.b);
 
-  flipCoin(newCoins, aKey);
-  flipCoin(newCoins, bKey);
-
   if (cycle) {
+    // Cycle closure: flip every coin in the enclosed region (boundary + interior)
     flipInteriorCoins(newCoins, { ...state, edges: newEdges, coins: newCoins }, cycle);
+  } else {
+    // No cycle: flip only the two endpoints
+    flipCoin(newCoins, aKey);
+    flipCoin(newCoins, bKey);
   }
 
   return {

@@ -26,11 +26,12 @@ describe("Cycle closure", () => {
       b: { row: 1, col: 1 },
     });
 
-    // Interior coin should have flipped: heads → tails
-    expect(next.coins.get("2,2")?.face).toBe("tails");
-    // Endpoints should have flipped too
-    expect(next.coins.get("4,1")?.face).toBe("tails");
-    expect(next.coins.get("1,1")?.face).toBe("heads");
+    // All coins in the enclosed region should have flipped
+    expect(next.coins.get("2,2")?.face).toBe("tails"); // interior
+    expect(next.coins.get("1,1")?.face).toBe("heads"); // boundary
+    expect(next.coins.get("1,4")?.face).toBe("heads"); // boundary
+    expect(next.coins.get("4,4")?.face).toBe("tails"); // boundary
+    expect(next.coins.get("4,1")?.face).toBe("tails"); // boundary
   });
 
   it("only flips endpoints when interior is empty", () => {
@@ -50,8 +51,11 @@ describe("Cycle closure", () => {
       b: { row: 1, col: 1 },
     });
 
-    expect(next.coins.get("4,1")?.face).toBe("tails");
+    // All boundary coins should flip when a cycle closes, even with empty interior
     expect(next.coins.get("1,1")?.face).toBe("heads");
+    expect(next.coins.get("1,4")?.face).toBe("heads");
+    expect(next.coins.get("4,4")?.face).toBe("tails");
+    expect(next.coins.get("4,1")?.face).toBe("tails");
     expect(next.coins.size).toBe(4);
   });
 
@@ -74,8 +78,14 @@ describe("Cycle closure", () => {
       b: { row: 1, col: 1 },
     });
 
+    // Interior coins flipped
     expect(next.coins.get("2,2")?.face).toBe("tails");
     expect(next.coins.get("3,3")?.face).toBe("heads");
+    // Boundary coins also flipped
+    expect(next.coins.get("1,1")?.face).toBe("heads");
+    expect(next.coins.get("1,5")?.face).toBe("heads");
+    expect(next.coins.get("5,5")?.face).toBe("tails");
+    expect(next.coins.get("5,1")?.face).toBe("tails");
   });
 
   it("coins outside the new cycle region remain unchanged", () => {
