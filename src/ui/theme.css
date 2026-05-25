@@ -1032,6 +1032,7 @@ body.no-scan .scanlines {
 .touch {
   fill: transparent;
   cursor: pointer;
+  pointer-events: all;
 }
 
 .coin-body.heads {

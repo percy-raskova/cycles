@@ -1,6 +1,7 @@
 import type { GameState, Position } from "@core/types";
 import { CELL_SIZE, GRID_SIZE, MARGIN, VIEWBOX_SIZE } from "@ui/lib/constants";
 import { positionToSvg } from "@ui/lib/coordinates";
+import { forwardRef } from "react";
 import { CoinView } from "./CoinView";
 import { EdgeView } from "./EdgeView";
 import { GridView } from "./GridView";
@@ -20,22 +21,26 @@ interface BoardViewProps {
   readonly highlightedCoins: ReadonlySet<string>;
 }
 
-export function BoardView({
-  state,
-  onCoinClick,
-  onIntersectionClick,
-  onIntersectionHover,
-  onCoinHover,
-  selectedCoin,
-  hoveredPosition,
-  previewEdge,
-  legalPlacements,
-  flippingCoins,
-  illegalMoveCoin,
-  highlightedCoins,
-}: BoardViewProps) {
+export const BoardView = forwardRef<SVGSVGElement, BoardViewProps>(function BoardView(
+  {
+    state,
+    onCoinClick,
+    onIntersectionClick,
+    onIntersectionHover,
+    onCoinHover,
+    selectedCoin,
+    hoveredPosition,
+    previewEdge,
+    legalPlacements,
+    flippingCoins,
+    illegalMoveCoin,
+    highlightedCoins,
+  },
+  ref,
+) {
   return (
     <svg
+      ref={ref}
       data-testid="board-view"
       viewBox={`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}
       width="100%"
@@ -106,4 +111,4 @@ export function BoardView({
       })}
     </svg>
   );
-}
+});

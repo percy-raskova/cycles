@@ -1,4 +1,3 @@
-import type { Move } from "@core";
 import { Desktop } from "@ui/components/Desktop";
 import { MenuBar } from "@ui/components/MenuBar";
 import { Modal } from "@ui/components/Modal";
@@ -7,34 +6,13 @@ import { StatusBar } from "@ui/components/StatusBar";
 import { Taskbar } from "@ui/components/Taskbar";
 import { TitleBar } from "@ui/components/TitleBar";
 import { Toolbar } from "@ui/components/Toolbar";
+import { MobileApp } from "@ui/components/mobile";
 import { useGameSession } from "@ui/hooks/useGameSession";
+import { deriveLog } from "@ui/lib/deriveLog";
 import { GamePage } from "@ui/pages/GamePage";
 import { useMemo, useState } from "react";
 
 type Panel = "help" | "controls" | "about" | "settings";
-
-function deriveLog(history: readonly Move[]): { readonly action: string; readonly text: string }[] {
-  const entries: { action: string; text: string }[] = [];
-  for (let i = 0; i < history.length; i++) {
-    const move = history[i];
-    if (!move) continue;
-    const player = i % 2 === 0 ? "HEADS" : "TAILS";
-    if (move.type === "PLACE") {
-      entries.push({
-        action: "PLACE",
-        text: `${player} placed ${move.face === "heads" ? "Heads" : "Tails"} @ (${move.position.row + 1},${move.position.col + 1})`,
-      });
-    } else if (move.type === "JOIN") {
-      entries.push({
-        action: "JOIN",
-        text: `${player} joined (${move.a.row + 1},${move.a.col + 1})↔(${move.b.row + 1},${move.b.col + 1})`,
-      });
-    } else if (move.type === "PASS") {
-      entries.push({ action: "PASS", text: `${player} passed` });
-    }
-  }
-  return entries;
-}
 
 function App() {
   const [modal, setModal] = useState<null | { panel: Panel }>(null);
@@ -96,6 +74,9 @@ function App() {
       </div>
 
       {modal && <Modal initialPanel={modal.panel} onClose={() => setModal(null)} />}
+
+      {/* Mobile PWA layout — shown/hidden via CSS media query */}
+      <MobileApp session={session} applyMove={applyMove} onReset={reset} moveLog={log} />
     </>
   );
 }

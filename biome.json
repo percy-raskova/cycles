@@ -40,5 +40,30 @@
       "test-results",
       "playwright-report"
     ]
-  }
+  },
+  "overrides": [
+    {
+      "include": ["src/ui/components/mobile/MobileBoard.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useSemanticElements": "off"
+          },
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
+    },
+    {
+      "include": ["src/ui/components/mobile/BottomSheet.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
+    }
+  ]
 }

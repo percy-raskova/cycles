@@ -22,6 +22,30 @@ describe("GameOverPanel", () => {
     expect(screen.getByTestId("game-over-winner").textContent).toContain("draw");
   });
 
+  it("uses a native <dialog> element for semantic accessibility", () => {
+    const onNewGame = vi.fn();
+    const { container } = render(
+      <GameOverPanel score={{ heads: 7, tails: 5, winner: "HEADS" }} onNewGame={onNewGame} />,
+    );
+
+    const dialog = container.querySelector("dialog");
+    expect(dialog).toBeTruthy();
+    expect(dialog?.classList.contains("panel")).toBe(true);
+  });
+
+  it("applies Win95 chrome classes to the panel", () => {
+    const onNewGame = vi.fn();
+    const { container } = render(
+      <GameOverPanel score={{ heads: 7, tails: 5, winner: "HEADS" }} onNewGame={onNewGame} />,
+    );
+
+    expect(container.querySelector(".game-over")).toBeTruthy();
+    expect(container.querySelector(".gobar")).toBeTruthy();
+    expect(container.querySelector(".gobody")).toBeTruthy();
+    expect(container.querySelector(".winner")).toBeTruthy();
+    expect(container.querySelector(".actions")).toBeTruthy();
+  });
+
   it("calls onNewGame when New Game button is clicked", async () => {
     const onNewGame = vi.fn();
     render(<GameOverPanel score={{ heads: 7, tails: 5, winner: "HEADS" }} onNewGame={onNewGame} />);

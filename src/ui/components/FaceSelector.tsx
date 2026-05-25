@@ -1,15 +1,18 @@
 import type { CoinFace, Position } from "@core/types";
-import { VIEWBOX_SIZE } from "@ui/lib/constants";
-import { positionToSvg } from "@ui/lib/coordinates";
+import { useSvgPosition } from "@ui/hooks/useSvgPosition";
+import { CELL_SIZE, MARGIN, VIEWBOX_SIZE } from "@ui/lib/constants";
 
 interface FaceSelectorProps {
   readonly position: Position;
   readonly onSelect: (face: CoinFace) => void;
   readonly onCancel: () => void;
+  readonly svgRef: React.RefObject<SVGSVGElement>;
 }
 
-export function FaceSelector({ position, onSelect, onCancel }: FaceSelectorProps) {
-  const { x, y } = positionToSvg(position);
+export function FaceSelector({ position, onSelect, onCancel, svgRef }: FaceSelectorProps) {
+  const offset = useSvgPosition(svgRef, position, VIEWBOX_SIZE, CELL_SIZE, MARGIN);
+
+  if (!offset) return null;
 
   return (
     <>
@@ -31,8 +34,8 @@ export function FaceSelector({ position, onSelect, onCancel }: FaceSelectorProps
         className="face-popup"
         style={{
           position: "absolute",
-          left: x - 45,
-          top: y - 55,
+          left: offset.left,
+          top: offset.top,
         }}
       >
         <span className="lbl">Choose face</span>

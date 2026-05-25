@@ -11,11 +11,12 @@ export default defineConfig({
       manifest: {
         name: "CYCLES",
         short_name: "CYCLES",
-        description: "A two-player planar-graph strategy game",
+        description: "A two-player game of planar graphs, parity, and enclosure.",
         start_url: "/",
         display: "standalone",
-        background_color: "#0a0a1a",
-        theme_color: "#ff00ff",
+        orientation: "portrait",
+        background_color: "#1a0b2e",
+        theme_color: "#9b4f96",
         icons: [
           {
             src: "/icons/icon-192x192.png",

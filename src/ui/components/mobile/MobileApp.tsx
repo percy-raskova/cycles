@@ -7,17 +7,22 @@ import {
   positionKey,
 } from "@core";
 import type { CoinFace, GameSession, Move, Position } from "@core";
-import { BoardView } from "@ui/components/BoardView";
-import { FaceSelector } from "@ui/components/FaceSelector";
-import { GameOverPanel } from "@ui/components/GameOverPanel";
-import { Sidebar } from "@ui/components/Sidebar";
 import type { ApplyMoveResult } from "@ui/hooks/useGameSession";
 import { createLogger } from "@ui/lib/logger";
-import { useCallback, useEffect, useReducer, useRef } from "react";
-import { type Phase, gamePageReducer, initialGamePageState } from "./gamePageReducer";
+import { type Phase, gamePageReducer, initialGamePageState } from "@ui/pages/gamePageReducer";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { BottomSheet } from "./BottomSheet";
+import { Drawer } from "./Drawer";
+import { MobileBoard } from "./MobileBoard";
+import { MobileFacePopup } from "./MobileFacePopup";
+import { MobileGameOver } from "./MobileGameOver";
+import { MobileScoreStrip } from "./MobileScoreStrip";
+import { MobileStatusStrip } from "./MobileStatusStrip";
+import { MobileSupplyStrip } from "./MobileSupplyStrip";
+import { MobileTitleBar } from "./MobileTitleBar";
+import { MobileToolbar } from "./MobileToolbar";
 
-const log = createLogger("ui");
-
+const log = createLogger("ui:mobile");
 const EMPTY_FLIPPING: ReadonlySet<string> = new Set();
 
 function buildHighlightedCoins(state: GameSession["state"], movePhase: Phase): ReadonlySet<string> {
@@ -49,22 +54,22 @@ function buildPreviewEdge(
   return null;
 }
 
-export interface GamePageProps {
+interface MobileAppProps {
   readonly session: GameSession;
   readonly applyMove: (move: Move) => ApplyMoveResult;
   readonly onReset: () => void;
-  readonly moveLog?: readonly { readonly action: string; readonly text: string }[];
+  readonly moveLog: readonly { readonly action: string; readonly text: string }[];
 }
 
-export function GamePage({ session, applyMove, onReset, moveLog = [] }: GamePageProps) {
+export function MobileApp({ session, applyMove, onReset, moveLog }: MobileAppProps) {
   const [ui, dispatch] = useReducer(gamePageReducer, initialGamePageState);
-  const { phase: movePhase, hovered: hoveredPosition, illegalMoveCoin, notice } = ui;
+  const { phase: movePhase, hovered: hoveredPosition, illegalMoveCoin } = ui;
   const isAnimating = ui.animation !== null;
   const flippingCoins = ui.animation?.flipping ?? EMPTY_FLIPPING;
   const prevHistoryLength = useRef(session.history.length);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  // Reset UI state when session rewinds (undo or reset)
+  // Reset UI when session rewinds
   useEffect(() => {
     const current = session.history.length;
     const previous = prevHistoryLength.current;
@@ -84,13 +89,13 @@ export function GamePage({ session, applyMove, onReset, moveLog = [] }: GamePage
       const timer = setTimeout(() => {
         applyMove({ type: "PASS" });
         dispatch({ type: "SET_NOTICE", notice: null });
-      }, 1000);
+      }, 900);
       return () => clearTimeout(timer);
     }
     dispatch({ type: "SET_NOTICE", notice: null });
   }, [session, isAnimating, applyMove]);
 
-  // End the flip animation after its duration
+  // End flip animation
   useEffect(() => {
     if (isAnimating) {
       const timer = setTimeout(() => dispatch({ type: "ANIMATION_END" }), 500);
@@ -98,7 +103,7 @@ export function GamePage({ session, applyMove, onReset, moveLog = [] }: GamePage
     }
   }, [isAnimating]);
 
-  // Global Escape key handler
+  // Global Escape key
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -109,7 +114,7 @@ export function GamePage({ session, applyMove, onReset, moveLog = [] }: GamePage
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Clear illegal-move feedback after animation duration
+  // Clear illegal move feedback
   useEffect(() => {
     if (illegalMoveCoin) {
       const timer = setTimeout(() => dispatch({ type: "CLEAR_ILLEGAL" }), 300);
@@ -117,107 +122,74 @@ export function GamePage({ session, applyMove, onReset, moveLog = [] }: GamePage
     }
   }, [illegalMoveCoin]);
 
-  const handleNewGame = useCallback(() => {
-    onReset();
-    dispatch({ type: "RESET_UI" });
-    dispatch({ type: "HOVER", position: null });
-  }, [onReset]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sheet, setSheet] = useState<{ open: boolean; tab: string }>({ open: false, tab: "log" });
 
-  const handleIntersectionHover = useCallback((position: Position | null) => {
-    dispatch({ type: "HOVER", position });
-  }, []);
+  const legalPlacementSet = useMemo(
+    () => new Set(legalPlacements(session.state).map((p) => positionKey(p))),
+    [session.state],
+  );
+
+  const highlightedCoins = useMemo(
+    () => buildHighlightedCoins(session.state, movePhase),
+    [session.state, movePhase],
+  );
+
+  const previewEdge = useMemo(
+    () => buildPreviewEdge(session.state, movePhase, hoveredPosition),
+    [session.state, movePhase, hoveredPosition],
+  );
 
   const handleIntersectionClick = useCallback(
     (position: Position) => {
-      log.debug("intersection click", position);
-      if (session.isTerminal || isAnimating) {
-        log.debug("intersection ignored", { isTerminal: session.isTerminal, isAnimating });
-        return;
-      }
+      log.debug("mobile intersection click", position);
+      if (session.isTerminal || isAnimating) return;
       if (movePhase.kind === "SELECTING_SECOND_COIN") {
-        log.debug("intersection cancels pending join");
         dispatch({ type: "CANCEL_PHASE" });
         return;
       }
-      if (movePhase.kind !== "IDLE") {
-        log.debug("intersection ignored — busy phase", movePhase.kind);
-        return;
-      }
+      if (movePhase.kind !== "IDLE") return;
 
       const key = positionKey(position);
-      if (session.state.coins.has(key)) {
-        log.debug("intersection ignored — occupied", position);
-        return;
-      }
-      if (positionBlockedByEdge(position, session.state.edges)) {
-        log.debug("intersection ignored — blocked by edge", position);
-        return;
-      }
+      if (session.state.coins.has(key)) return;
+      if (positionBlockedByEdge(position, session.state.edges)) return;
 
       dispatch({ type: "SELECT_INTERSECTION", position });
     },
     [session.isTerminal, isAnimating, movePhase.kind, session.state.coins, session.state.edges],
   );
 
-  const handleJoinAttempt = useCallback(
-    (position: Position) => {
-      if (movePhase.kind !== "SELECTING_SECOND_COIN") return;
-
-      if (movePhase.first.row === position.row && movePhase.first.col === position.col) {
-        dispatch({ type: "CANCEL_PHASE" });
-        return;
-      }
-
-      const move: Move = {
-        type: "JOIN",
-        a: movePhase.first,
-        b: position,
-      };
-      log.debug("join attempt", { from: movePhase.first, to: position });
-      const result = applyMove(move);
-      if (result.success) {
-        dispatch({ type: "MOVE_RESOLVED", flipped: result.flipped });
-      } else {
-        log.warn("join rejected", { from: movePhase.first, to: position }, result.error);
-        dispatch({ type: "ILLEGAL_MOVE", position });
-      }
-    },
-    [movePhase, applyMove],
-  );
-
   const handleCoinClick = useCallback(
     (position: Position) => {
-      log.debug("coin click", position);
-      if (session.isTerminal || isAnimating) {
-        log.debug("coin ignored", { isTerminal: session.isTerminal, isAnimating });
-        return;
-      }
+      log.debug("mobile coin click", position);
+      if (session.isTerminal || isAnimating) return;
 
       if (movePhase.kind === "SELECTING_SECOND_COIN") {
-        handleJoinAttempt(position);
+        if (movePhase.first.row === position.row && movePhase.first.col === position.col) {
+          dispatch({ type: "CANCEL_PHASE" });
+          return;
+        }
+        const move: Move = { type: "JOIN", a: movePhase.first, b: position };
+        const result = applyMove(move);
+        if (result.success) {
+          dispatch({ type: "MOVE_RESOLVED", flipped: result.flipped });
+        } else {
+          dispatch({ type: "ILLEGAL_MOVE", position });
+        }
         return;
       }
 
-      if (movePhase.kind !== "IDLE") {
-        log.debug("coin ignored — busy phase", movePhase.kind);
-        return;
-      }
-
+      if (movePhase.kind !== "IDLE") return;
       dispatch({ type: "BEGIN_JOIN", first: position });
     },
-    [session.isTerminal, isAnimating, movePhase.kind, handleJoinAttempt],
+    [session.isTerminal, isAnimating, movePhase, applyMove],
   );
 
   const handleFaceSelect = useCallback(
     (face: CoinFace) => {
       if (session.isTerminal || isAnimating) return;
       if (movePhase.kind !== "SELECTING_FACE") return;
-      const move: Move = {
-        type: "PLACE",
-        position: movePhase.position,
-        face,
-      };
-      log.debug("place", { position: movePhase.position, face });
+      const move: Move = { type: "PLACE", position: movePhase.position, face };
       const result = applyMove(move);
       if (!result.success) {
         log.warn("place rejected", { position: movePhase.position, face }, result.error);
@@ -234,44 +206,93 @@ export function GamePage({ session, applyMove, onReset, moveLog = [] }: GamePage
     dispatch({ type: "CANCEL_PHASE" });
   }, []);
 
+  const handleDrawerAction = useCallback(
+    (action: string) => {
+      setDrawerOpen(false);
+      if (action === "new") {
+        onReset();
+        dispatch({ type: "RESET_UI" });
+      } else if (action === "undo") {
+        // undo is handled by parent; we just close drawer
+      } else if (action === "pass") {
+        applyMove({ type: "PASS" });
+      } else {
+        setSheet({ open: true, tab: action === "log" ? "log" : action });
+      }
+    },
+    [onReset, applyMove],
+  );
+
   const selectedCoin: Position | null =
     movePhase.kind === "SELECTING_SECOND_COIN" ? movePhase.first : null;
 
-  const highlightedCoins = buildHighlightedCoins(session.state, movePhase);
-  const previewEdge = buildPreviewEdge(session.state, movePhase, hoveredPosition);
-  const legalPlacementSet = new Set(legalPlacements(session.state).map((p) => positionKey(p)));
+  const isJoining = movePhase.kind === "SELECTING_SECOND_COIN";
+  const canPass = !session.isTerminal;
+  const canUndo = session.history.length > 0 && !session.isTerminal;
 
   return (
-    <div className="app-body">
-      <div className="board-pane">
-        <div className="board-frame game-board-container">
-          <BoardView
+    <div className="phone-shell">
+      <div className="p-sun" />
+      <div className="p-horizon" />
+      <div className="p-scanlines" />
+
+      <div className="mobile-app">
+        <MobileTitleBar
+          onMenuOpen={() => setDrawerOpen(true)}
+          onHelpOpen={() => setSheet({ open: true, tab: "rules" })}
+        />
+
+        <MobileStatusStrip session={session} />
+
+        <div className="m-board-frame">
+          <MobileBoard
             ref={svgRef}
             state={session.state}
-            onCoinClick={handleCoinClick}
-            onCoinHover={handleIntersectionHover}
-            onIntersectionClick={handleIntersectionClick}
-            onIntersectionHover={handleIntersectionHover}
-            selectedCoin={selectedCoin}
-            hoveredPosition={hoveredPosition}
-            previewEdge={previewEdge}
             legalPlacements={legalPlacementSet}
+            selectedCoin={selectedCoin}
+            highlightedCoins={highlightedCoins}
+            previewEdge={previewEdge}
             flippingCoins={flippingCoins}
             illegalMoveCoin={illegalMoveCoin}
-            highlightedCoins={highlightedCoins}
+            onIntersectionClick={handleIntersectionClick}
+            onCoinClick={handleCoinClick}
           />
           {movePhase.kind === "SELECTING_FACE" && !session.isTerminal && (
-            <FaceSelector
+            <MobileFacePopup
               position={movePhase.position}
+              svgRef={svgRef}
               onSelect={handleFaceSelect}
               onCancel={handleFaceCancel}
-              svgRef={svgRef}
             />
           )}
-          {session.isTerminal && <GameOverPanel session={session} onNewGame={handleNewGame} />}
+          {session.isTerminal && <MobileGameOver session={session} onNewGame={onReset} />}
         </div>
+
+        <MobileSupplyStrip coinsRemaining={session.state.coinsRemaining} />
+        <MobileScoreStrip session={session} />
+
+        <MobileToolbar
+          isJoining={isJoining}
+          canPass={canPass}
+          canUndo={canUndo}
+          onTapMode={() => dispatch({ type: "CANCEL_PHASE" })}
+          onPass={() => applyMove({ type: "PASS" })}
+          onUndo={() => {}} // undo handled by parent App
+          onLogOpen={() => setSheet({ open: true, tab: "log" })}
+        />
+
+        <Drawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          onAction={handleDrawerAction}
+        />
+        <BottomSheet
+          open={sheet.open}
+          initialTab={sheet.tab}
+          onClose={() => setSheet({ open: false, tab: sheet.tab })}
+          logEntries={moveLog}
+        />
       </div>
-      <Sidebar session={session} moveLog={moveLog} notice={notice} />
     </div>
   );
 }
