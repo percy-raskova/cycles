@@ -59,8 +59,6 @@ export interface GamePageProps {
   readonly session: GameSession;
   readonly applyMove: (move: Move) => ApplyMoveResult;
   readonly onReset: () => void;
-  readonly onUndo: () => void;
-  readonly canUndo: boolean;
 }
 
 export function GamePage({ session, applyMove, onReset }: GamePageProps) {

@@ -6,16 +6,8 @@ import { useGameSession } from "../../hooks/useGameSession";
 import { GamePage } from "../GamePage";
 
 function GamePageWrapper() {
-  const { session, applyMove, reset, undo, canUndo } = useGameSession();
-  return (
-    <GamePage
-      session={session}
-      applyMove={applyMove}
-      onReset={reset}
-      onUndo={undo}
-      canUndo={canUndo}
-    />
-  );
+  const { session, applyMove, reset } = useGameSession();
+  return <GamePage session={session} applyMove={applyMove} onReset={reset} />;
 }
 
 function getDotAt(row: number, col: number): Element | undefined {
@@ -283,30 +275,5 @@ describe("GamePage — Coin Flip Animation (US4)", () => {
     // Both coins should have the flipping animation class
     expect(coin00?.getAttribute("class") ?? "").toContain("coin-flipping");
     expect(coin02?.getAttribute("class") ?? "").toContain("coin-flipping");
-  });
-});
-
-describe("GamePage — Reset and Undo (US3)", () => {
-  async function placeCoinAt(row: number, col: number, face: "heads" | "tails") {
-    const dot = getDotAt(row, col);
-    if (dot) {
-      await userEvent.click(dot);
-    }
-    const selector = face === "heads" ? "face-selector-heads" : "face-selector-tails";
-    await userEvent.click(screen.getByTestId(selector));
-  }
-
-  it("undo reverts the most recent move", async () => {
-    render(<GamePageWrapper />);
-
-    // Place a coin
-    await placeCoinAt(0, 0, "heads");
-    expect(screen.getByTestId("coin-0-0")).toBeTruthy();
-
-    // Click undo via the board (we need to trigger onUndo somehow)
-    // Since GamePageWrapper doesn't expose onUndo, we can't easily test this here.
-    // This is tested at the hook level in session.test.ts.
-    // We'll verify the integration in MenuBar.test.tsx instead.
-    expect(true).toBe(true);
   });
 });

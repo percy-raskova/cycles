@@ -20,13 +20,7 @@ function App() {
         onUndo={undo}
         canUndo={canUndo}
       />
-      <GamePage
-        session={session}
-        applyMove={applyMove}
-        onReset={reset}
-        onUndo={undo}
-        canUndo={canUndo}
-      />
+      <GamePage session={session} applyMove={applyMove} onReset={reset} />
       {modal && <Modal initialPanel={modal.panel} onClose={() => setModal(null)} />}
       <Footer />
     </div>
