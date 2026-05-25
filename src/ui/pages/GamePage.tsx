@@ -14,19 +14,14 @@ import { GameOverPanel } from "@ui/components/GameOverPanel";
 import { TurnIndicator } from "@ui/components/TurnIndicator";
 import type { ApplyMoveResult } from "@ui/hooks/useGameSession";
 import { createLogger } from "@ui/lib/logger";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
+import { type Phase, gamePageReducer, initialGamePageState } from "./gamePageReducer";
 
 const log = createLogger("ui");
 
-type MovePhase =
-  | { readonly kind: "IDLE" }
-  | { readonly kind: "SELECTING_FACE"; readonly position: Position }
-  | { readonly kind: "SELECTING_SECOND_COIN"; readonly first: Position };
+const EMPTY_FLIPPING: ReadonlySet<string> = new Set();
 
-function buildHighlightedCoins(
-  state: GameSession["state"],
-  movePhase: MovePhase,
-): ReadonlySet<string> {
+function buildHighlightedCoins(state: GameSession["state"], movePhase: Phase): ReadonlySet<string> {
   const highlighted = new Set<string>();
   if (movePhase.kind !== "SELECTING_SECOND_COIN") return highlighted;
   const first = movePhase.first;
@@ -42,7 +37,7 @@ function buildHighlightedCoins(
 
 function buildPreviewEdge(
   state: GameSession["state"],
-  movePhase: MovePhase,
+  movePhase: Phase,
   hoveredPosition: Position | null,
 ): { readonly from: Position; readonly to: Position } | null {
   if (
@@ -62,12 +57,10 @@ export interface GamePageProps {
 }
 
 export function GamePage({ session, applyMove, onReset }: GamePageProps) {
-  const [movePhase, setMovePhase] = useState<MovePhase>({ kind: "IDLE" });
-  const [illegalMoveCoin, setIllegalMoveCoin] = useState<Position | null>(null);
-  const [hoveredPosition, setHoveredPosition] = useState<Position | null>(null);
-  const [flippingCoins, setFlippingCoins] = useState<ReadonlySet<string>>(new Set());
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [ui, dispatch] = useReducer(gamePageReducer, initialGamePageState);
+  const { phase: movePhase, hovered: hoveredPosition, illegalMoveCoin, notice } = ui;
+  const isAnimating = ui.animation !== null;
+  const flippingCoins = ui.animation?.flipping ?? EMPTY_FLIPPING;
   const prevHistoryLength = useRef(session.history.length);
 
   // Reset UI state when session rewinds (undo or reset)
@@ -75,11 +68,7 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
     const current = session.history.length;
     const previous = prevHistoryLength.current;
     if (current < previous) {
-      setMovePhase({ kind: "IDLE" });
-      setIllegalMoveCoin(null);
-      setFlippingCoins(new Set());
-      setIsAnimating(false);
-      setNotice(null);
+      dispatch({ type: "RESET_UI" });
     }
     prevHistoryLength.current = current;
   }, [session.history.length]);
@@ -90,21 +79,29 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
     if (!hasLegalMoves(session) && !isAnimating) {
       const player = session.state.currentPlayer;
       log.debug("auto-pass", player);
-      setNotice(`${player} has no legal moves — passing`);
+      dispatch({ type: "SET_NOTICE", notice: `${player} has no legal moves — passing` });
       const timer = setTimeout(() => {
         applyMove({ type: "PASS" });
-        setNotice(null);
+        dispatch({ type: "SET_NOTICE", notice: null });
       }, 1000);
       return () => clearTimeout(timer);
     }
-    setNotice(null);
+    dispatch({ type: "SET_NOTICE", notice: null });
   }, [session, isAnimating, applyMove]);
+
+  // End the flip animation after its duration
+  useEffect(() => {
+    if (isAnimating) {
+      const timer = setTimeout(() => dispatch({ type: "ANIMATION_END" }), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnimating]);
 
   // Global Escape key handler
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setMovePhase({ kind: "IDLE" });
+        dispatch({ type: "CANCEL_PHASE" });
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -114,23 +111,19 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
   // Clear illegal-move feedback after animation duration
   useEffect(() => {
     if (illegalMoveCoin) {
-      const timer = setTimeout(() => setIllegalMoveCoin(null), 300);
+      const timer = setTimeout(() => dispatch({ type: "CLEAR_ILLEGAL" }), 300);
       return () => clearTimeout(timer);
     }
   }, [illegalMoveCoin]);
 
   const handleNewGame = useCallback(() => {
     onReset();
-    setMovePhase({ kind: "IDLE" });
-    setIllegalMoveCoin(null);
-    setHoveredPosition(null);
-    setFlippingCoins(new Set());
-    setIsAnimating(false);
-    setNotice(null);
+    dispatch({ type: "RESET_UI" });
+    dispatch({ type: "HOVER", position: null });
   }, [onReset]);
 
   const handleIntersectionHover = useCallback((position: Position | null) => {
-    setHoveredPosition(position);
+    dispatch({ type: "HOVER", position });
   }, []);
 
   const handleIntersectionClick = useCallback(
@@ -142,7 +135,7 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
       }
       if (movePhase.kind === "SELECTING_SECOND_COIN") {
         log.debug("intersection cancels pending join");
-        setMovePhase({ kind: "IDLE" });
+        dispatch({ type: "CANCEL_PHASE" });
         return;
       }
       if (movePhase.kind !== "IDLE") {
@@ -160,7 +153,7 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
         return;
       }
 
-      setMovePhase({ kind: "SELECTING_FACE", position });
+      dispatch({ type: "SELECT_INTERSECTION", position });
     },
     [session.isTerminal, isAnimating, movePhase.kind, session.state.coins, session.state.edges],
   );
@@ -170,7 +163,7 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
       if (movePhase.kind !== "SELECTING_SECOND_COIN") return;
 
       if (movePhase.first.row === position.row && movePhase.first.col === position.col) {
-        setMovePhase({ kind: "IDLE" });
+        dispatch({ type: "CANCEL_PHASE" });
         return;
       }
 
@@ -182,18 +175,10 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
       log.debug("join attempt", { from: movePhase.first, to: position });
       const result = applyMove(move);
       if (result.success) {
-        setMovePhase({ kind: "IDLE" });
-        if (result.flipped.size > 0) {
-          setFlippingCoins(result.flipped);
-          setIsAnimating(true);
-          setTimeout(() => {
-            setFlippingCoins(new Set());
-            setIsAnimating(false);
-          }, 500);
-        }
+        dispatch({ type: "MOVE_RESOLVED", flipped: result.flipped });
       } else {
         log.warn("join rejected", { from: movePhase.first, to: position }, result.error);
-        setIllegalMoveCoin(position);
+        dispatch({ type: "ILLEGAL_MOVE", position });
       }
     },
     [movePhase, applyMove],
@@ -217,7 +202,7 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
         return;
       }
 
-      setMovePhase({ kind: "SELECTING_SECOND_COIN", first: position });
+      dispatch({ type: "BEGIN_JOIN", first: position });
     },
     [session.isTerminal, isAnimating, movePhase.kind, handleJoinAttempt],
   );
@@ -235,21 +220,17 @@ export function GamePage({ session, applyMove, onReset }: GamePageProps) {
       const result = applyMove(move);
       if (!result.success) {
         log.warn("place rejected", { position: movePhase.position, face }, result.error);
-      } else if (result.flipped.size > 0) {
-        setFlippingCoins(result.flipped);
-        setIsAnimating(true);
-        setTimeout(() => {
-          setFlippingCoins(new Set());
-          setIsAnimating(false);
-        }, 500);
       }
-      setMovePhase({ kind: "IDLE" });
+      dispatch({
+        type: "MOVE_RESOLVED",
+        flipped: result.success ? result.flipped : EMPTY_FLIPPING,
+      });
     },
     [session.isTerminal, isAnimating, movePhase, applyMove],
   );
 
   const handleFaceCancel = useCallback(() => {
-    setMovePhase({ kind: "IDLE" });
+    dispatch({ type: "CANCEL_PHASE" });
   }, []);
 
   const selectedCoin: Position | null =
