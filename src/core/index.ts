@@ -37,3 +37,9 @@ export {
   undo,
 } from "./session";
 export type { FinalScore, GameSession, StepResult } from "./session";
+export {
+  deserializeSession,
+  deserializeState,
+  serializeSession,
+  serializeState,
+} from "./serialization";
