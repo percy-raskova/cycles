@@ -1,17 +1,5 @@
 export type * from "./types";
-export {
-  areEdgesEqual,
-  collinearityCheck,
-  edgeIntersects,
-  getIntersectionPoints,
-  isQueenLine,
-  isValidPosition,
-  pointInPolygon,
-  pointOnSegment,
-  positionBlockedByEdge,
-  positionsEqual,
-  squaredDistance,
-} from "./geometry";
+export { positionBlockedByEdge } from "./geometry";
 export {
   GRID_SIZE,
   TOTAL_COINS,
