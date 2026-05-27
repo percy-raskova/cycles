@@ -77,10 +77,10 @@ describe("useBotGame", () => {
     expect(result.current.session.history.length).toBeGreaterThan(1);
   });
 
-  it("auto-invokes Greedy bot on bot's turn (T023)", async () => {
+  it("auto-invokes Strategic bot on bot's turn (T023)", async () => {
     const { result } = renderHook(() =>
       useBotGame({
-        opponent: "greedy",
+        opponent: "strategic",
         playerRole: "HEADS",
         humanFirst: false,
         botDelayMs: 0,

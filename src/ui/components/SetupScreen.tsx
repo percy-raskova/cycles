@@ -60,15 +60,15 @@ export function SetupScreen({ onStart }: SetupScreenProps) {
             <button
               type="button"
               role="radio"
-              aria-checked={opponent === "greedy"}
-              className={`setup-option ${opponent === "greedy" ? "setup-option--selected" : ""}`}
-              onClick={() => setOpponent("greedy")}
-              aria-label="Greedy bot opponent"
+              aria-checked={opponent === "strategic"}
+              className={`setup-option ${opponent === "strategic" ? "setup-option--selected" : ""}`}
+              onClick={() => setOpponent("strategic")}
+              aria-label="Strategic bot opponent"
             >
               <span className="setup-option-icon" aria-hidden="true">
-                &#9820;
+                &#9819;
               </span>
-              <span className="setup-option-label">Greedy</span>
+              <span className="setup-option-label">Strategic</span>
             </button>
           </div>
         </fieldset>

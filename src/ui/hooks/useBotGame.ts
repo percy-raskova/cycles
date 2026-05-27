@@ -1,12 +1,4 @@
-import {
-  allLegalMoves,
-  applyMove,
-  createSession,
-  greedyBot,
-  hasLegalMoves,
-  randomBot,
-  scoreForPlayer,
-} from "@core";
+import { createSession, createStrategicBot, hasLegalMoves, randomBot } from "@core";
 import type { GameSession, Move, Player } from "@core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { GameSetupOptions } from "../types/setup";
@@ -39,61 +31,12 @@ function getBotFunction(opponent: GameSetupOptions["opponent"]) {
   switch (opponent) {
     case "random":
       return randomBot;
-    case "greedy":
-      return greedyBot;
+    case "strategic":
+      // Inject the clock at the UI boundary (Q8) so the engine stays time-free.
+      return createStrategicBot({ now: () => performance.now(), deadlineMs: 2000 });
     default:
       return null;
   }
-}
-
-/**
- * A yielding version of greedyBot that spreads evaluation across
- * microtasks so the UI thread can paint between move simulations.
- * This prevents frame drops on complex board states.
- */
-async function yieldingGreedyBot(
-  state: Parameters<typeof greedyBot>[0],
-): Promise<ReturnType<typeof greedyBot>> {
-  const moves = allLegalMoves(state);
-  if (moves.length === 0) {
-    throw new Error("No legal moves available");
-  }
-
-  const player = state.currentPlayer;
-  const before = scoreForPlayer(state, player);
-
-  let bestMove = moves[0];
-  let bestDelta = Number.NEGATIVE_INFINITY;
-
-  if (!bestMove) {
-    throw new Error("No legal moves available");
-  }
-
-  // Evaluate moves in chunks of 8, yielding between chunks
-  const CHUNK_SIZE = 8;
-  for (let i = 0; i < moves.length; i += CHUNK_SIZE) {
-    const chunk = moves.slice(i, i + CHUNK_SIZE);
-    for (const move of chunk) {
-      try {
-        const nextState = applyMove(state, move);
-        const after = scoreForPlayer(nextState, player);
-        const delta = after - before;
-
-        if (delta > bestDelta) {
-          bestDelta = delta;
-          bestMove = move;
-        }
-      } catch {
-        // Skip illegal moves
-      }
-    }
-    // Yield to browser — allow paint/frame between chunks
-    if (i + CHUNK_SIZE < moves.length) {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    }
-  }
-
-  return bestMove;
 }
 
 export function useBotGame(options: UseBotGameOptions): UseBotGameReturn {
@@ -149,10 +92,7 @@ export function useBotGame(options: UseBotGameOptions): UseBotGameReturn {
         return;
       }
 
-      const botPromise =
-        opponentRef.current === "greedy"
-          ? yieldingGreedyBot(session.state)
-          : Promise.resolve(botFn(session.state));
+      const botPromise = Promise.resolve(botFn(session.state));
 
       botPromise
         .then((move) => {

@@ -191,3 +191,22 @@ For a human player aiming for strong play without computation:
 ---
 
 **Bottom line on rigor**: the game is provably determined (Zermelo), the move algebra is fully explicit (§3), Phase II is computationally tractable, but the full game value of CYCLES on the 7×7 board with 12 coins is — to my knowledge — unknown and would require either a clever invariant or substantial compute to resolve. The repository's pure-function engine is the right substrate for the computational route.
+
+---
+
+## 12. Future Enhancements (Strategic bot, feature 011)
+
+The shipped Strategic bot (3-ply adaptive-depth negamax with α–β, exhaustive endgames,
+and the §9 heuristics as a state-based leaf) deliberately defers several ideas:
+
+- **MCTS** (§10.4): would likely play stronger in the high-branching placement phase than
+  shallow full-width search, but is non-deterministic without a seeded RNG; deferred to
+  preserve the bot's pure/deterministic contract (FR-002).
+- **Transposition table**: low expected hit rate at depth 3 (moves are additive — PLACE
+  grows coins, JOIN grows edges — so positions rarely transpose within the horizon);
+  revisit if search depth increases.
+- **Automated weight tuning** (CMA-ES / self-play): the current weights are hand-tuned
+  (Q3) and already win 100% of decisive games vs Greedy; auto-tuning conflicts with the
+  "no learning across games" assumption and is unnecessary at present.
+- **Note on §3**: a non-cycle JOIN's real σ swing is ±4/0 (the §3 "±2" is Δ#heads); the
+  bot reasons in real σ. See `specs/011-game-theoretic-bot/research.md` (IC-1).

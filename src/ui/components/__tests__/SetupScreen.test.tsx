@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { SetupScreen } from "../SetupScreen";
 
@@ -22,11 +22,11 @@ describe("SetupScreen a11y", () => {
 
     const humanBtn = screen.getByRole("radio", { name: /human/i });
     const randomBtn = screen.getByRole("radio", { name: /random/i });
-    const greedyBtn = screen.getByRole("radio", { name: /greedy/i });
+    const strategicBtn = screen.getByRole("radio", { name: /strategic/i });
 
     expect(humanBtn.getAttribute("aria-checked")).toBe("true");
     expect(randomBtn.getAttribute("aria-checked")).toBe("false");
-    expect(greedyBtn.getAttribute("aria-checked")).toBe("false");
+    expect(strategicBtn.getAttribute("aria-checked")).toBe("false");
   });
 
   it("start button has aria-label", () => {
@@ -43,7 +43,6 @@ describe("SetupScreen a11y", () => {
       const styles = window.getComputedStyle(opt);
       const minHeight = Number.parseInt(styles.minHeight, 10);
       const minWidth = Number.parseInt(styles.minWidth, 10);
-      // minHeight/minWidth may be returned as pixels or empty string in jsdom
       if (!Number.isNaN(minHeight)) {
         expect(minHeight).toBeGreaterThanOrEqual(44);
       }
@@ -51,5 +50,24 @@ describe("SetupScreen a11y", () => {
         expect(minWidth).toBeGreaterThanOrEqual(44);
       }
     }
+  });
+});
+
+describe("SetupScreen opponent selection (FR-001)", () => {
+  it("offers a Strategic bot opponent and no longer offers Greedy", () => {
+    render(<SetupScreen onStart={vi.fn()} />);
+    expect(screen.getByRole("radio", { name: "Strategic bot opponent" })).not.toBeNull();
+    expect(screen.queryByRole("radio", { name: /greedy/i })).toBeNull();
+  });
+
+  it("starting with Strategic selected yields opponent: 'strategic'", () => {
+    const onStart = vi.fn();
+    render(<SetupScreen onStart={onStart} />);
+
+    fireEvent.click(screen.getByRole("radio", { name: "Strategic bot opponent" }));
+    fireEvent.click(screen.getByRole("button", { name: /start game/i }));
+
+    expect(onStart).toHaveBeenCalledTimes(1);
+    expect(onStart.mock.calls[0]?.[0]?.opponent).toBe("strategic");
   });
 });

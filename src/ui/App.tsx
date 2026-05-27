@@ -21,7 +21,7 @@ function getInitialSetupOptions(): GameSetupOptions | null {
   if (typeof window === "undefined") return null;
   const params = new URLSearchParams(window.location.search);
   const mode = params.get("mode");
-  if (mode === "human" || mode === "random" || mode === "greedy") {
+  if (mode === "human" || mode === "random" || mode === "strategic") {
     return {
       opponent: mode,
       playerRole: "HEADS",

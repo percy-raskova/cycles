@@ -1,6 +1,6 @@
 import type { Player } from "@core";
 
-export type BotStrategyUI = "random" | "greedy";
+export type BotStrategyUI = "random" | "strategic";
 export type OpponentType = "human" | BotStrategyUI;
 
 export interface GameSetupOptions {

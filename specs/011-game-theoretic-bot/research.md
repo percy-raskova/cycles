@@ -265,3 +265,55 @@ synchronous bot blocks paint; otherwise the bot runs synchronously inside the ex
 2,000 ms timer causes a visible UI stall on a complex board. If yes, add a chunked/
 async wrapper analogous to the existing `yieldingGreedyBot`; if no, drop the wrapper
 entirely (simplest). Decide from the `bot-perf` measurement, do not assume.
+
+---
+
+## Implementation Corrections (discovered during `/speckit-implement`)
+
+These supersede earlier decisions where noted; recorded here per Constitution VII
+(document divergences) so the reasoning is preserved.
+
+### IC-1 — σ swing of a non-cycle JOIN is ±4/0, not ±2/0 (corrects analysis §3)
+
+`cycles-game-theory.md` §3 reports a non-cycle JOIN's `Δσ` as ±2; that quantity is
+actually `Δ(#heads)`. The real `σ = #H − #T` swing is **double** (each flipped endpoint
+moves σ by 2), i.e. **+4 / 0 / −4** (both-tails / mixed / both-heads, Heads perspective).
+The engine (`applyMove`) is the source of truth (Constitution VII); the bot reasons in
+real σ so the minimax leaf is the true win margin. `strategic-sigma.test.ts` cross-checks
+the analytic Δσ against `applyMove` for every legal JOIN. Move-preference ordering is
+unchanged, so heuristic direction is unaffected — only the magnitude/label is corrected.
+
+### IC-2 — Minimax leaf must be antisymmetric; tempo moved to a root move-bias (revises Q7/R8)
+
+Negamax requires a zero-sum leaf: `v(s,P) = −v(s,¬P)`. The σ, boundary-safety, and
+center-exposure terms are antisymmetric, but **tempo is player-symmetric** (a property of
+the position, "no +2 for either side"). Including it in the leaf broke antisymmetry and —
+through the per-ply negations — biased the search so badly it preferred opening with the
+*opponent's* face. Fix: the leaf is **σ + boundary + center only** (antisymmetric, sound),
+and **tempo (FR-006) is applied once at the root** as a PLACE-over-JOIN bias
+(`totalScore = backed-up value + W_TEMPO·tempo(move)`), never inside negamax. This is also
+a more faithful reading of FR-006 ("defer JOINs"), which is a move preference, not a
+position value.
+
+### IC-3 — Interior beam replaced by adaptive full-width depth (revises Q6/R3)
+
+A finite beam pruning the **opponent's response layer** is unsound in the placement phase:
+many placements tie at 1-ply value, so the beam's tie-break kept tactically-irrelevant
+cells and dropped the opponent's deep-best reply, making the search **overvalue
+material-sacrificing lines** (verified: beam-off chose the correct opening, beam-on did
+not). Replacement: **no beam**; instead adapt the full-width search depth to the branching
+factor (`search.ts` `effectiveDepth`): full 3-ply when branching ≤ 16 (alpha-beta keeps
+this ~b² and affordable), sound full-width 2-ply otherwise, and exhaustive for ≤200-leaf
+endgames. This is both sounder and faster than the beam (measured avg ~19 ms / worst
+~44 ms unloaded, vs the beam's ~73 ms). Move ordering now uses the accurate 1-ply value
+`−v(successor)` (successors cached for reuse, so no extra `applyMove`), which also makes
+alpha-beta prune well. `K_BEAM` defaults to ∞ (beam disabled); the knob remains for
+experiments.
+
+### IC-4 — SC-001 verified
+
+With the corrected, sound bot, a 60-game Strategic-vs-Greedy calibration (both color
+assignments, alternating starts) gave **Strategic 30 / Greedy 0 / 30 draws, 0 crashes** —
+a 100% decisive win rate, far exceeding the SC-001 ≥55% target. The default weights (R8)
+are therefore committed without further tuning; the gated 1000-game test asserts SC-001
+on demand.

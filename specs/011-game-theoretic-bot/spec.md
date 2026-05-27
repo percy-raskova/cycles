@@ -115,6 +115,17 @@ A developer or researcher can inspect the Strategic bot's source and see a clear
 - **Q8** (resolves analyze finding N1): How is the move **timeout** implemented without breaking engine purity (Constitution I/VI) or determinism (FR-002)?  
   **A**: **Dependency injection.** The core search never references `performance`/`Date`; instead it accepts an optional injected clock `now?: () => number` plus `deadlineMs`. When omitted (the default, used by tests/tournaments/CLI) the search is pure and deterministic. The UI (`src/ui/`, where timing is allowed) passes `now: () => performance.now()` and `deadlineMs: 2000`. This keeps `src/core/` free of ambient-time dependencies while preserving the production safety valve.
 
+> **Implementation corrections** (see `research.md` → *Implementation Corrections*): during
+> build, three refinements were made and verified by tests — (IC-1) a non-cycle JOIN's real
+> σ swing is ±4/0, not the ±2/0 mislabelled in analysis §3 (the engine is authoritative);
+> (IC-2) the minimax leaf is **σ + boundary + center only** (antisymmetric, required for
+> negamax soundness) and **tempo/FR-006 is applied as a root PLACE-over-JOIN bias**, not a
+> leaf term (Q7 amended); (IC-3) the interior beam (Q6) was unsound in the placement phase
+> and is replaced by **adaptive full-width depth** — full 3-ply when branching ≤ 16, sound
+> full-width 2-ply otherwise, exhaustive for ≤200-leaf endgames (FR-005's "all root
+> candidates evaluated" still holds; the beam knob remains but defaults off). SC-001 was
+> verified at 100% decisive wins vs Greedy with these corrections.
+
 ## Assumptions
 
 - The existing `GameState`, `Move`, and `applyMove` APIs remain stable; no engine changes are required beyond adding the new bot.
