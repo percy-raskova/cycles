@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { canUndo, createSession, getTurnPrompt, reset, step, undo } from "../../session";
 import type { GameSession } from "../../session";
+import { canUndo, createSession, getTurnPrompt, reset, step, undo } from "../../session";
 import { joinCoins, legalJoins, placeCoin } from "../../state";
 import type { Move } from "../../types";
 

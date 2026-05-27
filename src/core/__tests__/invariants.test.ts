@@ -1,7 +1,7 @@
 import fc from "fast-check";
-import { describe, expect, it } from "vitest";
-import { createSession, step, undo } from "../session";
+import { describe, it } from "vitest";
 import type { GameSession } from "../session";
+import { createSession, step, undo } from "../session";
 import { createInitialState, placeCoin } from "../state";
 
 describe("property-based invariants", () => {

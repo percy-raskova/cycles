@@ -4,7 +4,10 @@ import { computeFinalScore } from "@core";
 function Group({
   title,
   children,
-}: { readonly title: string; readonly children: React.ReactNode }) {
+}: {
+  readonly title: string;
+  readonly children: React.ReactNode;
+}) {
   return (
     <div className="group">
       <span className="group-title">{title}</span>
@@ -16,7 +19,10 @@ function Group({
 function TurnPanel({
   session,
   notice,
-}: { readonly session: GameSession; readonly notice: string | null }) {
+}: {
+  readonly session: GameSession;
+  readonly notice: string | null;
+}) {
   const isHeads = session.state.currentPlayer === "HEADS";
   return (
     <Group title="&#9679; Turn">

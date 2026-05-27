@@ -1,5 +1,5 @@
-import { computeFinalScore } from "@core";
 import type { FinalScore, GameSession } from "@core";
+import { computeFinalScore } from "@core";
 
 interface GameOverPanelProps {
   readonly session?: GameSession;

@@ -1,7 +1,8 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
-  "organizeImports": {
-    "enabled": true
+  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "files": {
+    "includes": ["src/**", "tests/**", "scripts/**", "*.ts", "*.json", "index.html"]
   },
   "formatter": {
     "enabled": true,
@@ -16,64 +17,109 @@
       "complexity": {
         "noExcessiveCognitiveComplexity": {
           "level": "error",
-          "options": {
-            "maxAllowedComplexity": 15
-          }
+          "options": { "maxAllowedComplexity": 15 }
+        },
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": { "maxLines": 100, "skipBlankLines": true }
         }
       },
       "correctness": {
-        "noUnusedVariables": "error"
+        "noUnusedVariables": "error",
+        "useExhaustiveDependencies": "error",
+        "useHookAtTopLevel": "error",
+        "useJsxKeyInIterable": "error"
       },
       "style": {
+        "useConst": "error",
+        "noNonNullAssertion": "error",
+        "useImportType": "error",
+        "useExportType": "error",
+        "noDescendingSpecificity": "off"
+      },
+      "suspicious": {
         "noVar": "error",
-        "useConst": "error"
+        "noExplicitAny": "error",
+        "noDoubleEquals": "error",
+        "noArrayIndexKey": "error",
+        "noConsole": {
+          "level": "error",
+          "options": { "allow": ["error", "info", "warn", "debug"] }
+        }
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "error",
+        "noBlankTarget": "error"
       }
     }
   },
-  "files": {
-    "ignore": [
-      "node_modules",
-      "dist",
-      ".specify",
-      ".opencode",
-      "coverage",
-      "test-results",
-      "playwright-report"
-    ]
-  },
   "overrides": [
     {
-      "include": ["src/ui/components/mobile/MobileBoard.tsx"],
+      "includes": ["src/core/**"],
       "linter": {
         "rules": {
-          "a11y": {
-            "useSemanticElements": "off"
-          },
-          "suspicious": {
-            "noArrayIndexKey": "off"
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "react": "Engine (src/core) must be pure — no React (Constitution Principle I).",
+                  "react-dom": "Engine (src/core) must be pure — no React DOM (Constitution Principle I).",
+                  "@ui": "Engine (src/core) must not import the UI layer.",
+                  "@ui/lib/logger": "Engine must not depend on UI logging."
+                }
+              }
+            }
           }
         }
       }
     },
     {
-      "include": ["src/ui/components/mobile/BottomSheet.tsx"],
+      "includes": [
+        "src/cli/**",
+        "scripts/**",
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "tests/**"
+      ],
+      "linter": { "rules": { "suspicious": { "noConsole": "off" } } }
+    },
+    {
+      "includes": [
+        "src/ui/components/CoinView.tsx",
+        "src/ui/components/GridView.tsx",
+        "src/ui/components/FaceSelector.tsx",
+        "src/ui/components/SetupScreen.tsx",
+        "src/ui/components/mobile/MobileBoard.tsx",
+        "src/ui/components/mobile/BottomSheet.tsx",
+        "src/ui/components/mobile/Drawer.tsx"
+      ],
       "linter": {
         "rules": {
-          "suspicious": {
-            "noArrayIndexKey": "off"
-          }
+          "a11y": { "useSemanticElements": "off", "noStaticElementInteractions": "off" }
         }
       }
     },
     {
-      "include": ["src/ui/components/SetupScreen.tsx"],
-      "linter": {
-        "rules": {
-          "a11y": {
-            "useSemanticElements": "off"
-          }
-        }
-      }
+      "includes": [
+        "src/ui/components/mobile/MobileBoard.tsx",
+        "src/ui/components/mobile/BottomSheet.tsx"
+      ],
+      "linter": { "rules": { "suspicious": { "noArrayIndexKey": "off" } } }
+    },
+    {
+      "includes": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/__tests__/**",
+        "tests/**",
+        "src/ui/components/**",
+        "src/ui/pages/**",
+        "src/ui/App.tsx",
+        "src/ui/main.tsx"
+      ],
+      "linter": { "rules": { "complexity": { "noExcessiveLinesPerFunction": "off" } } }
     }
   ]
 }

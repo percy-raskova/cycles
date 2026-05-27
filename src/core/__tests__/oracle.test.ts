@@ -1,5 +1,5 @@
 import fc from "fast-check";
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 import { areEdgesEqual, edgeIntersects, isQueenLine } from "../geometry";
 import { applyMove } from "../move";
 import { createInitialState, legalJoins, legalPlacements, placeCoin, positionKey } from "../state";

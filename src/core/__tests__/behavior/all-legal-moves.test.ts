@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { allLegalMoves } from "../../bots/legal-moves";
 import { applyMove } from "../../move";
-import { createInitialState, joinCoins, legalJoins, legalPlacements, placeCoin } from "../../state";
+import { createInitialState, joinCoins, legalJoins, placeCoin } from "../../state";
 
 describe("allLegalMoves", () => {
   it("returns PLACE moves on empty board", () => {

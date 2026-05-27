@@ -1,6 +1,5 @@
 import { positionKey } from "@core";
 import type { Position } from "@core/types";
-import { CELL_SIZE, MARGIN, VIEWBOX_SIZE } from "@ui/lib/constants";
 import React, { useMemo } from "react";
 
 interface GridDotProps {

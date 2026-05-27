@@ -1,13 +1,13 @@
 import { Desktop } from "@ui/components/Desktop";
 import { MenuBar } from "@ui/components/MenuBar";
 import { Modal } from "@ui/components/Modal";
+import { MobileApp } from "@ui/components/mobile";
 import { Scanlines } from "@ui/components/Scanlines";
 import { SetupScreen } from "@ui/components/SetupScreen";
 import { StatusBar } from "@ui/components/StatusBar";
 import { Taskbar } from "@ui/components/Taskbar";
 import { TitleBar } from "@ui/components/TitleBar";
 import { Toolbar } from "@ui/components/Toolbar";
-import { MobileApp } from "@ui/components/mobile";
 import { useBotGame } from "@ui/hooks/useBotGame";
 import { useGameSession } from "@ui/hooks/useGameSession";
 import { deriveLog } from "@ui/lib/deriveLog";

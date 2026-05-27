@@ -1,11 +1,11 @@
 import { pointInPolygon, pointOnSegment } from "./geometry";
 import {
-  GRID_SIZE,
-  TOTAL_COINS,
   createInitialState,
+  GRID_SIZE,
   isLegalJoin,
   placeCoin,
   positionKey,
+  TOTAL_COINS,
 } from "./state";
 import type { Coin, CoinFace, Edge, GameState, Move, Position } from "./types";
 

@@ -1,3 +1,4 @@
+import type { CoinFace, GameSession, Move, Position } from "@core";
 import {
   canJoin,
   hasLegalMoves,
@@ -6,10 +7,9 @@ import {
   positionBlockedByEdge,
   positionKey,
 } from "@core";
-import type { CoinFace, GameSession, Move, Position } from "@core";
 import type { ApplyMoveResult } from "@ui/hooks/useGameSession";
 import { createLogger } from "@ui/lib/logger";
-import { type Phase, gamePageReducer, initialGamePageState } from "@ui/pages/gamePageReducer";
+import { gamePageReducer, initialGamePageState, type Phase } from "@ui/pages/gamePageReducer";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { BottomSheet } from "./BottomSheet";
 import { Drawer } from "./Drawer";

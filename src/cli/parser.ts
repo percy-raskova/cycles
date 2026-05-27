@@ -1,5 +1,4 @@
-import type { CoinFace, Move } from "../core/types";
-import type { Position } from "../core/types";
+import type { CoinFace, Move, Position } from "../core/types";
 
 export type ParseResult =
   | { readonly kind: "ok"; readonly move: Move }

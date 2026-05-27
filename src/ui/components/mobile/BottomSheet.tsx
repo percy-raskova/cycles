@@ -63,7 +63,9 @@ export function BottomSheet({ open, initialTab = "log", onClose, logEntries }: B
 
 function SheetLog({
   entries,
-}: { readonly entries: readonly { readonly action: string; readonly text: string }[] }) {
+}: {
+  readonly entries: readonly { readonly action: string; readonly text: string }[];
+}) {
   if (entries.length === 0) {
     return (
       <p style={{ color: "var(--ink-mute)", fontStyle: "italic" }}>

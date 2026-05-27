@@ -1,5 +1,5 @@
-import { createSession, createStrategicBot, hasLegalMoves, randomBot } from "@core";
 import type { GameSession, Move, Player } from "@core";
+import { createSession, createStrategicBot, hasLegalMoves, randomBot } from "@core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { GameSetupOptions } from "../types/setup";
 import { useGameSession } from "./useGameSession";

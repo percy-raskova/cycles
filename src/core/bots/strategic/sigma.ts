@@ -1,5 +1,4 @@
-import { coinsInsideCycle, findCycle } from "../../move";
-import { applyMove } from "../../move";
+import { applyMove, coinsInsideCycle, findCycle } from "../../move";
 import { positionKey } from "../../state";
 import type { GameState, Move, Player, Position } from "../../types";
 

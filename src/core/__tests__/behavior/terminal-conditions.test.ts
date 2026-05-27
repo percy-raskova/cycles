@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { makeBlockedBoardState } from "../../../../tests/fixtures/board-states";
-import { computeFinalScore, createSession, hasLegalMoves, step } from "../../session";
 import type { GameSession } from "../../session";
+import { computeFinalScore, createSession, hasLegalMoves, step } from "../../session";
 import { joinCoins, legalJoins, placeCoin } from "../../state";
 
 describe("Terminal conditions", () => {

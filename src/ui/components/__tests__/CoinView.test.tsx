@@ -1,5 +1,3 @@
-// @vitest-environment jsdom
-import { createInitialState, placeCoin } from "@core";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { CoinView } from "../CoinView";

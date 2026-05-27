@@ -1,21 +1,15 @@
-export type * from "./types";
-export { positionBlockedByEdge } from "./geometry";
-export {
-  GRID_SIZE,
-  TOTAL_COINS,
-  canJoin,
-  createInitialState,
-  isLegalJoin,
-  legalJoins,
-  legalPlacements,
-  placeCoin,
-  positionKey,
-  passesThroughCoin,
-} from "./state";
-export { applyMove, coinsInsideCycle, findCycle, isValidState } from "./move";
-export { scoreForPlayer } from "./score";
 export type { BotFunction, BotStrategy } from "./bots/index";
 export * from "./bots/index";
+export { positionBlockedByEdge } from "./geometry";
+export { applyMove, coinsInsideCycle, findCycle, isValidState } from "./move";
+export { scoreForPlayer } from "./score";
+export {
+  deserializeSession,
+  deserializeState,
+  serializeSession,
+  serializeState,
+} from "./serialization";
+export type { FinalScore, GameSession, StepResult } from "./session";
 export {
   canUndo,
   computeFinalScore,
@@ -26,10 +20,16 @@ export {
   step,
   undo,
 } from "./session";
-export type { FinalScore, GameSession, StepResult } from "./session";
 export {
-  deserializeSession,
-  deserializeState,
-  serializeSession,
-  serializeState,
-} from "./serialization";
+  canJoin,
+  createInitialState,
+  GRID_SIZE,
+  isLegalJoin,
+  legalJoins,
+  legalPlacements,
+  passesThroughCoin,
+  placeCoin,
+  positionKey,
+  TOTAL_COINS,
+} from "./state";
+export type * from "./types";

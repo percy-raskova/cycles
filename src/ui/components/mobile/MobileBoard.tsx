@@ -1,5 +1,5 @@
-import { positionKey } from "@core";
 import type { Coin, GameState, Position } from "@core";
+import { positionKey } from "@core";
 import { forwardRef } from "react";
 
 const M_CELL = 80;

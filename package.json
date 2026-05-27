@@ -18,15 +18,15 @@
     "e2e:ui": "playwright test --ui",
     "e2e:debug": "playwright test --debug",
     "e2e:report": "open playwright-report/index.html 2>/dev/null || xdg-open playwright-report/index.html",
-    "lint": "biome check .",
-    "lint:write": "biome check --write .",
+    "lint": "biome check --error-on-warnings .",
+    "lint:write": "biome check --write --error-on-warnings .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
     "cli": "bun run src/cli/main.ts",
     "lint:staged": "lint-staged"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2",
     "@playwright/test": "^1.60.0",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -56,6 +56,8 @@
     "pre-commit": "bun run lint:staged && bun run typecheck && bun run test:run"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,json,md}": ["biome check --write --no-errors-on-unmatched"]
+    "*.{ts,tsx,js,jsx,json,md}": [
+      "biome check --write --no-errors-on-unmatched --error-on-warnings"
+    ]
   }
 }

@@ -1,6 +1,4 @@
 import { render, screen } from "@testing-library/react";
-// @vitest-environment jsdom
-import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import App from "../../src/ui/App";
 import { startGameFromSetup } from "../helpers/setup-helpers";

@@ -76,10 +76,10 @@
   --bev: 2px;
 
   /* ---- Legacy shadow/border aliases ---- */
-  --shadow-raised: inset 1px 1px 0 0 rgba(255, 255, 255, 0.55), inset -1px -1px 0 0
-    var(--chrome-shadow);
-  --shadow-sunken: inset 1px 1px 0 0 var(--chrome-shadow), inset -1px -1px 0 0
-    rgba(255, 255, 255, 0.4);
+  --shadow-raised:
+    inset 1px 1px 0 0 rgba(255, 255, 255, 0.55), inset -1px -1px 0 0 var(--chrome-shadow);
+  --shadow-sunken:
+    inset 1px 1px 0 0 var(--chrome-shadow), inset -1px -1px 0 0 rgba(255, 255, 255, 0.4);
   --border-raised: var(--bev) solid;
   --border-sunken: var(--bev) solid;
   --focus-ring: 2px solid var(--neon-magenta);
@@ -97,7 +97,9 @@
   border-left-color: var(--chrome-light);
   border-right-color: var(--chrome-dark);
   border-bottom-color: var(--chrome-dark);
-  box-shadow: inset 1px 1px 0 0 rgba(255, 255, 255, 0.55), inset -1px -1px 0 0 var(--chrome-shadow);
+  box-shadow:
+    inset 1px 1px 0 0 rgba(255, 255, 255, 0.55),
+    inset -1px -1px 0 0 var(--chrome-shadow);
   background: var(--chrome);
 }
 
@@ -109,7 +111,9 @@
   border-left-color: var(--chrome-dark);
   border-right-color: var(--chrome-light);
   border-bottom-color: var(--chrome-light);
-  box-shadow: inset 1px 1px 0 0 var(--chrome-shadow), inset -1px -1px 0 0 rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 1px 1px 0 0 var(--chrome-shadow),
+    inset -1px -1px 0 0 rgba(255, 255, 255, 0.4);
 }
 
 /* Thin raised bevel variant */
@@ -127,7 +131,9 @@
   border-left-color: var(--chrome-dark);
   border-right-color: var(--chrome-light);
   border-bottom-color: var(--chrome-light);
-  box-shadow: inset 1px 1px 0 0 var(--chrome-shadow), inset -1px -1px 0 0 rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 1px 1px 0 0 var(--chrome-shadow),
+    inset -1px -1px 0 0 rgba(255, 255, 255, 0.4);
 }
 
 /* ============================================================
@@ -164,7 +170,8 @@ button {
 .desktop {
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse 70% 60% at 50% 78%, rgba(255, 57, 212, 0.18), transparent 60%),
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 78%, rgba(255, 57, 212, 0.18), transparent 60%),
     radial-gradient(ellipse 50% 50% at 50% 30%, rgba(0, 56, 168, 0.35), transparent 70%),
     linear-gradient(180deg, #0d0420 0%, #1a0b2e 45%, #2a0f4a 70%, #5a1b66 100%);
   overflow: hidden;
@@ -189,10 +196,12 @@ button {
   );
   opacity: 0.45;
   filter: blur(0.2px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0 50%, transparent 50%),
+  -webkit-mask-image:
+    linear-gradient(180deg, #000 0 50%, transparent 50%),
     repeating-linear-gradient(180deg, #000 0 18px, transparent 18px 22px);
   -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(180deg, #000 0 50%, transparent 50%),
+  mask-image:
+    linear-gradient(180deg, #000 0 50%, transparent 50%),
     repeating-linear-gradient(180deg, #000 0 18px, transparent 18px 22px);
   mask-composite: intersect;
   box-shadow: 0 0 80px 20px rgba(255, 57, 212, 0.18);
@@ -206,7 +215,8 @@ button {
   height: 50vh;
   transform: translateX(-50%) perspective(420px) rotateX(58deg);
   transform-origin: 50% 0%;
-  background: repeating-linear-gradient(
+  background:
+    repeating-linear-gradient(
       180deg,
       transparent 0 calc(8% - 1px),
       rgba(255, 57, 212, 0.22) calc(8% - 1px) 8%
@@ -235,7 +245,8 @@ button {
 .desktop .stars {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(1px 1px at 12% 18%, #fff 100%, transparent),
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, #fff 100%, transparent),
     radial-gradient(1px 1px at 23% 8%, #fff 100%, transparent),
     radial-gradient(1px 1px at 78% 14%, #f4b8f0 100%, transparent),
     radial-gradient(1px 1px at 88% 22%, #fff 100%, transparent),
@@ -367,7 +378,9 @@ body.no-scan .scanlines {
   line-height: 1;
   letter-spacing: 0.04em;
   color: #fff;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.55), 0 0 8px rgba(255, 200, 240, 0.35);
+  text-shadow:
+    1px 1px 0 rgba(0, 0, 0, 0.55),
+    0 0 8px rgba(255, 200, 240, 0.35);
 }
 
 .title-buttons {
@@ -460,7 +473,9 @@ body.no-scan .scanlines {
   height: 8px;
   border-radius: 50%;
   background: var(--cyan);
-  box-shadow: 0 0 6px var(--cyan), inset 0 0 1px #fff;
+  box-shadow:
+    0 0 6px var(--cyan),
+    inset 0 0 1px #fff;
   animation: blink 1.2s steps(2, end) infinite;
 }
 
@@ -607,7 +622,8 @@ body.no-scan .scanlines {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, rgba(255, 57, 212, 0.1) 0%, transparent 60%),
+  background:
+    radial-gradient(ellipse at center, rgba(255, 57, 212, 0.1) 0%, transparent 60%),
     repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0 2px, transparent 2px 4px);
   pointer-events: none;
 }
@@ -754,7 +770,9 @@ body.no-scan .scanlines {
   font-weight: 700;
   font-size: 14px;
   color: #1a0b2e;
-  box-shadow: inset 2px 2px 0 0 rgba(255, 255, 255, 0.6), inset -2px -2px 0 0 rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 2px 2px 0 0 rgba(255, 255, 255, 0.6),
+    inset -2px -2px 0 0 rgba(0, 0, 0, 0.35);
 }
 
 .turn.heads .chip {
@@ -793,14 +811,18 @@ body.no-scan .scanlines {
     var(--orchid) 60%,
     var(--orchid-deep)
   );
-  box-shadow: inset 1px 1px 0 0 rgba(255, 255, 255, 0.6), inset -1px -1px 0 0 rgba(0, 0, 0, 0.3);
+  box-shadow:
+    inset 1px 1px 0 0 rgba(255, 255, 255, 0.6),
+    inset -1px -1px 0 0 rgba(0, 0, 0, 0.3);
   position: relative;
 }
 
 .supply .pip.spent {
   background: var(--chrome-face);
   border-color: var(--chrome-dark);
-  box-shadow: inset 1px 1px 0 0 var(--chrome-dark), inset -1px -1px 0 0 var(--chrome-light);
+  box-shadow:
+    inset 1px 1px 0 0 var(--chrome-dark),
+    inset -1px -1px 0 0 var(--chrome-light);
 }
 
 .supply .pip.spent::after {
@@ -1002,7 +1024,9 @@ body.no-scan .scanlines {
 .dot {
   fill: var(--orchid);
   filter: drop-shadow(0 0 2px rgba(218, 112, 214, 0.35));
-  transition: r 120ms, fill 120ms;
+  transition:
+    r 120ms,
+    fill 120ms;
 }
 
 .dot.legal {
@@ -1133,8 +1157,10 @@ body.no-scan .scanlines {
   border-left-color: var(--chrome-light);
   border-right-color: var(--chrome-dark);
   border-bottom-color: var(--chrome-dark);
-  box-shadow: inset 1px 1px 0 0 #fff, inset -1px -1px 0 0 var(--chrome-shadow), 4px 4px 0 0
-    rgba(0, 0, 0, 0.55);
+  box-shadow:
+    inset 1px 1px 0 0 #fff,
+    inset -1px -1px 0 0 var(--chrome-shadow),
+    4px 4px 0 0 rgba(0, 0, 0, 0.55);
   z-index: 50;
 }
 
@@ -1158,7 +1184,9 @@ body.no-scan .scanlines {
   font-family: var(--font-display);
   font-size: 28px;
   color: #1a0b2e;
-  box-shadow: inset 2px 2px 0 0 rgba(255, 255, 255, 0.6), inset -2px -2px 0 0 rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 2px 2px 0 0 rgba(255, 255, 255, 0.6),
+    inset -2px -2px 0 0 rgba(0, 0, 0, 0.35);
 }
 
 .face-choice.heads {
@@ -1316,7 +1344,8 @@ body.no-scan .scanlines {
   display: inline-block;
   width: 20px;
   height: 20px;
-  background: radial-gradient(circle at 50% 50%, #ffe9a8 0 22%, transparent 22%),
+  background:
+    radial-gradient(circle at 50% 50%, #ffe9a8 0 22%, transparent 22%),
     radial-gradient(circle at 50% 20%, var(--bi-magenta) 0 26%, transparent 26%),
     radial-gradient(circle at 80% 35%, var(--orchid) 0 26%, transparent 26%),
     radial-gradient(circle at 80% 75%, var(--bi-blue) 0 26%, transparent 26%),
@@ -1509,7 +1538,9 @@ body.no-scan .scanlines {
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   * {
+    /* biome-ignore lint/complexity/noImportantStyles: prefers-reduced-motion must force-disable all animation */
     animation: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: prefers-reduced-motion must force-disable all transitions */
     transition: none !important;
   }
 }

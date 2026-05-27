@@ -1,3 +1,4 @@
+import type { CoinFace, GameSession, Move, Position } from "@core";
 import {
   canJoin,
   hasLegalMoves,
@@ -6,7 +7,6 @@ import {
   positionBlockedByEdge,
   positionKey,
 } from "@core";
-import type { CoinFace, GameSession, Move, Position } from "@core";
 import { BoardView } from "@ui/components/BoardView";
 import { FaceSelector } from "@ui/components/FaceSelector";
 import { GameOverPanel } from "@ui/components/GameOverPanel";
@@ -14,7 +14,7 @@ import { Sidebar } from "@ui/components/Sidebar";
 import type { ApplyMoveResult } from "@ui/hooks/useGameSession";
 import { createLogger } from "@ui/lib/logger";
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import { type Phase, gamePageReducer, initialGamePageState } from "./gamePageReducer";
+import { gamePageReducer, initialGamePageState, type Phase } from "./gamePageReducer";
 
 const log = createLogger("ui");
 

@@ -6,8 +6,8 @@ import {
   serializeSession,
   serializeState,
 } from "../../serialization";
-import { createSession, step } from "../../session";
 import type { GameSession } from "../../session";
+import { createSession, step } from "../../session";
 import { createInitialState, placeCoin } from "../../state";
 
 /** Drive a session through a sequence of PLACE moves to reach a non-trivial state. */

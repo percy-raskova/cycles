@@ -1,5 +1,5 @@
-import { computeFinalScore } from "@core";
 import type { GameSession } from "@core";
+import { computeFinalScore } from "@core";
 
 interface MobileGameOverProps {
   readonly session: GameSession;

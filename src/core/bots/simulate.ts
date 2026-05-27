@@ -1,7 +1,7 @@
 import {
-  type GameSession,
   computeFinalScore,
   createSession,
+  type GameSession,
   hasLegalMoves,
   step,
 } from "../session";

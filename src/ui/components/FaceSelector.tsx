@@ -1,8 +1,7 @@
 import type { CoinFace, Position } from "@core/types";
 import { usePopupPosition } from "@ui/hooks/usePopupPosition";
 import { CELL_SIZE, GRID_SIZE, MARGIN, VIEWBOX_SIZE } from "@ui/lib/constants";
-import { useRef } from "react";
-import React from "react";
+import React, { useRef } from "react";
 
 interface FaceSelectorProps {
   readonly position: Position;

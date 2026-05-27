@@ -38,6 +38,7 @@ function BoardViewImpl(
   }: BoardViewProps,
   ref: React.Ref<SVGSVGElement>,
 ) {
+  // biome-ignore lint/correctness/useHookAtTopLevel: forwardRef render fn — Biome misreads (props, ref) as a non-component; this hook IS at component top level
   const edges = useMemo(
     () =>
       state.edges.map((edge) => (
@@ -49,6 +50,7 @@ function BoardViewImpl(
     [state.edges],
   );
 
+  // biome-ignore lint/correctness/useHookAtTopLevel: forwardRef render fn — Biome misreads (props, ref) as a non-component; this hook IS at component top level
   const coins = useMemo(
     () =>
       Array.from(state.coins.values()).map((coin) => {

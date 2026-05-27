@@ -72,6 +72,11 @@ function CoinViewImpl({
       onMouseEnter={onHover ? () => onHover(coin.position) : undefined}
       onMouseLeave={onHover ? () => onHover(null) : undefined}
       role={onClick ? "button" : undefined}
+      aria-label={
+        onClick
+          ? `${coin.face} coin at row ${coin.position.row}, column ${coin.position.col}`
+          : undefined
+      }
       tabIndex={onClick ? 0 : undefined}
       style={{ cursor: onClick ? "pointer" : "default" }}
     >

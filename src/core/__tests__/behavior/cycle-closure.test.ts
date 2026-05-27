@@ -221,35 +221,37 @@ describe("Cycle closure", () => {
         ],
         outsideCoins: [{ row: 0, col: 0 }],
       },
-    ])(
-      "$name — returns boundary + interior coins",
-      ({ vertices, interiorCoins, boundaryCoins, outsideCoins }) => {
-        let state = createInitialState();
+    ])("$name — returns boundary + interior coins", ({
+      vertices,
+      interiorCoins,
+      boundaryCoins,
+      outsideCoins,
+    }) => {
+      let state = createInitialState();
 
-        // Place all coins (must stay within TOTAL_COINS = 12)
-        const allCoins = [...interiorCoins, ...boundaryCoins, ...outsideCoins];
-        for (const pos of allCoins) {
-          state = applyMove(state, { type: "PLACE", position: pos, face: "heads" });
-        }
+      // Place all coins (must stay within TOTAL_COINS = 12)
+      const allCoins = [...interiorCoins, ...boundaryCoins, ...outsideCoins];
+      for (const pos of allCoins) {
+        state = applyMove(state, { type: "PLACE", position: pos, face: "heads" });
+      }
 
-        const first = vertices[0];
-        if (!first) throw new Error("vertices array is empty");
-        const cyclePath: Position[] = [...vertices, first]; // close the polygon
-        const result = coinsInsideCycle(state, cyclePath);
-        const resultKeys = new Set(result.map((p) => `${p.row},${p.col}`));
+      const first = vertices[0];
+      if (!first) throw new Error("vertices array is empty");
+      const cyclePath: Position[] = [...vertices, first]; // close the polygon
+      const result = coinsInsideCycle(state, cyclePath);
+      const resultKeys = new Set(result.map((p) => `${p.row},${p.col}`));
 
-        const expected = new Set([
-          ...interiorCoins.map((p) => `${p.row},${p.col}`),
-          ...boundaryCoins.map((p) => `${p.row},${p.col}`),
-        ]);
+      const expected = new Set([
+        ...interiorCoins.map((p) => `${p.row},${p.col}`),
+        ...boundaryCoins.map((p) => `${p.row},${p.col}`),
+      ]);
 
-        expect(resultKeys).toEqual(expected);
+      expect(resultKeys).toEqual(expected);
 
-        for (const pos of outsideCoins) {
-          expect(resultKeys.has(`${pos.row},${pos.col}`)).toBe(false);
-        }
-      },
-    );
+      for (const pos of outsideCoins) {
+        expect(resultKeys.has(`${pos.row},${pos.col}`)).toBe(false);
+      }
+    });
   });
 
   describe("findCycle", () => {
