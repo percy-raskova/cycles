@@ -1,6 +1,3 @@
-<!-- SPECKIT START -->
-Current plan: [specs/010-baseline-bots/plan.md](specs/010-baseline-bots/plan.md)
-<!-- SPECKIT END -->
 
 ## Repo purpose
 - Specification document repo for **CYCLES**, a two-player planar-graph game.
