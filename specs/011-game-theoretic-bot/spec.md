@@ -55,24 +55,26 @@ A developer or researcher can inspect the Strategic bot's source and see a clear
 
 ### Edge Cases
 
-- **What happens when no heuristic produces a clear favorite?** The bot falls back to Greedy-style one-move score maximization rather than making an arbitrary choice.
-- **What happens when the bot is forced to make a move with Δσ ≤ 0?** The bot selects the least damaging move (minimizing score loss or maximizing future options) rather than crashing.
-- **What happens in very late game states with only forced moves?** The bot applies exhaustive search for the final 2–3 moves when the remaining game tree is small enough.
-- **How does the system handle a bot that takes too long?** A configurable timeout (default 5 seconds) triggers fallback to Greedy evaluation for that move.
+- **What happens when the 3-ply minimax search exceeds the time budget?** A configurable move timeout (default 2,000ms) triggers an early cutoff: the bot returns the best move found so far, or falls back to Greedy one-move evaluation if no search has completed.
+- **What happens in very late game states with only forced moves?** When the remaining game tree is small enough (≤ 200 leaf nodes), the bot switches from 3-ply minimax to full exhaustive search to guarantee optimal play for the endgame.
+- **What happens when the bot is forced to make a move with Δσ ≤ 0?** The 3-ply search naturally discovers this through minimax; if all leaf evaluations are negative, the bot picks the move with the least bad minimax value.
+- **What happens when no heuristic produces a clear favorite at the leaf?** The leaf evaluation falls back to Greedy-style one-move score maximization, so the minimax search still has a valid gradient.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 - **FR-001**: The setup screen MUST offer "Strategic" as an opponent option and MUST no longer offer "Greedy".
-- **FR-002**: The Strategic bot MUST be a pure, synchronous function from `GameState` to `Move` with no side effects.
-- **FR-003**: The Strategic bot MUST evaluate placement moves using boundary-preference and center-avoidance heuristics for self-faced coins.
+- **FR-002**: The Strategic bot MUST be a pure, synchronous, deterministic function from `GameState` to `Move` with no side effects. Tie-breaking between equal total scores is deterministic: prefer cycle-closing JOINs, then non-cycle JOINs, then PLACEs; within the same move type, prefer the lexicographically smallest position key.
+- **FR-003**: The Strategic bot MUST evaluate placement moves using boundary-preference and center-avoidance heuristics for both face choices at each empty position, and select the face with the higher heuristic score.
 - **FR-004**: The Strategic bot MUST evaluate non-cycle JOIN moves using the Δσ algebra: strongly prefer +2 edges for the current player, avoid −2 edges unless forced, and treat 0 edges as neutral.
-- **FR-005**: The Strategic bot MUST evaluate cycle-closing JOIN moves by the net swing `2(t − h)` and prefer cycles that enclose more opponent-faced coins than friendly-faced coins.
+- **FR-005**: The Strategic bot MUST evaluate all candidate moves via a 3-ply minimax search with alpha–beta pruning. The evaluation function at leaf nodes is the weighted-sum heuristic suite (FR-003–FR-006). Cycle-closing moves are therefore evaluated as `Δσ_close + v(successor_subgame)` where `v` is the heuristic leaf evaluation.
 - **FR-006**: The Strategic bot MUST detect when both players lack a +2 non-cycle JOIN and, if placements remain available, defer JOINs to manipulate Phase-II tempo.
-- **FR-007**: The Strategic bot MUST fall back to Greedy one-move score maximization when heuristics produce no clear preference.
-- **FR-008**: The bot selection in the setup screen MUST remain accessible (touch targets ≥ 44×44 CSS pixels, visible focus, labels not color-only).
-- **FR-009**: The system MUST support running head-to-head tournaments between any two bot strategies for regression testing.
+- **FR-007**: The Strategic bot MUST combine heuristic scores via a weighted sum with fixed, empirically-tuned weights. The move with the highest total score is selected.
+- **FR-008**: The Strategic bot MUST fall back to Greedy one-move score maximization when all heuristic scores are zero (no heuristic produces a non-neutral evaluation).
+- **FR-009**: The bot selection in the setup screen MUST remain accessible (touch targets ≥ 44×44 CSS pixels, visible focus, labels not color-only).
+- **FR-010**: The system MUST support running head-to-head tournaments between any two bot strategies for regression testing.
+- **FR-011**: The Strategic bot module MUST export a `inspectTopMoves(state, n)` function that returns the top-N candidate moves with per-heuristic score breakdowns, without mutating state.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -85,14 +87,29 @@ A developer or researcher can inspect the Strategic bot's source and see a clear
 ### Measurable Outcomes
 
 - **SC-001**: In a 1,000-game head-to-head tournament with alternating starts, the Strategic bot wins at least 55% of decisive games against Greedy (i.e., wins − losses > 0).
-- **SC-002**: The Strategic bot completes every move in under 100ms on average and under 5,000ms in the worst case (measured on a mid-range development machine).
+- **SC-002**: The Strategic bot completes every move in under 100ms on average and under 2,000ms in the worst case (measured on a mid-range development machine). The 2,000ms worst-case bound aligns with the move-timeout fallback.
 - **SC-003**: The Strategic bot makes zero illegal moves and causes zero crashes across 10,000 full-game simulations.
 - **SC-004**: A developer can identify the code implementing each of the five major heuristic categories from the analysis document within 30 seconds of reading the source file.
+
+## Clarifications
+
+### Session 2026-05-27
+
+- **Q1**: How should multiple heuristics combine into a single move ranking?  
+  **A**: Weighted sum (Option B). Each heuristic assigns a numeric score to every candidate move; scores are multiplied by fixed weights and summed. The move with the highest total wins. Tie-breaking is deterministic (stable sort by move type, then position key).
+- **Q2**: Should the Strategic bot evaluate cycle-closing moves with any lookahead beyond the immediate swing?  
+  **A**: Full 3-ply minimax with alpha–beta pruning (Option C). All move types are searched to fixed depth 3; leaf nodes are scored with the weighted-sum heuristic suite. In very late game states where the remaining tree is small enough, the bot switches to exhaustive search instead.
+- **Q3**: How should the heuristic weights be determined?  
+  **A**: Hand-tuned with manual iteration (Option B). Start with analysis-informed defaults; refine by running head-to-head tournaments against Greedy and observing win-rate changes. Final weights are documented as code constants.
+- **Q4**: Should the Strategic bot ever voluntarily place an opponent-faced coin?  
+  **A**: Self-face default with exceptions (Option B). The bot evaluates both faces for every empty position and chooses the one with the higher heuristic score. Opponent-faced placements are rare and require a positive net heuristic score.
+- **Q5**: Should the Strategic bot export a developer-facing API that returns the top-N ranked moves with per-move heuristic breakdowns?  
+  **A**: Yes, as a separate exported function (Option A). Export a `strategicBot.inspectTopMoves(state, n)` function that returns the top-N candidate moves with their total scores and per-heuristic breakdowns, without mutating state.
 
 ## Assumptions
 
 - The existing `GameState`, `Move`, and `applyMove` APIs remain stable; no engine changes are required beyond adding the new bot.
 - The Greedy bot implementation is retained as a fallback strategy and for tournament comparison, but is removed from the UI selector.
 - The game-theoretic analysis document (`cycles-game-theory.md`) is treated as authoritative but not infallible — heuristics may be tuned or partially overridden based on empirical tournament results.
-- Phase-II exhaustive search is out of scope for this feature; the bot uses heuristics and limited lookahead rather than full game-tree solving.
-- The bot does not learn or adapt across games; each move decision is stateless and deterministic (or deterministic given a fixed random seed for tie-breaking).
+- Phase-II exhaustive search is used only when the remaining game tree is small enough (≤ 200 leaf nodes); otherwise the bot relies on 3-ply minimax with heuristics rather than full game-tree solving.
+- The bot does not learn or adapt across games; each move decision is stateless and deterministic given the same evaluation weights and search depth.
