@@ -1,1 +1,3 @@
-{"feature_directory": "specs/010-baseline-bots"}
+{
+  "feature_directory": "specs/011-game-theoretic-bot"
+}
