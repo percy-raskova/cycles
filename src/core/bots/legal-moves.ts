@@ -5,11 +5,8 @@ export function allLegalMoves(state: GameState): readonly Move[] {
   const moves: Move[] = [];
 
   for (const pos of legalPlacements(state)) {
-    moves.push({
-      type: "PLACE",
-      position: pos,
-      face: state.currentPlayer === "HEADS" ? "heads" : "tails",
-    });
+    moves.push({ type: "PLACE", position: pos, face: "heads" });
+    moves.push({ type: "PLACE", position: pos, face: "tails" });
   }
 
   for (const [a, b] of legalJoins(state)) {

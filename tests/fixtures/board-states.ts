@@ -1,4 +1,5 @@
-import { createInitialState, joinCoins, placeCoin } from "@core";
+import { createInitialState, placeCoin } from "@core";
+import { joinCoins } from "@core/state";
 import type { CoinFace, GameState, Player } from "@core/types";
 
 export function makeInitialState(firstPlayer?: Player): GameState {

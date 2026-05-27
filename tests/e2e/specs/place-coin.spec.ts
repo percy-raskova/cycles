@@ -52,7 +52,9 @@ test.describe("E2E — Place Coin journey", () => {
     await game.clickIntersection(3, 3);
     await expect(game.faceSelectorBackdrop).toBeVisible();
 
-    await game.faceSelectorBackdrop.click();
+    // Click a corner of the backdrop well away from the popup so the
+    // popup does not intercept the pointer event.
+    await game.faceSelectorBackdrop.click({ position: { x: 0, y: 0 } });
     await expect(game.faceSelectorBackdrop).not.toBeVisible();
     await expect(game.coinAt(3, 3)).not.toBeVisible();
   });

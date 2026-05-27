@@ -9,7 +9,7 @@ export interface Position {
 
 export interface Coin {
   readonly position: Position;
-  face: CoinFace;
+  readonly face: CoinFace;
 }
 
 export interface Edge {

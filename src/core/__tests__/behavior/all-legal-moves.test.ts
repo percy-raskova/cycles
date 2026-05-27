@@ -9,7 +9,7 @@ describe("allLegalMoves", () => {
     const moves = allLegalMoves(state);
     expect(moves.length).toBeGreaterThan(0);
     expect(moves.every((m) => m.type === "PLACE")).toBe(true);
-    expect(moves).toHaveLength(49); // all 49 positions
+    expect(moves).toHaveLength(98); // all 49 positions × 2 faces
   });
 
   it("returns JOIN moves when coins exist and can be joined", () => {

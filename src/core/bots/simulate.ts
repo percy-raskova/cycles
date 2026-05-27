@@ -1,6 +1,10 @@
-import { applyMove } from "../move";
-import { type GameSession, computeFinalScore, createSession, hasLegalMoves } from "../session";
-import type { PassMove } from "../types";
+import {
+  type GameSession,
+  computeFinalScore,
+  createSession,
+  hasLegalMoves,
+  step,
+} from "../session";
 import type { BotFunction } from "./index";
 
 export interface SimulationConfig {
@@ -39,37 +43,23 @@ function advanceGame(session: GameSession, botA: BotFunction, botB: BotFunction)
 
   const bot = session.state.currentPlayer === "HEADS" ? botA : botB;
   const move = bot(session.state);
-  const newState = applyMove(session.state, move);
+  const result = step(session, move);
 
-  if (newState.passCount >= 2) {
-    const score = computeFinalScore({ ...session, state: newState });
-    return {
-      ...session,
-      state: newState,
-      history: [...session.history, move],
-      isTerminal: true,
-      winner: score.winner,
-    };
+  if (result.kind === "error") {
+    throw new Error(result.error);
   }
 
-  return { ...session, state: newState, history: [...session.history, move] };
+  return result.session;
 }
 
 function handlePass(session: GameSession): GameSession {
-  const passMove: PassMove = { type: "PASS" };
-  const passState = applyMove(session.state, passMove);
-  const newSession = {
-    ...session,
-    state: passState,
-    history: [...session.history, passMove],
-  };
+  const result = step(session, { type: "PASS" });
 
-  if (passState.passCount >= 2) {
-    const score = computeFinalScore(newSession);
-    return { ...newSession, isTerminal: true, winner: score.winner };
+  if (result.kind === "error") {
+    throw new Error(result.error);
   }
 
-  return newSession;
+  return result.session;
 }
 
 export function runSimulation(config: SimulationConfig): SimulationResult {

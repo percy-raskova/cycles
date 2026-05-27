@@ -24,6 +24,10 @@ function isValidPosition(pos: Position): boolean {
 }
 
 export function placeCoin(state: GameState, position: Position, face: CoinFace): GameState {
+  if (!Number.isInteger(position.row) || !Number.isInteger(position.col)) {
+    throw new Error(`Position must have integer coordinates: (${position.row}, ${position.col})`);
+  }
+
   if (!isValidPosition(position)) {
     throw new Error(`Invalid position: (${position.row}, ${position.col})`);
   }
@@ -42,11 +46,11 @@ export function placeCoin(state: GameState, position: Position, face: CoinFace):
   }
 
   const newCoins = new Map(state.coins);
-  newCoins.set(key, { position, face });
+  newCoins.set(key, { position: { ...position }, face });
 
   return {
     coins: newCoins,
-    edges: state.edges,
+    edges: [...state.edges],
     currentPlayer: state.currentPlayer === "HEADS" ? "TAILS" : "HEADS",
     coinsRemaining: state.coinsRemaining - 1,
     passCount: 0,
@@ -75,7 +79,9 @@ export function legalPlacements(state: GameState): readonly Position[] {
 }
 
 export function legalJoins(state: GameState): readonly [Position, Position][] {
-  const coins = Array.from(state.coins.values());
+  const coins = Array.from(state.coins.values()).sort((a, b) =>
+    positionKey(a.position).localeCompare(positionKey(b.position)),
+  );
   const joins: [Position, Position][] = [];
 
   for (let i = 0; i < coins.length; i++) {

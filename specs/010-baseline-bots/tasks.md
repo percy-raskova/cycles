@@ -59,7 +59,7 @@
 ### Implementation for User Story 1
 
 - [X] T014 [P] [US1] Implement `randomBot` in `src/core/bots/random.ts`
-- [X] T015 [US1] Implement `useBotGame` hook in `src/ui/hooks/useBotGame.ts` (wraps `useGameSession`, accepts `botDelayMs` option defaulting to 300, auto-invokes bot when `currentPlayer` is the bot after the configured delay; tests pass `delayMs: 0` to skip)
+- [X] T015 [US1] Implement `useBotGame` hook in `src/ui/hooks/useBotGame.ts` (wraps `useGameSession`, accepts `botDelayMs` option defaulting to 2000, auto-invokes bot when `currentPlayer` is the bot after the configured delay; tests pass `delayMs: 0` to skip)
 - [X] T016 [US1] Implement `SetupScreen` component in `src/ui/components/SetupScreen.tsx` (supports: opponent = Human | Random; playerRole = HEADS | TAILS)
 - [X] T017 [US1] Wire `SetupScreen` + `useBotGame` into `src/ui/App.tsx` (show setup before game, pass chosen opponent/role to session creation)
 - [X] T018 [P] [US1] Add a11y test for `SetupScreen` in `src/ui/components/__tests__/SetupScreen.test.tsx`

@@ -17,22 +17,22 @@ export class CyclesPage {
   // ─── Navigation ─────────────────────────────────────────────────
 
   async goto(): Promise<void> {
-    await this.page.goto("/");
+    await this.page.goto("/?mode=human");
     await this.page.waitForSelector("[data-testid='board-view']");
   }
 
   // ─── Turn Indicator ─────────────────────────────────────────────
 
   get turnIndicator(): Locator {
-    return this.page.locator("[data-testid='turn-indicator']");
+    return this.page.locator("[data-testid='turn-indicator']").first();
   }
 
   get turnPlayer(): Locator {
-    return this.page.locator("[data-testid='turn-indicator-player']");
+    return this.page.locator("[data-testid='turn-indicator-player']").first();
   }
 
   get turnRemaining(): Locator {
-    return this.page.locator("[data-testid='turn-indicator-remaining']");
+    return this.page.locator("[data-testid='turn-indicator-remaining']").first();
   }
 
   async currentPlayer(): Promise<string> {
@@ -55,7 +55,7 @@ export class CyclesPage {
   intersection(row: number, col: number): Locator {
     const r = row + 1;
     const c = col + 1;
-    return this.page.locator(`[aria-label="Empty intersection at row ${r}, column ${c}"]`);
+    return this.page.locator(`[aria-label^="Intersection r${r} c${c}"]`).first();
   }
 
   async clickIntersection(row: number, col: number): Promise<void> {
@@ -63,7 +63,7 @@ export class CyclesPage {
   }
 
   coinAt(row: number, col: number): Locator {
-    return this.page.locator(`[data-testid='coin-${row}-${col}']`);
+    return this.page.locator(`[data-testid='coin-${row}-${col}']`).first();
   }
 
   async clickCoin(row: number, col: number): Promise<void> {
@@ -71,21 +71,23 @@ export class CyclesPage {
   }
 
   edgeBetween(fromRow: number, fromCol: number, toRow: number, toCol: number): Locator {
-    return this.page.locator(`[data-testid='edge-${fromRow}-${fromCol}-${toRow}-${toCol}']`);
+    return this.page
+      .locator(`[data-testid='edge-${fromRow}-${fromCol}-${toRow}-${toCol}']`)
+      .first();
   }
 
   // ─── Face Selector ──────────────────────────────────────────────
 
   get faceSelectorHeads(): Locator {
-    return this.page.locator("[data-testid='face-selector-heads']");
+    return this.page.locator("[data-testid='face-selector-heads']").first();
   }
 
   get faceSelectorTails(): Locator {
-    return this.page.locator("[data-testid='face-selector-tails']");
+    return this.page.locator("[data-testid='face-selector-tails']").first();
   }
 
   get faceSelectorBackdrop(): Locator {
-    return this.page.locator("[data-testid='face-selector-backdrop']");
+    return this.page.locator("[data-testid='face-selector-backdrop']").first();
   }
 
   async selectFace(face: "heads" | "tails"): Promise<void> {
@@ -96,11 +98,11 @@ export class CyclesPage {
   // ─── Menu Bar ───────────────────────────────────────────────────
 
   get resetButton(): Locator {
-    return this.page.locator("[aria-label='Reset game to initial state']");
+    return this.page.locator("[aria-label='Reset game to initial state']").first();
   }
 
   get undoButton(): Locator {
-    return this.page.locator("[aria-label='Undo last move']");
+    return this.page.locator("[aria-label='Undo last move']").first();
   }
 
   async resetGame(): Promise<void> {
@@ -114,15 +116,15 @@ export class CyclesPage {
   // ─── Game Over ──────────────────────────────────────────────────
 
   get gameOverPanel(): Locator {
-    return this.page.locator("[data-testid='game-over-panel']");
+    return this.page.locator("[data-testid='game-over-panel']").first();
   }
 
   get gameOverWinner(): Locator {
-    return this.page.locator("[data-testid='game-over-winner']");
+    return this.page.locator("[data-testid='game-over-winner']").first();
   }
 
   get newGameButton(): Locator {
-    return this.page.locator("[data-testid='game-over-new-game']");
+    return this.page.locator("[data-testid='game-over-new-game']").first();
   }
 
   // ─── Convenience Actions ────────────────────────────────────────

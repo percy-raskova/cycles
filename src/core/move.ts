@@ -1,9 +1,9 @@
 import { pointInPolygon, pointOnSegment } from "./geometry";
 import {
   GRID_SIZE,
+  TOTAL_COINS,
   createInitialState,
   isLegalJoin,
-  joinCoins,
   placeCoin,
   positionKey,
 } from "./state";
@@ -143,8 +143,10 @@ function flipInteriorCoins(
 
 function applyPass(state: GameState): GameState {
   return {
-    ...state,
+    coins: new Map(state.coins),
+    edges: [...state.edges],
     currentPlayer: state.currentPlayer === "HEADS" ? "TAILS" : "HEADS",
+    coinsRemaining: state.coinsRemaining,
     passCount: state.passCount + 1,
     lastAction: "PASS",
   };
@@ -163,7 +165,7 @@ export function applyMove(state: GameState, move: Move): GameState {
 
 export function isValidState(state: GameState): boolean {
   // Coin count invariant
-  if (state.coins.size + state.coinsRemaining !== 12) return false;
+  if (state.coins.size + state.coinsRemaining !== TOTAL_COINS) return false;
 
   // All coin positions within bounds
   for (const coin of state.coins.values()) {

@@ -1114,6 +1114,13 @@ body.no-scan .scanlines {
 /* ============================================================
    Face selector pop-up
    ============================================================ */
+.face-selector-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: transparent;
+}
+
 .face-popup {
   position: absolute;
   display: flex;

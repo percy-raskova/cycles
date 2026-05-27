@@ -1,4 +1,5 @@
-import { createInitialState, joinCoins, placeCoin } from "@core";
+import { createInitialState, placeCoin } from "@core";
+import { joinCoins } from "@core/state";
 // @vitest-environment jsdom
 import { act, fireEvent } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";

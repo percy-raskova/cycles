@@ -92,7 +92,7 @@ src/
 1. **Bot function signature**: `(state: GameState, player: Player) => Move` vs `(state: GameState) => Move`. Resolution: `(state: GameState) => Move` is sufficient because `GameState.currentPlayer` tells us whose turn it is. The bot always moves for `currentPlayer`.
 2. **Greedy score evaluation**: `computeFinalScore` counts total heads/tails. Greedy needs "score for current player before vs after." Resolution: add `scoreForPlayer(state, player)` helper in core, reuse in greedy evaluation.
 3. **Simulation runner location**: Should it be a CLI script or a test harness? Resolution: both. `src/core/bots/simulate.ts` exports a pure `runSimulation(config)` function usable by tests and a future CLI wrapper. The 1000-game regression lives as a core behavior test.
-4. **Bot turn timing in UI**: Immediate (synchronous) vs delayed. Resolution: `useBotGame.ts` triggers bot via `useEffect` with a 300ms minimum delay for UX, but the bot function itself is synchronous. Tests bypass the delay.
+4. **Bot turn timing in UI**: Immediate (synchronous) vs delayed. Resolution: `useBotGame.ts` triggers bot via `useEffect` with a 2000ms minimum delay for UX, but the bot function itself is synchronous. Tests bypass the delay.
 
 **Research artifacts**: See [research.md](research.md) for detailed rationale on each decision.
 

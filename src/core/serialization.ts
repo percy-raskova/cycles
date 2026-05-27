@@ -26,6 +26,28 @@ interface PlainSession {
   readonly winner: Player | "draw" | null;
 }
 
+function isPlainState(value: unknown): value is PlainState {
+  if (typeof value !== "object" || value === null) return false;
+  const obj = value as Record<string, unknown>;
+  if (!Array.isArray(obj.coins)) return false;
+  if (!Array.isArray(obj.edges)) return false;
+  if (typeof obj.currentPlayer !== "string") return false;
+  if (typeof obj.coinsRemaining !== "number") return false;
+  if (typeof obj.passCount !== "number") return false;
+  if (obj.lastAction !== null && typeof obj.lastAction !== "string") return false;
+  return true;
+}
+
+function isPlainSession(value: unknown): value is PlainSession {
+  if (typeof value !== "object" || value === null) return false;
+  const obj = value as Record<string, unknown>;
+  if (!isPlainState(obj.state)) return false;
+  if (!Array.isArray(obj.history)) return false;
+  if (typeof obj.isTerminal !== "boolean") return false;
+  if (obj.winner !== null && typeof obj.winner !== "string") return false;
+  return true;
+}
+
 function toPlainState(state: GameState): PlainState {
   return {
     coins: Array.from(state.coins.entries()),
@@ -40,7 +62,7 @@ function toPlainState(state: GameState): PlainState {
 function fromPlainState(plain: PlainState): GameState {
   return {
     coins: new Map<string, Coin>(plain.coins.map(([key, coin]) => [key, { ...coin }])),
-    edges: plain.edges,
+    edges: plain.edges.map((e) => ({ from: { ...e.from }, to: { ...e.to } })),
     currentPlayer: plain.currentPlayer,
     coinsRemaining: plain.coinsRemaining,
     passCount: plain.passCount,
@@ -54,7 +76,9 @@ export function serializeState(state: GameState): string {
 
 export function deserializeState(json: string): GameState | null {
   try {
-    return fromPlainState(JSON.parse(json) as PlainState);
+    const parsed = JSON.parse(json) as unknown;
+    if (!isPlainState(parsed)) return null;
+    return fromPlainState(parsed);
   } catch {
     return null;
   }
@@ -72,12 +96,13 @@ export function serializeSession(session: GameSession): string {
 
 export function deserializeSession(json: string): GameSession | null {
   try {
-    const plain = JSON.parse(json) as PlainSession;
+    const parsed = JSON.parse(json) as unknown;
+    if (!isPlainSession(parsed)) return null;
     return {
-      state: fromPlainState(plain.state),
-      history: plain.history,
-      isTerminal: plain.isTerminal,
-      winner: plain.winner,
+      state: fromPlainState(parsed.state),
+      history: parsed.history,
+      isTerminal: parsed.isTerminal,
+      winner: parsed.winner,
     };
   } catch {
     return null;

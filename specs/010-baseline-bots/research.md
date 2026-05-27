@@ -91,11 +91,11 @@ export function runSimulation(config: SimulationConfig): SimulationResult;
 
 **Question**: When the bot's turn arrives, should it move instantly or with a delay?
 
-**Decision**: The bot function is synchronous and returns instantly. The UI hook (`useBotGame.ts`) adds a 300ms minimum delay via `useEffect` + `setTimeout` for perceived human-like pacing. Tests bypass the delay by invoking the core function directly.
+**Decision**: The bot function is synchronous and returns instantly. The UI hook (`useBotGame.ts`) adds a 2000ms minimum delay via `useEffect` + `setTimeout` for perceived human-like pacing. Tests bypass the delay by invoking the core function directly.
 
 **Rationale**:
 - Instant moves feel jarring to human players. A short delay preserves game rhythm.
-- 300ms is below human reaction-time thresholds so it doesn't feel sluggish, but sufficient to signal "the opponent is thinking."
+- 2000ms is above human reaction-time thresholds so it feels deliberate, and sufficient to signal "the opponent is thinking."
 - The delay is a UI concern only; the core bot has no concept of time.
 - Tests must not depend on real timers. Core bot tests invoke the function directly. UI hook tests mock `setTimeout` or use Vitest's `vi.useFakeTimers()`.
 

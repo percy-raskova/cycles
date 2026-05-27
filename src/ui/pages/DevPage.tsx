@@ -1,4 +1,4 @@
-import { createInitialState, deserializeState, joinCoins, placeCoin, serializeState } from "@core";
+import { applyMove, createInitialState, deserializeState, placeCoin, serializeState } from "@core";
 import type { GameState } from "@core/types";
 import { BoardView } from "@ui/components/BoardView";
 import { useState } from "react";
@@ -27,10 +27,10 @@ function makePresetSmallCycle(): GameState {
   state = placeCoin(state, { row: 2, col: 4 }, "tails");
   state = placeCoin(state, { row: 4, col: 4 }, "heads");
   state = placeCoin(state, { row: 4, col: 2 }, "tails");
-  state = joinCoins(state, { row: 2, col: 2 }, { row: 2, col: 4 });
-  state = joinCoins(state, { row: 2, col: 4 }, { row: 4, col: 4 });
-  state = joinCoins(state, { row: 4, col: 4 }, { row: 4, col: 2 });
-  state = joinCoins(state, { row: 4, col: 2 }, { row: 2, col: 2 });
+  state = applyMove(state, { type: "JOIN", a: { row: 2, col: 2 }, b: { row: 2, col: 4 } });
+  state = applyMove(state, { type: "JOIN", a: { row: 2, col: 4 }, b: { row: 4, col: 4 } });
+  state = applyMove(state, { type: "JOIN", a: { row: 4, col: 4 }, b: { row: 4, col: 2 } });
+  state = applyMove(state, { type: "JOIN", a: { row: 4, col: 2 }, b: { row: 2, col: 2 } });
   return state;
 }
 

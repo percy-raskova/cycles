@@ -17,9 +17,23 @@ import { useMemo, useState } from "react";
 
 type Panel = "help" | "controls" | "about" | "settings";
 
+function getInitialSetupOptions(): GameSetupOptions | null {
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get("mode");
+  if (mode === "human" || mode === "random" || mode === "greedy") {
+    return {
+      opponent: mode,
+      playerRole: "HEADS",
+      humanFirst: true,
+    };
+  }
+  return null;
+}
+
 function App() {
   const [modal, setModal] = useState<null | { panel: Panel }>(null);
-  const [setupOptions, setSetupOptions] = useState<GameSetupOptions | null>(null);
+  const [setupOptions, setSetupOptions] = useState<GameSetupOptions | null>(getInitialSetupOptions);
 
   const botGame = useBotGame(
     setupOptions ?? { opponent: "human", playerRole: "HEADS", humanFirst: true },

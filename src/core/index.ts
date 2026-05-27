@@ -6,7 +6,6 @@ export {
   canJoin,
   createInitialState,
   isLegalJoin,
-  joinCoins,
   legalJoins,
   legalPlacements,
   placeCoin,
