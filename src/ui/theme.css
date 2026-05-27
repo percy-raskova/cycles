@@ -187,7 +187,7 @@ button {
     #9b4f96 72%,
     #0038a8 100%
   );
-  opacity: 0.85;
+  opacity: 0.45;
   filter: blur(0.2px);
   -webkit-mask-image: linear-gradient(180deg, #000 0 50%, transparent 50%),
     repeating-linear-gradient(180deg, #000 0 18px, transparent 18px 22px);
@@ -195,7 +195,7 @@ button {
   mask-image: linear-gradient(180deg, #000 0 50%, transparent 50%),
     repeating-linear-gradient(180deg, #000 0 18px, transparent 18px 22px);
   mask-composite: intersect;
-  box-shadow: 0 0 120px 30px rgba(255, 57, 212, 0.35);
+  box-shadow: 0 0 80px 20px rgba(255, 57, 212, 0.18);
 }
 
 .desktop .horizon {
@@ -209,7 +209,7 @@ button {
   background: repeating-linear-gradient(
       180deg,
       transparent 0 calc(8% - 1px),
-      rgba(255, 57, 212, 0.55) calc(8% - 1px) 8%
+      rgba(255, 57, 212, 0.22) calc(8% - 1px) 8%
     ),
     conic-gradient(
       from 270deg at 50% 0%,
@@ -228,7 +228,7 @@ button {
   background: repeating-linear-gradient(
     90deg,
     transparent 0 calc(2.5% - 1px),
-    rgba(0, 229, 255, 0.6) calc(2.5% - 1px) 2.5%
+    rgba(0, 229, 255, 0.25) calc(2.5% - 1px) 2.5%
   );
 }
 
@@ -247,23 +247,20 @@ button {
   opacity: 0.7;
 }
 
-/* CRT scanlines overlay */
+/* CRT scanlines overlay — kept very subtle for accessibility */
 .scanlines {
   pointer-events: none;
   position: fixed;
   inset: 0;
-  background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0 2px, transparent 2px 4px);
+  background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0 2px, transparent 2px 4px);
   z-index: 9000;
   mix-blend-mode: multiply;
-  opacity: 0.55;
+  opacity: 0.18;
 }
 
+/* Vignette disabled by default — can cause eye strain on dark themes */
 .crt-vignette {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
-  z-index: 9001;
+  display: none;
 }
 
 /* Hide effects when tweaked off */
@@ -998,35 +995,24 @@ body.no-scan .scanlines {
 }
 
 .gridline.major {
-  stroke: rgba(0, 229, 255, 0.55);
+  stroke: rgba(200, 200, 210, 0.22);
   stroke-width: 1.5;
 }
 
 .dot {
   fill: var(--orchid);
-  filter: drop-shadow(0 0 3px rgba(218, 112, 214, 0.6));
+  filter: drop-shadow(0 0 2px rgba(218, 112, 214, 0.35));
   transition: r 120ms, fill 120ms;
 }
 
 .dot.legal {
   fill: var(--cyan);
-  filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.9));
-  animation: legalPulse 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.45));
 }
 
 .dot.hovered {
   fill: var(--neon-magenta);
-  filter: drop-shadow(0 0 8px rgba(255, 57, 212, 0.9));
-}
-
-@keyframes legalPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.55;
-  }
+  filter: drop-shadow(0 0 3px rgba(255, 57, 212, 0.5));
 }
 
 .touch {
@@ -1067,25 +1053,14 @@ body.no-scan .scanlines {
 
 .coin-group.selected .coin-body {
   stroke: var(--neon-magenta);
-  stroke-width: 3.5;
-  filter: drop-shadow(0 0 8px rgba(255, 57, 212, 0.9));
+  stroke-width: 3;
+  filter: drop-shadow(0 0 3px rgba(255, 57, 212, 0.5));
 }
 
 .coin-group.target .coin-body {
   stroke: var(--cyan);
-  stroke-width: 3;
-  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.8));
-  animation: targetPulse 1.4s ease-in-out infinite;
-}
-
-@keyframes targetPulse {
-  0%,
-  100% {
-    stroke-opacity: 1;
-  }
-  50% {
-    stroke-opacity: 0.5;
-  }
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.4));
 }
 
 .coin-group.flipping .coin-body {
@@ -1098,7 +1073,7 @@ body.no-scan .scanlines {
   }
   50% {
     transform: scaleX(0.05);
-    filter: brightness(1.6);
+    filter: brightness(1.15);
   }
   100% {
     transform: scaleX(1);
@@ -1126,21 +1101,14 @@ body.no-scan .scanlines {
   stroke: var(--orchid-light);
   stroke-width: 4;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 4px rgba(244, 184, 240, 0.7));
+  filter: drop-shadow(0 0 2px rgba(244, 184, 240, 0.35));
 }
 
 .edge.preview {
   stroke: var(--neon-magenta);
   stroke-dasharray: 8 6;
-  opacity: 0.85;
-  filter: drop-shadow(0 0 4px rgba(255, 57, 212, 0.8));
-  animation: dash 0.8s linear infinite;
-}
-
-@keyframes dash {
-  to {
-    stroke-dashoffset: -28;
-  }
+  opacity: 0.7;
+  filter: drop-shadow(0 0 2px rgba(255, 57, 212, 0.4));
 }
 
 /* ============================================================

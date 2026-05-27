@@ -2,15 +2,16 @@ import type { CoinFace, Position } from "@core/types";
 import { usePopupPosition } from "@ui/hooks/usePopupPosition";
 import { CELL_SIZE, GRID_SIZE, MARGIN, VIEWBOX_SIZE } from "@ui/lib/constants";
 import { useRef } from "react";
+import React from "react";
 
 interface FaceSelectorProps {
   readonly position: Position;
   readonly onSelect: (face: CoinFace) => void;
   readonly onCancel: () => void;
-  readonly svgRef: React.RefObject<SVGSVGElement>;
+  readonly svgRef: React.RefObject<SVGSVGElement | null>;
 }
 
-export function FaceSelector({ position, onSelect, onCancel, svgRef }: FaceSelectorProps) {
+function FaceSelectorImpl({ position, onSelect, onCancel, svgRef }: FaceSelectorProps) {
   const popupRef = useRef<HTMLDivElement>(null);
   const offset = usePopupPosition(
     svgRef,
@@ -76,3 +77,5 @@ export function FaceSelector({ position, onSelect, onCancel, svgRef }: FaceSelec
     </>
   );
 }
+
+export const FaceSelector = React.memo(FaceSelectorImpl);

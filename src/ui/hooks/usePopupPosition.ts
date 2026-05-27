@@ -1,82 +1,64 @@
 import type { Position } from "@core/types";
-import { useLayoutEffect, useState } from "react";
 
 export interface PopupOffset {
-  readonly left: number;
-  readonly top: number;
+  readonly left: string | number;
+  readonly top: string | number;
 }
 
 /**
- * Convert a grid position (in SVG viewBox coordinates) to CSS pixel coordinates
- * for a popup, clamped so it stays fully inside the board frame and flips
+ * Convert a grid position to CSS pixel coordinates for a popup,
+ * clamped so it stays fully inside the board frame and flips
  * vertically near the top/bottom rows.
+ *
+ * This is pure math — no DOM reads — so it never forces layout
+ * or causes jank.
  */
 export function usePopupPosition(
-  svgRef: React.RefObject<SVGSVGElement>,
-  popupRef: React.RefObject<HTMLElement>,
+  _svgRef: React.RefObject<SVGSVGElement | null>,
+  _popupRef: React.RefObject<HTMLElement | null>,
   position: Position,
   viewBoxSize: number,
   cellSize: number,
   margin: number,
   gridSize: number,
-): PopupOffset | null {
-  const [offset, setOffset] = useState<PopupOffset | null>(null);
+): PopupOffset {
+  // We compute directly from known CSS bounds rather than reading
+  // getBoundingClientRect(), which would force a synchronous layout.
+  // The board frame is 100% of its container, so the popup position
+  // is a direct ratio of viewBox → CSS pixels.
 
-  useLayoutEffect(() => {
-    const svg = svgRef.current;
-    const popup = popupRef.current;
-    if (!svg || !popup) return;
+  const svgX = margin + position.col * cellSize;
+  const svgY = margin + position.row * cellSize;
 
-    function update() {
-      const currentSvg = svgRef.current;
-      const currentPopup = popupRef.current;
-      if (!currentSvg || !currentPopup) return;
+  // Convert viewBox units to percentage of the SVG
+  const pctX = svgX / viewBoxSize;
+  const pctY = svgY / viewBoxSize;
 
-      const svgRect = currentSvg.getBoundingClientRect();
-      const frame = currentSvg.parentElement;
-      const frameRect = frame?.getBoundingClientRect() ?? svgRect;
-      const popupRect = currentPopup.getBoundingClientRect();
+  // Popup dimensions (fixed by CSS; see .face-popup in theme.css)
+  const popupWidth = 140;
+  const popupHeight = 120;
 
-      // Convert SVG viewBox coordinates to CSS pixels within the SVG
-      const svgX = margin + position.col * cellSize;
-      const svgY = margin + position.row * cellSize;
+  // Horizontal: centre on intersection
+  let left = pctX * 100;
+  // Clamp so popup stays inside the board
+  left = Math.max(
+    (popupWidth / 2 / viewBoxSize) * 100,
+    Math.min(left, 100 - (popupWidth / 2 / viewBoxSize) * 100),
+  );
 
-      const intersectionLeft = (svgX / viewBoxSize) * svgRect.width;
-      const intersectionTop = (svgY / viewBoxSize) * svgRect.height;
+  // Vertical: flip based on row to avoid clipping
+  const GAP_PCT = (20 / viewBoxSize) * 100;
+  let top: number;
+  if (position.row === 0) {
+    top = pctY * 100 + GAP_PCT;
+  } else if (position.row === gridSize - 1) {
+    top = pctY * 100 - (popupHeight / viewBoxSize) * 100 - GAP_PCT;
+  } else {
+    top = pctY * 100 - (popupHeight / viewBoxSize) * 100 - GAP_PCT;
+  }
 
-      const popupWidth = popupRect.width;
-      const popupHeight = popupRect.height;
-      const frameWidth = frameRect.width;
-      const frameHeight = frameRect.height;
+  // Clamp vertical
+  top = Math.max(0, Math.min(top, 100 - (popupHeight / viewBoxSize) * 100));
 
-      // Horizontal: centre on intersection, clamp to frame bounds
-      let left = intersectionLeft - popupWidth / 2;
-      left = Math.max(0, Math.min(left, frameWidth - popupWidth));
-
-      // Vertical: flip based on row to avoid clipping
-      const GAP = 8;
-      let top: number;
-      if (position.row === 0) {
-        // Below the intersection
-        top = intersectionTop + GAP;
-      } else if (position.row === gridSize - 1) {
-        // Above the intersection
-        top = intersectionTop - popupHeight - GAP;
-      } else {
-        // Default: above
-        top = intersectionTop - popupHeight - GAP;
-      }
-
-      // Clamp vertical to frame
-      top = Math.max(0, Math.min(top, frameHeight - popupHeight));
-
-      setOffset({ left, top });
-    }
-
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [svgRef, popupRef, position, viewBoxSize, cellSize, margin, gridSize]);
-
-  return offset;
+  return { left: `${left}%`, top: `${top}%` };
 }

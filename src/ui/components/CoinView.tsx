@@ -1,6 +1,7 @@
 import type { Coin, Position } from "@core/types";
 import { COIN_RADIUS } from "@ui/lib/constants";
 import { positionToSvg } from "@ui/lib/coordinates";
+import React from "react";
 
 interface CoinViewProps {
   readonly coin: Coin;
@@ -37,7 +38,7 @@ function buildClassName(
   return parts.join(" ");
 }
 
-export function CoinView({
+function CoinViewImpl({
   coin,
   onClick,
   onHover,
@@ -104,3 +105,5 @@ export function CoinView({
     </g>
   );
 }
+
+export const CoinView = React.memo(CoinViewImpl);

@@ -2,21 +2,33 @@ import { Desktop } from "@ui/components/Desktop";
 import { MenuBar } from "@ui/components/MenuBar";
 import { Modal } from "@ui/components/Modal";
 import { Scanlines } from "@ui/components/Scanlines";
+import { SetupScreen } from "@ui/components/SetupScreen";
 import { StatusBar } from "@ui/components/StatusBar";
 import { Taskbar } from "@ui/components/Taskbar";
 import { TitleBar } from "@ui/components/TitleBar";
 import { Toolbar } from "@ui/components/Toolbar";
 import { MobileApp } from "@ui/components/mobile";
+import { useBotGame } from "@ui/hooks/useBotGame";
 import { useGameSession } from "@ui/hooks/useGameSession";
 import { deriveLog } from "@ui/lib/deriveLog";
 import { GamePage } from "@ui/pages/GamePage";
+import type { GameSetupOptions } from "@ui/types/setup";
 import { useMemo, useState } from "react";
 
 type Panel = "help" | "controls" | "about" | "settings";
 
 function App() {
   const [modal, setModal] = useState<null | { panel: Panel }>(null);
-  const { session, applyMove, reset, undo, canUndo } = useGameSession();
+  const [setupOptions, setSetupOptions] = useState<GameSetupOptions | null>(null);
+
+  const botGame = useBotGame(
+    setupOptions ?? { opponent: "human", playerRole: "HEADS", humanFirst: true },
+  );
+
+  const humanGame = useGameSession();
+  const isBot = setupOptions ? setupOptions.opponent !== "human" : false;
+
+  const { session, applyMove, reset, undo, canUndo } = isBot ? botGame : humanGame;
 
   const log = useMemo(() => deriveLog(session.history), [session.history]);
 
@@ -26,6 +38,28 @@ function App() {
 
   function openModal(panel: Panel) {
     setModal({ panel });
+  }
+
+  function handleStart(options: GameSetupOptions) {
+    setSetupOptions(options);
+  }
+
+  function handleReset() {
+    reset();
+  }
+
+  function handleBackToSetup() {
+    setSetupOptions(null);
+  }
+
+  if (!setupOptions) {
+    return (
+      <>
+        <Desktop />
+        <Scanlines />
+        <SetupScreen onStart={handleStart} />
+      </>
+    );
   }
 
   return (
@@ -41,21 +75,21 @@ function App() {
             onOpenSettings={() => openModal("settings")}
             onOpenControls={() => openModal("controls")}
             onOpenAbout={() => openModal("about")}
-            onReset={reset}
+            onReset={handleReset}
             onUndo={undo}
             canUndo={canUndo}
             legacyMode={true}
           />
           <Toolbar
             onUndo={undo}
-            onReset={reset}
+            onReset={handleReset}
             canUndo={canUndo}
             onHelp={(p) => openModal(p === "about" ? "about" : "help")}
             onPass={() => applyMove({ type: "PASS" })}
             canPass={canPass}
           />
 
-          <GamePage session={session} applyMove={applyMove} onReset={reset} moveLog={log} />
+          <GamePage session={session} applyMove={applyMove} onReset={handleReset} moveLog={log} />
 
           <StatusBar
             player={session.state.currentPlayer}
@@ -76,7 +110,20 @@ function App() {
       {modal && <Modal initialPanel={modal.panel} onClose={() => setModal(null)} />}
 
       {/* Mobile PWA layout — shown/hidden via CSS media query */}
-      <MobileApp session={session} applyMove={applyMove} onReset={reset} moveLog={log} />
+      <MobileApp session={session} applyMove={applyMove} onReset={handleReset} moveLog={log} />
+
+      {isBot && (
+        <div className="setup-return">
+          <button
+            type="button"
+            className="setup-return-btn"
+            onClick={handleBackToSetup}
+            aria-label="Back to setup"
+          >
+            &#9664; Setup
+          </button>
+        </div>
+      )}
     </>
   );
 }

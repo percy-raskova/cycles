@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { applyMove, findCycle } from "../../move";
+import { applyMove, coinsInsideCycle, findCycle } from "../../move";
 import { createInitialState } from "../../state";
+import type { Position } from "../../types";
 
 describe("Cycle closure", () => {
   it("flips interior coin in a rectangle cycle", () => {
@@ -88,6 +89,41 @@ describe("Cycle closure", () => {
     expect(next.coins.get("5,1")?.face).toBe("tails");
   });
 
+  it("flips boundary coins that are NOT the closing edge endpoints", () => {
+    let state = createInitialState();
+    // Build a rectangle: (1,1)-(1,3)-(3,3)-(3,1)
+    // Place coins on all four corners plus one interior
+    state = applyMove(state, { type: "PLACE", position: { row: 1, col: 1 }, face: "heads" });
+    state = applyMove(state, { type: "PLACE", position: { row: 1, col: 3 }, face: "tails" });
+    state = applyMove(state, { type: "PLACE", position: { row: 3, col: 3 }, face: "heads" });
+    state = applyMove(state, { type: "PLACE", position: { row: 3, col: 1 }, face: "tails" });
+    state = applyMove(state, { type: "PLACE", position: { row: 2, col: 2 }, face: "heads" });
+
+    // Connect three sides
+    state = applyMove(state, { type: "JOIN", a: { row: 1, col: 1 }, b: { row: 1, col: 3 } });
+    state = applyMove(state, { type: "JOIN", a: { row: 1, col: 3 }, b: { row: 3, col: 3 } });
+    state = applyMove(state, { type: "JOIN", a: { row: 3, col: 3 }, b: { row: 3, col: 1 } });
+
+    // Before closure:
+    // (1,1) heads→tails (first join), (1,3) tails→heads→tails (join 1 & 2)
+    // (3,3) heads→tails→heads (join 2 & 3), (3,1) tails→heads (join 3)
+    // (2,2) heads (never flipped)
+
+    // Close with edge (3,1)-(1,1). Boundary coins (1,3) and (3,3) are NOT endpoints.
+    const next = applyMove(state, {
+      type: "JOIN",
+      a: { row: 3, col: 1 },
+      b: { row: 1, col: 1 },
+    });
+
+    // Cycle closure flips EVERY coin in the region once
+    expect(next.coins.get("1,1")?.face).toBe("heads"); // endpoint: tails→heads
+    expect(next.coins.get("1,3")?.face).toBe("heads"); // boundary (not endpoint): tails→heads — was the bug
+    expect(next.coins.get("3,3")?.face).toBe("tails"); // boundary (not endpoint): heads→tails
+    expect(next.coins.get("3,1")?.face).toBe("tails"); // endpoint: heads→tails
+    expect(next.coins.get("2,2")?.face).toBe("tails"); // interior: heads→tails
+  });
+
   it("coins outside the new cycle region remain unchanged", () => {
     let state = createInitialState();
     state = applyMove(state, { type: "PLACE", position: { row: 1, col: 1 }, face: "heads" });
@@ -107,6 +143,113 @@ describe("Cycle closure", () => {
     });
 
     expect(next.coins.get("0,0")?.face).toBe("heads");
+  });
+
+  describe("coinsInsideCycle", () => {
+    it.each([
+      {
+        name: "square with empty interior",
+        vertices: [
+          { row: 1, col: 1 },
+          { row: 1, col: 4 },
+          { row: 4, col: 4 },
+          { row: 4, col: 1 },
+        ],
+        interiorCoins: [],
+        boundaryCoins: [
+          { row: 1, col: 1 },
+          { row: 1, col: 4 },
+          { row: 4, col: 4 },
+          { row: 4, col: 1 },
+        ],
+        outsideCoins: [
+          { row: 0, col: 0 },
+          { row: 5, col: 5 },
+        ],
+      },
+      {
+        name: "square with interior and two boundary extras",
+        vertices: [
+          { row: 1, col: 1 },
+          { row: 1, col: 4 },
+          { row: 4, col: 4 },
+          { row: 4, col: 1 },
+        ],
+        interiorCoins: [{ row: 2, col: 2 }],
+        boundaryCoins: [
+          { row: 1, col: 1 },
+          { row: 1, col: 4 },
+          { row: 4, col: 4 },
+          { row: 4, col: 1 },
+          { row: 2, col: 1 },
+          { row: 1, col: 2 },
+        ],
+        outsideCoins: [{ row: 0, col: 0 }],
+      },
+      {
+        name: "triangle",
+        vertices: [
+          { row: 0, col: 0 },
+          { row: 0, col: 4 },
+          { row: 4, col: 0 },
+        ],
+        interiorCoins: [{ row: 1, col: 1 }],
+        boundaryCoins: [
+          { row: 0, col: 0 },
+          { row: 0, col: 4 },
+          { row: 4, col: 0 },
+          { row: 2, col: 2 },
+        ],
+        outsideCoins: [{ row: 5, col: 5 }],
+      },
+      {
+        name: "diagonal square (diamond)",
+        vertices: [
+          { row: 2, col: 0 },
+          { row: 4, col: 2 },
+          { row: 2, col: 4 },
+          { row: 0, col: 2 },
+        ],
+        interiorCoins: [{ row: 2, col: 2 }],
+        boundaryCoins: [
+          { row: 2, col: 0 },
+          { row: 4, col: 2 },
+          { row: 2, col: 4 },
+          { row: 0, col: 2 },
+          { row: 1, col: 1 },
+          { row: 3, col: 3 },
+        ],
+        outsideCoins: [{ row: 0, col: 0 }],
+      },
+    ])(
+      "$name — returns boundary + interior coins",
+      ({ vertices, interiorCoins, boundaryCoins, outsideCoins }) => {
+        let state = createInitialState();
+
+        // Place all coins (must stay within TOTAL_COINS = 12)
+        const allCoins = [...interiorCoins, ...boundaryCoins, ...outsideCoins];
+        for (const pos of allCoins) {
+          state = applyMove(state, { type: "PLACE", position: pos, face: "heads" });
+        }
+
+        const first = vertices[0];
+        if (!first) throw new Error("vertices array is empty");
+        const cyclePath: Position[] = [...vertices, first]; // close the polygon
+        const result = coinsInsideCycle(state, cyclePath);
+        const resultKeys = new Set(result.map((p) => `${p.row},${p.col}`));
+
+        const expected = new Set([
+          ...interiorCoins.map((p) => `${p.row},${p.col}`),
+          ...boundaryCoins.map((p) => `${p.row},${p.col}`),
+        ]);
+
+        expect(resultKeys).toEqual(expected);
+
+        for (const pos of outsideCoins) {
+          expect(resultKeys.has(`${pos.row},${pos.col}`)).toBe(false);
+        }
+      },
+    );
   });
 
   describe("findCycle", () => {

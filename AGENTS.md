@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Current plan: [specs/008-vaporwave-ui-theme/plan.md](specs/008-vaporwave-ui-theme/plan.md)
+Current plan: [specs/010-baseline-bots/plan.md](specs/010-baseline-bots/plan.md)
 <!-- SPECKIT END -->
 
 ## Repo purpose

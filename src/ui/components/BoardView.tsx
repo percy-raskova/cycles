@@ -1,7 +1,7 @@
 import type { GameState, Position } from "@core/types";
 import { CELL_SIZE, GRID_SIZE, MARGIN, VIEWBOX_SIZE } from "@ui/lib/constants";
 import { positionToSvg } from "@ui/lib/coordinates";
-import { forwardRef } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { CoinView } from "./CoinView";
 import { EdgeView } from "./EdgeView";
 import { GridView } from "./GridView";
@@ -21,7 +21,7 @@ interface BoardViewProps {
   readonly highlightedCoins: ReadonlySet<string>;
 }
 
-export const BoardView = forwardRef<SVGSVGElement, BoardViewProps>(function BoardView(
+function BoardViewImpl(
   {
     state,
     onCoinClick,
@@ -35,9 +35,52 @@ export const BoardView = forwardRef<SVGSVGElement, BoardViewProps>(function Boar
     flippingCoins,
     illegalMoveCoin,
     highlightedCoins,
-  },
-  ref,
+  }: BoardViewProps,
+  ref: React.Ref<SVGSVGElement>,
 ) {
+  const edges = useMemo(
+    () =>
+      state.edges.map((edge) => (
+        <EdgeView
+          key={`edge-${edge.from.row}-${edge.from.col}-${edge.to.row}-${edge.to.col}`}
+          edge={edge}
+        />
+      )),
+    [state.edges],
+  );
+
+  const coins = useMemo(
+    () =>
+      Array.from(state.coins.values()).map((coin) => {
+        const pos = coin.position;
+        const posKey = `${pos.row},${pos.col}`;
+        const isSelected = selectedCoin?.row === pos.row && selectedCoin?.col === pos.col;
+        const isIllegal = illegalMoveCoin?.row === pos.row && illegalMoveCoin?.col === pos.col;
+        const isHighlighted = highlightedCoins.has(posKey);
+        return (
+          <CoinView
+            key={`coin-${pos.row}-${pos.col}`}
+            coin={coin}
+            onClick={onCoinClick}
+            onHover={onCoinHover}
+            isSelected={isSelected}
+            isHighlighted={isHighlighted}
+            isFlipping={flippingCoins.has(posKey)}
+            isIllegal={isIllegal}
+          />
+        );
+      }),
+    [
+      state.coins,
+      selectedCoin,
+      illegalMoveCoin,
+      highlightedCoins,
+      flippingCoins,
+      onCoinClick,
+      onCoinHover,
+    ],
+  );
+
   return (
     <svg
       ref={ref}
@@ -74,12 +117,7 @@ export const BoardView = forwardRef<SVGSVGElement, BoardViewProps>(function Boar
         hoveredPosition={hoveredPosition}
         legalPlacements={legalPlacements}
       />
-      {state.edges.map((edge) => (
-        <EdgeView
-          key={`edge-${edge.from.row}-${edge.from.col}-${edge.to.row}-${edge.to.col}`}
-          edge={edge}
-        />
-      ))}
+      {edges}
       {previewEdge && (
         <line
           data-testid="preview-edge"
@@ -90,25 +128,9 @@ export const BoardView = forwardRef<SVGSVGElement, BoardViewProps>(function Boar
           className="preview-line"
         />
       )}
-      {Array.from(state.coins.values()).map((coin) => {
-        const pos = coin.position;
-        const posKey = `${pos.row},${pos.col}`;
-        const isSelected = selectedCoin?.row === pos.row && selectedCoin?.col === pos.col;
-        const isIllegal = illegalMoveCoin?.row === pos.row && illegalMoveCoin?.col === pos.col;
-        const isHighlighted = highlightedCoins.has(posKey);
-        return (
-          <CoinView
-            key={`coin-${pos.row}-${pos.col}`}
-            coin={coin}
-            onClick={onCoinClick}
-            onHover={onCoinHover}
-            isSelected={isSelected}
-            isHighlighted={isHighlighted}
-            isFlipping={flippingCoins.has(posKey)}
-            isIllegal={isIllegal}
-          />
-        );
-      })}
+      {coins}
     </svg>
   );
-});
+}
+
+export const BoardView = React.memo(forwardRef<SVGSVGElement, BoardViewProps>(BoardViewImpl));

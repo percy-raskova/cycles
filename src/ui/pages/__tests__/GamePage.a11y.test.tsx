@@ -3,10 +3,12 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "@ui/App";
 import { describe, expect, it } from "vitest";
+import { startGameFromSetup } from "../../../../tests/helpers/setup-helpers";
 
 describe("Keyboard Navigation (US6)", () => {
   it("Tab cycles through all interactive elements", async () => {
     render(<App />);
+    await startGameFromSetup();
 
     const user = userEvent.setup();
 
@@ -27,8 +29,9 @@ describe("Keyboard Navigation (US6)", () => {
 });
 
 describe("Responsive Layout (US5)", () => {
-  it("game board container uses vmin-based sizing", () => {
+  it("game board container uses vmin-based sizing", async () => {
     render(<App />);
+    await startGameFromSetup();
 
     const boardContainer = document.querySelector(".game-board-container");
     expect(boardContainer).toBeTruthy();
@@ -37,8 +40,9 @@ describe("Responsive Layout (US5)", () => {
 });
 
 describe("Touch Target Size (US5)", () => {
-  it("menu buttons have sizing classes for ≥44×44 CSS pixels", () => {
+  it("menu buttons have sizing classes for ≥44×44 CSS pixels", async () => {
     render(<App />);
+    await startGameFromSetup();
 
     const buttons = [
       screen.getByLabelText("Reset game to initial state"),
@@ -57,6 +61,7 @@ describe("Touch Target Size (US5)", () => {
 describe("Visual Regression — Help Modal (US4)", () => {
   it("renders the help modal with Win95 window chrome", async () => {
     render(<App />);
+    await startGameFromSetup();
 
     const helpButton = screen.getByLabelText("Open help");
     await userEvent.click(helpButton);
@@ -72,6 +77,7 @@ describe("Visual Regression — Help Modal (US4)", () => {
 describe("Visual Regression — Settings Modal (US4)", () => {
   it("renders the settings modal with Win95 window chrome", async () => {
     render(<App />);
+    await startGameFromSetup();
 
     const settingsButton = screen.getByLabelText("Open settings");
     await userEvent.click(settingsButton);

@@ -14,6 +14,9 @@ export {
   passesThroughCoin,
 } from "./state";
 export { applyMove, coinsInsideCycle, findCycle, isValidState } from "./move";
+export { scoreForPlayer } from "./score";
+export type { BotFunction, BotStrategy } from "./bots/index";
+export * from "./bots/index";
 export {
   canUndo,
   computeFinalScore,

@@ -177,9 +177,9 @@
 .phone-shell .p-scanlines {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0 2px, transparent 2px 4px);
+  background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0 2px, transparent 2px 4px);
   mix-blend-mode: multiply;
-  opacity: 0.5;
+  opacity: 0.12;
   pointer-events: none;
   z-index: 50;
 }
@@ -855,17 +855,16 @@
   stroke-width: 1;
 }
 .mobile-app .gridline.major {
-  stroke: rgba(0, 229, 255, 0.55);
+  stroke: rgba(200, 200, 210, 0.22);
   stroke-width: 1.5;
 }
 .mobile-app .dot {
   fill: var(--orchid);
-  filter: drop-shadow(0 0 3px rgba(218, 112, 214, 0.6));
+  filter: drop-shadow(0 0 2px rgba(218, 112, 214, 0.35));
 }
 .mobile-app .dot.legal {
   fill: var(--cyan);
-  filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.85));
-  animation: legalPulse 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.45));
 }
 .mobile-app .coin-body.heads {
   fill: var(--heads);
@@ -894,14 +893,13 @@
 }
 .mobile-app .coin-group.selected .coin-body {
   stroke: var(--neon-magenta);
-  stroke-width: 3.5;
-  filter: drop-shadow(0 0 6px rgba(255, 57, 212, 0.9));
+  stroke-width: 3;
+  filter: drop-shadow(0 0 3px rgba(255, 57, 212, 0.5));
 }
 .mobile-app .coin-group.target .coin-body {
   stroke: var(--cyan);
-  stroke-width: 3;
-  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.8));
-  animation: targetPulse 1.4s ease-in-out infinite;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.4));
 }
 .mobile-app .coin-group.flipping .coin-body {
   animation: flip 500ms ease;
@@ -913,14 +911,13 @@
   stroke: var(--orchid-light);
   stroke-width: 4;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 4px rgba(244, 184, 240, 0.7));
+  filter: drop-shadow(0 0 2px rgba(244, 184, 240, 0.35));
 }
 .mobile-app .edge.preview {
   stroke: var(--neon-magenta);
   stroke-dasharray: 8 6;
-  opacity: 0.85;
-  filter: drop-shadow(0 0 4px rgba(255, 57, 212, 0.8));
-  animation: dash 0.8s linear infinite;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 2px rgba(255, 57, 212, 0.4));
 }
 .mobile-app .touch {
   fill: transparent;

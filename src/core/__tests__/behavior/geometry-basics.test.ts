@@ -2,9 +2,58 @@ import { describe, expect, it } from "vitest";
 import {
   getIntersectionPoints,
   isValidPosition,
+  pointOnSegment,
+  positionBlockedByEdge,
   positionsEqual,
   squaredDistance,
 } from "../../geometry";
+
+describe("pointOnSegment", () => {
+  it("returns true for points strictly between endpoints", () => {
+    expect(pointOnSegment({ row: 1, col: 1 }, { row: 0, col: 0 }, { row: 2, col: 2 })).toBe(true);
+    expect(pointOnSegment({ row: 0, col: 1 }, { row: 0, col: 0 }, { row: 0, col: 2 })).toBe(true);
+  });
+
+  it("returns true for endpoints themselves", () => {
+    expect(pointOnSegment({ row: 0, col: 0 }, { row: 0, col: 0 }, { row: 2, col: 2 })).toBe(true);
+    expect(pointOnSegment({ row: 2, col: 2 }, { row: 0, col: 0 }, { row: 2, col: 2 })).toBe(true);
+  });
+
+  it("returns false for collinear points outside the segment", () => {
+    expect(pointOnSegment({ row: 3, col: 3 }, { row: 0, col: 0 }, { row: 2, col: 2 })).toBe(false);
+    expect(pointOnSegment({ row: -1, col: -1 }, { row: 0, col: 0 }, { row: 2, col: 2 })).toBe(
+      false,
+    );
+  });
+
+  it("returns false for non-collinear points", () => {
+    expect(pointOnSegment({ row: 1, col: 2 }, { row: 0, col: 0 }, { row: 2, col: 2 })).toBe(false);
+  });
+});
+
+describe("positionBlockedByEdge", () => {
+  it("returns true when position lies strictly between edge endpoints", () => {
+    const edges = [{ from: { row: 0, col: 0 }, to: { row: 0, col: 3 } }];
+    expect(positionBlockedByEdge({ row: 0, col: 1 }, edges)).toBe(true);
+    expect(positionBlockedByEdge({ row: 0, col: 2 }, edges)).toBe(true);
+  });
+
+  it("returns false for edge endpoints", () => {
+    const edges = [{ from: { row: 0, col: 0 }, to: { row: 0, col: 3 } }];
+    expect(positionBlockedByEdge({ row: 0, col: 0 }, edges)).toBe(false);
+    expect(positionBlockedByEdge({ row: 0, col: 3 }, edges)).toBe(false);
+  });
+
+  it("returns false when position is off the line", () => {
+    const edges = [{ from: { row: 0, col: 0 }, to: { row: 0, col: 3 } }];
+    expect(positionBlockedByEdge({ row: 1, col: 1 }, edges)).toBe(false);
+  });
+
+  it("returns true for diagonal edge blocking", () => {
+    const edges = [{ from: { row: 0, col: 0 }, to: { row: 2, col: 2 } }];
+    expect(positionBlockedByEdge({ row: 1, col: 1 }, edges)).toBe(true);
+  });
+});
 
 describe("Geometry basics", () => {
   describe("squaredDistance", () => {

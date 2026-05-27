@@ -1,11 +1,12 @@
 import type { Edge } from "@core/types";
 import { positionToSvg } from "@ui/lib/coordinates";
+import React from "react";
 
 interface EdgeViewProps {
   readonly edge: Edge;
 }
 
-export function EdgeView({ edge }: EdgeViewProps) {
+function EdgeViewImpl({ edge }: EdgeViewProps) {
   const start = positionToSvg(edge.from);
   const end = positionToSvg(edge.to);
 
@@ -22,3 +23,5 @@ export function EdgeView({ edge }: EdgeViewProps) {
     />
   );
 }
+
+export const EdgeView = React.memo(EdgeViewImpl);

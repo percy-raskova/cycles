@@ -1,6 +1,7 @@
 import { positionKey } from "@core";
 import type { Position } from "@core/types";
 import { CELL_SIZE, MARGIN, VIEWBOX_SIZE } from "@ui/lib/constants";
+import React, { useMemo } from "react";
 
 interface GridDotProps {
   readonly row: number;
@@ -15,7 +16,7 @@ interface GridDotProps {
 
 const TOUCH_TARGET_SIZE = 120;
 
-function GridDot({
+function GridDotImpl({
   row,
   col,
   margin,
@@ -77,6 +78,8 @@ function GridDot({
   );
 }
 
+const GridDot = React.memo(GridDotImpl);
+
 interface GridViewProps {
   readonly gridSize: number;
   readonly cellSize: number;
@@ -98,63 +101,83 @@ export function GridView({
 }: GridViewProps) {
   const maxCoord = margin + (gridSize - 1) * cellSize;
 
-  const horizontalLines = Array.from({ length: gridSize }, (_, i) => {
-    const y = margin + i * cellSize;
-    const major = i === 0 || i === gridSize - 1;
-    return (
-      <line
-        // biome-ignore lint/suspicious/noArrayIndexKey: static grid
-        key={`h-${i}`}
-        x1={margin}
-        y1={y}
-        x2={maxCoord}
-        y2={y}
-        className={`gridline ${major ? "major" : ""}`}
-        stroke="var(--color-lavender)"
-        strokeWidth={2}
-      />
-    );
-  });
+  const horizontalLines = useMemo(
+    () =>
+      Array.from({ length: gridSize }, (_, i) => {
+        const y = margin + i * cellSize;
+        const major = i === 0 || i === gridSize - 1;
+        return (
+          <line
+            // biome-ignore lint/suspicious/noArrayIndexKey: static grid
+            key={`h-${i}`}
+            x1={margin}
+            y1={y}
+            x2={maxCoord}
+            y2={y}
+            className={`gridline ${major ? "major" : ""}`}
+            stroke="var(--color-lavender)"
+            strokeWidth={2}
+          />
+        );
+      }),
+    [gridSize, margin, cellSize, maxCoord],
+  );
 
-  const verticalLines = Array.from({ length: gridSize }, (_, i) => {
-    const x = margin + i * cellSize;
-    const major = i === 0 || i === gridSize - 1;
-    return (
-      <line
-        // biome-ignore lint/suspicious/noArrayIndexKey: static grid
-        key={`v-${i}`}
-        x1={x}
-        y1={margin}
-        x2={x}
-        y2={maxCoord}
-        className={`gridline ${major ? "major" : ""}`}
-        stroke="var(--color-lavender)"
-        strokeWidth={2}
-      />
-    );
-  });
+  const verticalLines = useMemo(
+    () =>
+      Array.from({ length: gridSize }, (_, i) => {
+        const x = margin + i * cellSize;
+        const major = i === 0 || i === gridSize - 1;
+        return (
+          <line
+            // biome-ignore lint/suspicious/noArrayIndexKey: static grid
+            key={`v-${i}`}
+            x1={x}
+            y1={margin}
+            x2={x}
+            y2={maxCoord}
+            className={`gridline ${major ? "major" : ""}`}
+            stroke="var(--color-lavender)"
+            strokeWidth={2}
+          />
+        );
+      }),
+    [gridSize, margin, cellSize, maxCoord],
+  );
 
-  const dots = Array.from({ length: gridSize * gridSize }, (_, i) => {
-    const row = Math.floor(i / gridSize);
-    const col = i % gridSize;
-    const key = positionKey({ row, col });
-    const isLegal = legalPlacements.has(key);
-    const isHovered = hoveredPosition?.row === row && hoveredPosition?.col === col;
+  const dots = useMemo(
+    () =>
+      Array.from({ length: gridSize * gridSize }, (_, i) => {
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
+        const key = positionKey({ row, col });
+        const isLegal = legalPlacements.has(key);
+        const isHovered = hoveredPosition?.row === row && hoveredPosition?.col === col;
 
-    return (
-      <GridDot
-        key={`d-${row}-${col}`}
-        row={row}
-        col={col}
-        margin={margin}
-        cellSize={cellSize}
-        isLegal={isLegal}
-        isHovered={isHovered}
-        onIntersectionClick={onIntersectionClick}
-        onIntersectionHover={onIntersectionHover}
-      />
-    );
-  });
+        return (
+          <GridDot
+            key={`d-${row}-${col}`}
+            row={row}
+            col={col}
+            margin={margin}
+            cellSize={cellSize}
+            isLegal={isLegal}
+            isHovered={isHovered}
+            onIntersectionClick={onIntersectionClick}
+            onIntersectionHover={onIntersectionHover}
+          />
+        );
+      }),
+    [
+      gridSize,
+      margin,
+      cellSize,
+      legalPlacements,
+      hoveredPosition,
+      onIntersectionClick,
+      onIntersectionHover,
+    ],
+  );
 
   return (
     <g data-testid="grid-view">
