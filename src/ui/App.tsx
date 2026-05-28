@@ -1,3 +1,4 @@
+import { hasLegalMoves } from "@core";
 import { Desktop } from "@ui/components/Desktop";
 import { MenuBar } from "@ui/components/MenuBar";
 import { Modal } from "@ui/components/Modal";
@@ -9,7 +10,6 @@ import { Taskbar } from "@ui/components/Taskbar";
 import { TitleBar } from "@ui/components/TitleBar";
 import { Toolbar } from "@ui/components/Toolbar";
 import { useBotGame } from "@ui/hooks/useBotGame";
-import { useGameSession } from "@ui/hooks/useGameSession";
 import { deriveLog } from "@ui/lib/deriveLog";
 import { GamePage } from "@ui/pages/GamePage";
 import type { GameSetupOptions } from "@ui/types/setup";
@@ -35,14 +35,12 @@ function App() {
   const [modal, setModal] = useState<null | { panel: Panel }>(null);
   const [setupOptions, setSetupOptions] = useState<GameSetupOptions | null>(getInitialSetupOptions);
 
-  const botGame = useBotGame(
+  // One driver-backed game for every mode (human-vs-human, vs Random, vs Strategic).
+  const { session, submitMove, lastFlipped, notice, reset, undo, canUndo } = useBotGame(
     setupOptions ?? { opponent: "human", playerRole: "HEADS", humanFirst: true },
   );
 
-  const humanGame = useGameSession();
   const isBot = setupOptions ? setupOptions.opponent !== "human" : false;
-
-  const { session, applyMove, reset, undo, canUndo } = isBot ? botGame : humanGame;
 
   const log = useMemo(() => deriveLog(session.history), [session.history]);
 
@@ -64,6 +62,13 @@ function App() {
 
   function handleBackToSetup() {
     setSetupOptions(null);
+  }
+
+  function handlePass() {
+    // Passes are forced-only; the driver auto-passes a player with no legal moves.
+    if (!hasLegalMoves(session)) {
+      submitMove({ type: "PASS" });
+    }
   }
 
   if (!setupOptions) {
@@ -99,11 +104,18 @@ function App() {
             onReset={handleReset}
             canUndo={canUndo}
             onHelp={(p) => openModal(p === "about" ? "about" : "help")}
-            onPass={() => applyMove({ type: "PASS" })}
+            onPass={handlePass}
             canPass={canPass}
           />
 
-          <GamePage session={session} applyMove={applyMove} onReset={handleReset} moveLog={log} />
+          <GamePage
+            session={session}
+            submitMove={submitMove}
+            lastFlipped={lastFlipped}
+            notice={notice}
+            onReset={handleReset}
+            moveLog={log}
+          />
 
           <StatusBar
             player={session.state.currentPlayer}
@@ -124,7 +136,13 @@ function App() {
       {modal && <Modal initialPanel={modal.panel} onClose={() => setModal(null)} />}
 
       {/* Mobile PWA layout — shown/hidden via CSS media query */}
-      <MobileApp session={session} applyMove={applyMove} onReset={handleReset} moveLog={log} />
+      <MobileApp
+        session={session}
+        submitMove={submitMove}
+        lastFlipped={lastFlipped}
+        onReset={handleReset}
+        moveLog={log}
+      />
 
       {isBot && (
         <div className="setup-return">

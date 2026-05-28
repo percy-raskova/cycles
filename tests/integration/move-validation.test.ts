@@ -104,16 +104,16 @@ describe("Move Validation (US2)", () => {
     expect(screen.getByTestId("turn-indicator-notice").textContent).toContain("passing");
 
     // Advance past first auto-pass delay — player switches, new notice appears
-    act(() => {
-      vi.advanceTimersByTime(1000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
     });
 
     expect(screen.getByTestId("turn-indicator-player").textContent).not.toBe(playerBefore);
     expect(screen.getByTestId("turn-indicator-notice")).toBeDefined();
 
     // Advance past second auto-pass delay — game reaches terminal
-    act(() => {
-      vi.advanceTimersByTime(1000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
     });
 
     expect(screen.queryByTestId("turn-indicator")).toBeNull();

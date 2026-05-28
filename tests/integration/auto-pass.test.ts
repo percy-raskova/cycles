@@ -40,16 +40,16 @@ describe("Auto-Pass (US4)", () => {
     const playerBefore = screen.getByTestId("turn-indicator-player").textContent;
 
     // First auto-pass: player switches, notice updates for new player
-    act(() => {
-      vi.advanceTimersByTime(1000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
     });
 
     expect(screen.getByTestId("turn-indicator-player").textContent).not.toBe(playerBefore);
     expect(screen.getByTestId("turn-indicator-notice")).toBeDefined();
 
     // Second auto-pass: game reaches terminal state
-    act(() => {
-      vi.advanceTimersByTime(1000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
     });
 
     expect(screen.queryByTestId("turn-indicator")).toBeNull();

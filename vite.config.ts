@@ -1,4 +1,5 @@
 import path from "node:path";
+import reactScan from "@react-scan/vite-plugin-react-scan";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
@@ -6,6 +7,8 @@ import { VitePWA } from "vite-plugin-pwa";
 export default defineConfig({
   plugins: [
     react(),
+    // Dev-only overlay; the plugin auto-gates so production builds are unaffected.
+    reactScan(),
     VitePWA({
       registerType: "autoUpdate",
       manifest: {

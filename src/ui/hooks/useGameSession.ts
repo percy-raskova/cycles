@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 
 const log = createLogger("session");
 
-function findFlippedCoins(previous: GameSession, current: GameSession): ReadonlySet<string> {
+export function findFlippedCoins(previous: GameSession, current: GameSession): ReadonlySet<string> {
   const flipped = new Set<string>();
   for (const [key, prevCoin] of previous.state.coins) {
     const newCoin = current.state.coins.get(key);

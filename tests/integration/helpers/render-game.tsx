@@ -1,13 +1,27 @@
 import type { GameSession } from "@core";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useGameSession } from "@ui/hooks/useGameSession";
+import { useBotGame } from "@ui/hooks/useBotGame";
 import { GamePage } from "@ui/pages/GamePage";
 
 function GamePageWrapper({ initialSession }: { readonly initialSession?: GameSession }) {
-  const { session, applyMove, reset } = useGameSession({ initialSession });
+  const { session, submitMove, lastFlipped, notice, reset } = useBotGame({
+    opponent: "human",
+    playerRole: "HEADS",
+    humanFirst: true,
+    botDelayMs: 0,
+    ...(initialSession ? { initialSession } : {}),
+  });
 
-  return <GamePage session={session} applyMove={applyMove} onReset={reset} />;
+  return (
+    <GamePage
+      session={session}
+      submitMove={submitMove}
+      lastFlipped={lastFlipped}
+      notice={notice}
+      onReset={reset}
+    />
+  );
 }
 
 interface RenderGameOptions {

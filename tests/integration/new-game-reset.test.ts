@@ -9,7 +9,7 @@ describe("New Game Reset (US6)", () => {
     vi.useRealTimers();
   });
 
-  it("resets all state after terminal state + New Game click", () => {
+  it("resets all state after terminal state + New Game click", async () => {
     vi.useFakeTimers();
     const state = makeBlockedBoardState();
     renderGame({
@@ -22,11 +22,11 @@ describe("New Game Reset (US6)", () => {
     });
 
     // Reach terminal state via two auto-passes (1s each)
-    act(() => {
-      vi.advanceTimersByTime(1000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
     });
-    act(() => {
-      vi.advanceTimersByTime(1000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
     });
 
     expect(screen.getByTestId("game-over-panel")).toBeDefined();

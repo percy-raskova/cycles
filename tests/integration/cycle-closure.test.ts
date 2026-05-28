@@ -63,7 +63,7 @@ describe("Cycle Closure (US3)", () => {
     expect(getCoinAt(3, 3).classList.contains("coin-flipping")).toBe(true);
   });
 
-  it("blocks input during the 500ms flip animation", () => {
+  it("blocks input during the 500ms flip animation", async () => {
     vi.useFakeTimers();
     const state = makeCycleBoardState();
     renderGame({
@@ -78,6 +78,7 @@ describe("Cycle Closure (US3)", () => {
     // Close the cycle to trigger animation (use fireEvent because fake timers are active)
     fireEvent.click(getCoinAt(4, 2));
     fireEvent.click(getCoinAt(2, 2));
+    await act(async () => {}); // flush the driver step: the move applies + animation starts
 
     // Animation is running
     expect(getCoinAt(4, 2).classList.contains("coin-flipping")).toBe(true);
@@ -92,8 +93,8 @@ describe("Cycle Closure (US3)", () => {
     expect(coin.classList.contains("coin-selected")).toBe(false);
 
     // After animation completes, input should work again
-    act(() => {
-      vi.advanceTimersByTime(500);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(500);
     });
 
     fireEvent.click(emptyDot);

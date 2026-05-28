@@ -9,28 +9,33 @@ describe("Edge Placement (FR-013)", () => {
     vi.useRealTimers();
   });
 
-  function selectFace(face: "heads" | "tails") {
+  // Pick a face, then flush the driver microtask so the move is applied before the
+  // next interaction (the deferred agent re-pends only after the prior move lands).
+  async function selectFace(face: "heads" | "tails") {
     const selector = face === "heads" ? "face-selector-heads" : "face-selector-tails";
     fireEvent.click(screen.getByTestId(selector));
+    await act(async () => {});
   }
 
-  it("rejects placement along a horizontal edge", () => {
+  it("rejects placement along a horizontal edge", async () => {
     vi.useFakeTimers();
     renderGame();
 
     // Place coins at (0,0) and (0,2)
     fireEvent.click(getDotAt(0, 0));
-    selectFace("heads");
+    await selectFace("heads");
     fireEvent.click(getDotAt(0, 2));
-    selectFace("tails");
+    await selectFace("tails");
 
     // Join them
     fireEvent.click(getCoinAt(0, 0));
     fireEvent.click(getCoinAt(0, 2));
 
-    // Wait for the join animation to complete
-    act(() => {
-      vi.advanceTimersByTime(500);
+    // Flush the join and run the flip animation to completion
+    // Flush the join (which schedules the flip-animation timer), then run timers out.
+    await act(async () => {});
+    await act(async () => {
+      await vi.runAllTimersAsync();
     });
 
     // Verify the edge exists
@@ -45,23 +50,24 @@ describe("Edge Placement (FR-013)", () => {
     expect(getFaceSelector(0, 1)).toBeNull();
   });
 
-  it("rejects placement along a diagonal edge", () => {
+  it("rejects placement along a diagonal edge", async () => {
     vi.useFakeTimers();
     renderGame();
 
     // Place coins at (0,0) and (2,2)
     fireEvent.click(getDotAt(0, 0));
-    selectFace("heads");
+    await selectFace("heads");
     fireEvent.click(getDotAt(2, 2));
-    selectFace("tails");
+    await selectFace("tails");
 
     // Join them
     fireEvent.click(getCoinAt(0, 0));
     fireEvent.click(getCoinAt(2, 2));
 
-    // Wait for the join animation to complete
-    act(() => {
-      vi.advanceTimersByTime(500);
+    // Flush the join (which schedules the flip-animation timer), then run timers out.
+    await act(async () => {});
+    await act(async () => {
+      await vi.runAllTimersAsync();
     });
 
     // Verify the edge exists
@@ -75,23 +81,24 @@ describe("Edge Placement (FR-013)", () => {
     expect(getFaceSelector(1, 1)).toBeNull();
   });
 
-  it("allows placement on an empty intersection not on an edge", () => {
+  it("allows placement on an empty intersection not on an edge", async () => {
     vi.useFakeTimers();
     renderGame();
 
     // Place coins at (0,0) and (0,2)
     fireEvent.click(getDotAt(0, 0));
-    selectFace("heads");
+    await selectFace("heads");
     fireEvent.click(getDotAt(0, 2));
-    selectFace("tails");
+    await selectFace("tails");
 
     // Join them
     fireEvent.click(getCoinAt(0, 0));
     fireEvent.click(getCoinAt(0, 2));
 
-    // Wait for the join animation to complete
-    act(() => {
-      vi.advanceTimersByTime(500);
+    // Flush the join (which schedules the flip-animation timer), then run timers out.
+    await act(async () => {});
+    await act(async () => {
+      await vi.runAllTimersAsync();
     });
 
     // (1,1) is not on the edge (0,0)-(0,2)

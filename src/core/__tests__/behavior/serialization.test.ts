@@ -44,7 +44,8 @@ describe("serialization — state", () => {
   it("produces JSON with no Map artifacts (coins is an array of entries)", () => {
     let state = createInitialState("HEADS");
     state = placeCoin(state, { row: 2, col: 3 }, "heads");
-    const parsed = JSON.parse(serializeState(state));
+    // JSON.parse is `unknown` under ts-reset — narrow to the field we actually assert.
+    const parsed = JSON.parse(serializeState(state)) as { coins: unknown };
     expect(Array.isArray(parsed.coins)).toBe(true);
   });
 

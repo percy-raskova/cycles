@@ -10,7 +10,8 @@ function TestWrapper() {
   return (
     <MobileApp
       session={session}
-      applyMove={() => ({ success: true, flipped: new Set() })}
+      submitMove={() => {}}
+      lastFlipped={new Set()}
       onReset={() => {}}
       moveLog={[]}
     />

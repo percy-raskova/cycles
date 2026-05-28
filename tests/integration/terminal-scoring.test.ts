@@ -22,11 +22,11 @@ describe("Terminal Scoring", () => {
     });
 
     // Auto-pass twice to reach terminal
-    act(() => {
-      vi.advanceTimersByTime(1000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
     });
-    act(() => {
-      vi.advanceTimersByTime(1000);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
     });
 
     expect(screen.getByTestId("game-over-panel")).toBeDefined();

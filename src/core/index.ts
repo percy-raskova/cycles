@@ -1,5 +1,6 @@
 export type { BotFunction, BotStrategy } from "./bots/index";
 export * from "./bots/index";
+export * from "./driver/index";
 export { positionBlockedByEdge } from "./geometry";
 export { applyMove, coinsInsideCycle, findCycle, isValidState } from "./move";
 export { scoreForPlayer } from "./score";

@@ -1,137 +1,242 @@
-import type { GameSession, Move, Player } from "@core";
-import { createSession, createStrategicBot, hasLegalMoves, randomBot } from "@core";
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { GameSetupOptions } from "../types/setup";
-import { useGameSession } from "./useGameSession";
+import type {
+  Agent,
+  BotFunction,
+  DeferredHandle,
+  DriverUpdate,
+  FinalScore,
+  GameSession,
+  Move,
+  Player,
+} from "@core";
+import {
+  computeFinalScore,
+  createCpuAgent,
+  createDeferredAgent,
+  createSession,
+  createStrategicBot,
+  driveGame,
+  randomBot,
+  undo as undoSession,
+} from "@core";
+import { createLogger } from "@ui/lib/logger";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { BotStrategyUI, GameSetupOptions, OpponentType } from "../types/setup";
+import { findFlippedCoins } from "./useGameSession";
+
+const log = createLogger("bot-game");
+
+/** Auto-pass notice duration (ms) before the driver applies a forced PASS. */
+const AUTO_PASS_MS = 1000;
+/** Default bot "think" delay (ms); tests inject `botDelayMs: 0` for instant play. */
+const BOT_THINK_MS = 2000;
+const EMPTY_FLIPPED: ReadonlySet<string> = new Set();
 
 export interface UseBotGameOptions extends GameSetupOptions {
   readonly botDelayMs?: number;
+  /** Test-only override of the starting session (e.g. a pre-built blocked board). */
+  readonly initialSession?: GameSession;
 }
 
 export interface UseBotGameReturn {
   readonly session: GameSession;
-  readonly applyMove: (move: Move) => ReturnType<ReturnType<typeof useGameSession>["applyMove"]>;
+  /** Submit the current player's move (human input → its DeferredAgent). */
+  readonly submitMove: (move: Move) => void;
   readonly reset: () => void;
   readonly undo: () => void;
   readonly canUndo: boolean;
-  readonly finalScore: ReturnType<typeof useGameSession>["finalScore"];
+  readonly finalScore: FinalScore | null;
   readonly botThinking: boolean;
+  /** Coins flipped by the most recent applied move (for flip animation). */
+  readonly lastFlipped: ReadonlySet<string>;
+  /** Forced-pass notice shown during the auto-pass delay, else null. */
+  readonly notice: string | null;
 }
 
 function oppositePlayer(player: Player): Player {
   return player === "HEADS" ? "TAILS" : "HEADS";
 }
 
-function createBotSession(options: UseBotGameOptions): GameSession {
+function initialFor(options: UseBotGameOptions): GameSession {
+  if (options.initialSession) {
+    return options.initialSession;
+  }
   const firstPlayer = options.humanFirst ? options.playerRole : oppositePlayer(options.playerRole);
   return createSession({ firstPlayer });
 }
 
-function getBotFunction(opponent: GameSetupOptions["opponent"]) {
-  switch (opponent) {
-    case "random":
-      return randomBot;
-    case "strategic":
-      // Inject the clock at the UI boundary (Q8) so the engine stays time-free.
-      return createStrategicBot({ now: () => performance.now(), deadlineMs: 2000 });
-    default:
-      return null;
+function getBotFunction(opponent: BotStrategyUI, deadlineMs: number): BotFunction {
+  if (opponent === "strategic") {
+    // Inject the clock at the UI boundary (Q8) so the engine stays time-free.
+    return createStrategicBot({ now: () => performance.now(), deadlineMs });
+  }
+  return randomBot;
+}
+
+function delay(ms: number, signal: AbortSignal | undefined): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(signal.reason);
+      return;
+    }
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener(
+      "abort",
+      () => {
+        clearTimeout(timer);
+        reject(signal.reason);
+      },
+      { once: true },
+    );
+  });
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    (error as { name?: unknown }).name === "AbortError"
+  );
+}
+
+interface BuiltAgents {
+  readonly agents: Readonly<Record<Player, Agent>>;
+  readonly deferred: Readonly<Partial<Record<Player, DeferredHandle>>>;
+}
+
+/** Build the agent pair once: the human slot(s) deferred, a bot opponent as a CpuAgent. */
+function buildAgents(
+  opponent: OpponentType,
+  humanSlot: Player,
+  botDelayMs: number | undefined,
+): BuiltAgents {
+  const oppSlot = oppositePlayer(humanSlot);
+  const humanHandle = createDeferredAgent(humanSlot);
+  const deferred: Partial<Record<Player, DeferredHandle>> = { [humanSlot]: humanHandle };
+
+  let oppAgent: Agent;
+  if (opponent === "human") {
+    const oppHandle = createDeferredAgent(oppSlot);
+    deferred[oppSlot] = oppHandle;
+    oppAgent = oppHandle.agent;
+  } else {
+    const bot = getBotFunction(opponent, botDelayMs ?? BOT_THINK_MS);
+    const think = (signal: AbortSignal | undefined) => delay(botDelayMs ?? BOT_THINK_MS, signal);
+    oppAgent = createCpuAgent(oppSlot, bot, { think });
+  }
+
+  const agents = { [humanSlot]: humanHandle.agent, [oppSlot]: oppAgent } as Record<Player, Agent>;
+  return { agents, deferred };
+}
+
+function applyUpdate(
+  update: DriverUpdate,
+  prevRef: { current: GameSession },
+  setSession: (s: GameSession) => void,
+  setNotice: (n: string | null) => void,
+  setLastFlipped: (f: ReadonlySet<string>) => void,
+): void {
+  if (update.kind === "applied") {
+    setLastFlipped(findFlippedCoins(prevRef.current, update.session));
+    setNotice(null);
+    prevRef.current = update.session;
+    setSession(update.session);
+    return;
+  }
+  if (update.kind === "start" || update.kind === "end") {
+    prevRef.current = update.session;
+    setSession(update.session);
   }
 }
 
 export function useBotGame(options: UseBotGameOptions): UseBotGameReturn {
-  const initialSession = createBotSession(options);
-  const gameSession = useGameSession({ initialSession });
+  const [session, setSession] = useState<GameSession>(() => initialFor(options));
+  const [notice, setNotice] = useState<string | null>(null);
+  const [lastFlipped, setLastFlipped] = useState<ReadonlySet<string>>(EMPTY_FLIPPED);
+  const [runId, setRunId] = useState(0);
 
-  const [botThinking, setBotThinking] = useState(false);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
+  const prevRef = useRef(session);
+  // A reset/undo sets the next run's start session; null ⇒ start fresh from options.
+  const targetRef = useRef<GameSession | null>(null);
 
-  // Refs to avoid stale closures and unnecessary effect re-runs
-  const sessionRef = useRef(gameSession.session);
-  const applyMoveRef = useRef(gameSession.applyMove);
-  const playerRoleRef = useRef(options.playerRole);
-  const opponentRef = useRef(options.opponent);
-  const delayMsRef = useRef(options.botDelayMs ?? 2000);
-  const botTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isRunningRef = useRef(false);
+  // Agents persist across runs; rebuilt only when the game configuration changes.
+  const { agents, deferred } = useMemo(
+    () => buildAgents(options.opponent, options.playerRole, options.botDelayMs),
+    [options.opponent, options.playerRole, options.botDelayMs],
+  );
 
-  // Keep refs in sync without triggering effects
-  sessionRef.current = gameSession.session;
-  applyMoveRef.current = gameSession.applyMove;
-  playerRoleRef.current = options.playerRole;
-  opponentRef.current = options.opponent;
-  delayMsRef.current = options.botDelayMs ?? 2000;
-
-  const currentPlayer = gameSession.session.state.currentPlayer;
-  const isTerminal = gameSession.session.isTerminal;
-  const isBotOpponent = opponentRef.current !== "human";
-  const isBotTurn = isBotOpponent && currentPlayer !== playerRoleRef.current && !isTerminal;
-
-  // Schedule bot move only when it's the bot's turn and not already running.
-  // The effect dependency is `isBotTurn` (a boolean), so:
-  //   - Re-renders during hover do NOT cancel the pending timer
-  //   - The timer only cancels when the bot turn actually ends
+  // Run the driver for the whole game; restart on reset/undo (runId) or config change (agents).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runId is a manual restart trigger; `agents` is the real captured dep, options are read via optionsRef.
   useEffect(() => {
-    if (!isBotTurn || isRunningRef.current) return;
+    const controller = new AbortController();
+    const start = targetRef.current ?? initialFor(optionsRef.current);
+    targetRef.current = null;
+    prevRef.current = start;
+    setSession(start);
+    setNotice(null);
+    setLastFlipped(EMPTY_FLIPPED);
 
-    const delay = delayMsRef.current;
-    isRunningRef.current = true;
-    setBotThinking(true);
-
-    botTimerRef.current = setTimeout(() => {
-      const session = sessionRef.current;
-      if (!hasLegalMoves(session)) {
-        isRunningRef.current = false;
-        setBotThinking(false);
-        return;
+    void driveGame({
+      initialSession: start,
+      agents,
+      signal: controller.signal,
+      onUpdate: (u) => applyUpdate(u, prevRef, setSession, setNotice, setLastFlipped),
+      hooks: {
+        beforeForcedPass: (slot, signal) => {
+          setNotice(`${slot} has no legal moves — passing`);
+          return delay(AUTO_PASS_MS, signal);
+        },
+      },
+    }).catch((error: unknown) => {
+      if (!isAbortError(error)) {
+        log.error("driver run failed", error);
       }
+    });
 
-      const botFn = getBotFunction(opponentRef.current);
-      if (!botFn) {
-        isRunningRef.current = false;
-        setBotThinking(false);
-        return;
-      }
+    return () => controller.abort();
+  }, [runId, agents]);
 
-      const botPromise = Promise.resolve(botFn(session.state));
+  const submitMove = useCallback(
+    (move: Move) => {
+      deferred[sessionRef.current.state.currentPlayer]?.submit(move);
+    },
+    [deferred],
+  );
 
-      botPromise
-        .then((move) => {
-          applyMoveRef.current(move);
-        })
-        .catch((err) => {
-          console.error("Bot move failed:", err);
-        })
-        .finally(() => {
-          isRunningRef.current = false;
-          setBotThinking(false);
-        });
-    }, delay);
+  const reset = useCallback(() => {
+    // New Game returns to a fresh board (matches the legacy reset → createSession()),
+    // not any test-injected initialSession.
+    targetRef.current = createSession();
+    setRunId((n) => n + 1);
+  }, []);
 
-    return () => {
-      if (botTimerRef.current) {
-        clearTimeout(botTimerRef.current);
-        botTimerRef.current = null;
-      }
-    };
-  }, [isBotTurn]);
-
-  const handleReset = useCallback(() => {
-    isRunningRef.current = false;
-    setBotThinking(false);
-    if (botTimerRef.current) {
-      clearTimeout(botTimerRef.current);
-      botTimerRef.current = null;
+  const undo = useCallback(() => {
+    const current = sessionRef.current;
+    if (current.history.length === 0) {
+      return;
     }
-    gameSession.reset();
-  }, [gameSession]);
+    targetRef.current = undoSession(current);
+    setRunId((n) => n + 1);
+  }, []);
+
+  const isBotOpponent = options.opponent !== "human";
+  const botThinking =
+    isBotOpponent &&
+    !session.isTerminal &&
+    session.state.currentPlayer === oppositePlayer(options.playerRole);
 
   return {
-    session: gameSession.session,
-    applyMove: gameSession.applyMove,
-    reset: handleReset,
-    undo: gameSession.undo,
-    canUndo: gameSession.canUndo,
-    finalScore: gameSession.finalScore,
+    session,
+    submitMove,
+    reset,
+    undo,
+    canUndo: session.history.length > 0,
+    finalScore: session.isTerminal ? computeFinalScore(session) : null,
     botThinking,
+    lastFlipped,
+    notice,
   };
 }

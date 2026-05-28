@@ -2,12 +2,25 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { useGameSession } from "../../hooks/useGameSession";
+import { useBotGame } from "../../hooks/useBotGame";
 import { GamePage } from "../GamePage";
 
 function GamePageWrapper() {
-  const { session, applyMove, reset } = useGameSession();
-  return <GamePage session={session} applyMove={applyMove} onReset={reset} />;
+  const { session, submitMove, lastFlipped, notice, reset } = useBotGame({
+    opponent: "human",
+    playerRole: "HEADS",
+    humanFirst: true,
+    botDelayMs: 0,
+  });
+  return (
+    <GamePage
+      session={session}
+      submitMove={submitMove}
+      lastFlipped={lastFlipped}
+      notice={notice}
+      onReset={reset}
+    />
+  );
 }
 
 function getDotAt(row: number, col: number): Element | undefined {
