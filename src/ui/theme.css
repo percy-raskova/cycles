@@ -194,7 +194,9 @@ button {
     #9b4f96 72%,
     #0038a8 100%
   );
-  opacity: 0.45;
+  /* Matches the mobile .p-sun tone-down (0.6 → 0.42); desktop dialed
+     0.45 → 0.32 so both shells share the "easier on the eyes" intensity. */
+  opacity: 0.32;
   filter: blur(0.2px);
   -webkit-mask-image:
     linear-gradient(180deg, #000 0 50%, transparent 50%),
@@ -219,7 +221,9 @@ button {
     repeating-linear-gradient(
       180deg,
       transparent 0 calc(8% - 1px),
-      rgba(255, 57, 212, 0.22) calc(8% - 1px) 8%
+      /* Magenta horizontal stripes dialed 0.22 → 0.13; matches the mobile
+         horizon tone-down ratio. */
+      rgba(255, 57, 212, 0.13) calc(8% - 1px) 8%
     ),
     conic-gradient(
       from 270deg at 50% 0%,
@@ -238,7 +242,9 @@ button {
   background: repeating-linear-gradient(
     90deg,
     transparent 0 calc(2.5% - 1px),
-    rgba(0, 229, 255, 0.25) calc(2.5% - 1px) 2.5%
+    /* Cyan verticals: 0.25 → 0.13. These are the worst moiré offenders on
+       desktop too (2.5% stripe + perspective warp = pixel-grid beats). */
+    rgba(0, 229, 255, 0.13) calc(2.5% - 1px) 2.5%
   );
 }
 
