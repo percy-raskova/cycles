@@ -53,14 +53,16 @@ export const MobileBoard = forwardRef<SVGSVGElement, MobileBoardProps>(function 
       </defs>
       <rect x="0" y="0" width={M_VIEWBOX} height={M_VIEWBOX} fill="url(#mBoardGlow)" />
 
-      {/* Diagonals subtle */}
-      <g opacity="0.18">
+      {/* Diagonal queen-line guides — opacity halved (0.18 → 0.09) and recolored
+          to the gridline grey-purple. The bright cyan dashed lines were reading
+          as "pulsating" against the high-contrast magenta board. */}
+      <g opacity="0.09">
         <line
           x1={M_MARGIN}
           y1={M_MARGIN}
           x2={max}
           y2={max}
-          stroke="var(--cyan)"
+          stroke="rgba(200, 200, 210, 0.6)"
           strokeWidth="1"
           strokeDasharray="2 4"
         />
@@ -69,7 +71,7 @@ export const MobileBoard = forwardRef<SVGSVGElement, MobileBoardProps>(function 
           y1={M_MARGIN}
           x2={M_MARGIN}
           y2={max}
-          stroke="var(--cyan)"
+          stroke="rgba(200, 200, 210, 0.6)"
           strokeWidth="1"
           strokeDasharray="2 4"
         />

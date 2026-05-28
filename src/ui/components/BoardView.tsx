@@ -84,17 +84,20 @@ function BoardViewImpl(
       aria-label="CYCLES game board"
     >
       <title>CYCLES game board</title>
-      {/* Diagonal guide lines (queen-lines through corners) — use <path> so tests counting <line> elements are not affected */}
-      <g opacity="0.18">
+      {/* Diagonal queen-line guides — opacity 0.18 → 0.09 and recolored to the
+          gridline grey-purple so they sit behind the play surface instead of
+          reading as bright cyan slashes. <path> kept (not <line>) so tests that
+          count <line> elements remain unaffected. */}
+      <g opacity="0.09">
         <path
           d={`M ${MARGIN} ${MARGIN} L ${MARGIN + (GRID_SIZE - 1) * CELL_SIZE} ${MARGIN + (GRID_SIZE - 1) * CELL_SIZE}`}
-          stroke="var(--cyan)"
+          stroke="rgba(200, 200, 210, 0.6)"
           strokeWidth="1"
           strokeDasharray="2 4"
         />
         <path
           d={`M ${MARGIN + (GRID_SIZE - 1) * CELL_SIZE} ${MARGIN} L ${MARGIN} ${MARGIN + (GRID_SIZE - 1) * CELL_SIZE}`}
-          stroke="var(--cyan)"
+          stroke="rgba(200, 200, 210, 0.6)"
           strokeWidth="1"
           strokeDasharray="2 4"
         />

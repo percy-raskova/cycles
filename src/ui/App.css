@@ -83,9 +83,10 @@
   background: repeating-linear-gradient(
     180deg,
     transparent 0 calc(10% - 1px),
-    /* Horizon stripes softened 0.55 → 0.32 — keeps the grid recognizable
-       without the harsh edge contrast that strained the eye. */
-    rgba(255, 57, 212, 0.32) calc(10% - 1px) 10%
+    /* Horizon stripes dialed further down (0.32 → 0.18) — the warped repeating
+       gradient was reading as "pulsating lines" via moiré against the device
+       pixel grid. Subtler now; the perspective vibe still lands. */
+    rgba(255, 57, 212, 0.18) calc(10% - 1px) 10%
   );
   -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
   mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
@@ -98,7 +99,9 @@
   background: repeating-linear-gradient(
     90deg,
     transparent 0 calc(3% - 1px),
-    rgba(0, 229, 255, 0.32) calc(3% - 1px) 3%
+    /* Cyan verticals were the worst moiré offender at 3% stripe + perspective
+       warp. Cut to 0.18; still reads as a horizon grid, no longer shimmery. */
+    rgba(0, 229, 255, 0.18) calc(3% - 1px) 3%
   );
 }
 .phone-shell .p-scanlines {
@@ -268,20 +271,21 @@
   pointer-events: none;
 }
 .m-board-frame::after {
+  /* Match desktop: subdued grey-purple corner brackets, not cyan. */
+  --bracket: rgba(200, 200, 210, 0.4);
   content: "";
   position: absolute;
   inset: 8px;
   background:
-    linear-gradient(var(--cyan), var(--cyan)) left top / 12px 1px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) left top / 1px 12px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) right top / 12px 1px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) right top / 1px 12px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) left bottom / 12px 1px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) left bottom / 1px 12px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) right bottom / 12px 1px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) right bottom / 1px 12px no-repeat;
+    linear-gradient(var(--bracket), var(--bracket)) left top / 12px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) left top / 1px 12px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) right top / 12px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) right top / 1px 12px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) left bottom / 12px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) left bottom / 1px 12px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) right bottom / 12px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) right bottom / 1px 12px no-repeat;
   pointer-events: none;
-  opacity: 0.55;
 }
 .m-board-svg {
   display: block;

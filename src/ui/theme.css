@@ -629,20 +629,23 @@ body.no-scan .scanlines {
 }
 
 .board-frame::after {
+  /* Corner brackets now match the .gridline.major palette (subdued grey-purple)
+     instead of the bright cyan — fades into the rest of the grid instead of
+     reading as a "blue border". */
+  --bracket: rgba(200, 200, 210, 0.4);
   content: "";
   position: absolute;
   inset: 8px;
   background:
-    linear-gradient(var(--cyan), var(--cyan)) left top / 16px 1px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) left top / 1px 16px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) right top / 16px 1px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) right top / 1px 16px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) left bottom / 16px 1px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) left bottom / 1px 16px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) right bottom / 16px 1px no-repeat,
-    linear-gradient(var(--cyan), var(--cyan)) right bottom / 1px 16px no-repeat;
+    linear-gradient(var(--bracket), var(--bracket)) left top / 16px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) left top / 1px 16px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) right top / 16px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) right top / 1px 16px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) left bottom / 16px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) left bottom / 1px 16px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) right bottom / 16px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) right bottom / 1px 16px no-repeat;
   pointer-events: none;
-  opacity: 0.55;
 }
 
 .board-svg {
@@ -1022,23 +1025,19 @@ body.no-scan .scanlines {
 }
 
 .dot {
+  /* Halos removed — the soft drop-shadow blur made the dots read as "pulsating"
+     when the legal-set changed between moves (each affected dot did a 120ms
+     fill cross-fade through its glow). Now: flat fill, no halo, no transition.
+     The fill itself still distinguishes legal (cyan) from non-legal (orchid). */
   fill: var(--orchid);
-  /* Halved the neon glow on every dot — applied to all 49 intersections, the old
-     0.35 was eye-strain on mobile and a meaningful paint cost on every move. */
-  filter: drop-shadow(0 0 2px rgba(218, 112, 214, 0.2));
-  transition:
-    r 120ms,
-    fill 120ms;
 }
 
 .dot.legal {
   fill: var(--cyan);
-  filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.25));
 }
 
 .dot.hovered {
   fill: var(--neon-magenta);
-  filter: drop-shadow(0 0 3px rgba(255, 57, 212, 0.3));
 }
 
 .touch {
