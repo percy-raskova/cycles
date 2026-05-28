@@ -17,3 +17,21 @@ if (typeof window !== "undefined" && window.HTMLDialogElement) {
     };
   }
 }
+
+// jsdom does not implement matchMedia; provide a desktop-default no-op so
+// hooks like useIsMobile work in every test. Tests that need a specific
+// viewport (e.g. mobile-desktop-toggle.test.tsx) reassign window.matchMedia
+// inline — that still overrides this default.
+if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
+  window.matchMedia = (query: string) =>
+    ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }) as MediaQueryList;
+}

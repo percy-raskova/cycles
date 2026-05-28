@@ -9,16 +9,10 @@ interface CoinViewProps {
   readonly onHover?: ((position: Position | null) => void) | undefined;
   readonly isSelected: boolean;
   readonly isHighlighted: boolean;
-  readonly isFlipping: boolean;
   readonly isIllegal: boolean;
 }
 
-function buildClassName(
-  isSelected: boolean,
-  isHighlighted: boolean,
-  isFlipping: boolean,
-  isIllegal: boolean,
-): string {
+function buildClassName(isSelected: boolean, isHighlighted: boolean, isIllegal: boolean): string {
   const parts: string[] = ["coin-group"];
   if (isSelected) {
     parts.push("selected");
@@ -26,10 +20,6 @@ function buildClassName(
   } else if (isHighlighted) {
     parts.push("target");
     parts.push("coin-highlighted");
-  }
-  if (isFlipping) {
-    parts.push("flipping");
-    parts.push("coin-flipping");
   }
   if (isIllegal) {
     parts.push("illegal");
@@ -44,13 +34,12 @@ function CoinViewImpl({
   onHover,
   isSelected,
   isHighlighted,
-  isFlipping,
   isIllegal,
 }: CoinViewProps) {
   const { x, y } = positionToSvg(coin.position);
   const label = coin.face === "heads" ? "H" : "T";
   const bodyClass = `coin-body ${coin.face}`;
-  const className = buildClassName(isSelected, isHighlighted, isFlipping, isIllegal);
+  const className = buildClassName(isSelected, isHighlighted, isIllegal);
 
   function handleClick() {
     onClick?.(coin.position);

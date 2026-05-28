@@ -17,7 +17,6 @@ interface MobileBoardProps {
   readonly selectedCoin: Position | null;
   readonly highlightedCoins: ReadonlySet<string>;
   readonly previewEdge: { readonly from: Position; readonly to: Position } | null;
-  readonly flippingCoins: ReadonlySet<string>;
   readonly illegalMoveCoin: Position | null;
   readonly onIntersectionClick: (position: Position) => void;
   readonly onCoinClick: (position: Position) => void;
@@ -30,7 +29,6 @@ export const MobileBoard = forwardRef<SVGSVGElement, MobileBoardProps>(function 
     selectedCoin,
     highlightedCoins,
     previewEdge,
-    flippingCoins,
     illegalMoveCoin,
     onIntersectionClick,
     onCoinClick,
@@ -151,7 +149,6 @@ export const MobileBoard = forwardRef<SVGSVGElement, MobileBoardProps>(function 
           coin={c}
           selectedCoin={selectedCoin}
           highlightedCoins={highlightedCoins}
-          flippingCoins={flippingCoins}
           illegalMoveCoin={illegalMoveCoin}
           onCoinClick={onCoinClick}
         />
@@ -164,7 +161,6 @@ interface MobileCoinProps {
   readonly coin: Coin;
   readonly selectedCoin: Position | null;
   readonly highlightedCoins: ReadonlySet<string>;
-  readonly flippingCoins: ReadonlySet<string>;
   readonly illegalMoveCoin: Position | null;
   readonly onCoinClick: (position: Position) => void;
 }
@@ -173,7 +169,6 @@ function MobileCoin({
   coin,
   selectedCoin,
   highlightedCoins,
-  flippingCoins,
   illegalMoveCoin,
   onCoinClick,
 }: MobileCoinProps) {
@@ -182,13 +177,8 @@ function MobileCoin({
   const k = `${row},${col}`;
   const sel = selectedCoin && selectedCoin.row === row && selectedCoin.col === col;
   const tgt = highlightedCoins.has(k);
-  const flip = flippingCoins.has(k);
   const ill = illegalMoveCoin && illegalMoveCoin.row === row && illegalMoveCoin.col === col;
-  const cls =
-    (sel ? "selected " : "") +
-    (tgt ? "target " : "") +
-    (flip ? "flipping " : "") +
-    (ill ? "illegal " : "");
+  const cls = (sel ? "selected " : "") + (tgt ? "target " : "") + (ill ? "illegal " : "");
   return (
     <g
       key={k}

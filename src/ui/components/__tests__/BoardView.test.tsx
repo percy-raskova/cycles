@@ -13,7 +13,6 @@ function renderBoardView(state: GameState) {
       hoveredPosition={null}
       previewEdge={null}
       legalPlacements={new Set()}
-      flippingCoins={new Set()}
       illegalMoveCoin={null}
       highlightedCoins={new Set()}
     />,
@@ -122,7 +121,6 @@ describe("BoardView — with coins", () => {
         hoveredPosition={null}
         previewEdge={null}
         legalPlacements={new Set()}
-        flippingCoins={new Set()}
         illegalMoveCoin={null}
         highlightedCoins={new Set()}
       />,
@@ -202,7 +200,6 @@ describe("BoardView — preview edge", () => {
         hoveredPosition={null}
         previewEdge={{ from: { row: 0, col: 0 }, to: { row: 1, col: 1 } }}
         legalPlacements={new Set()}
-        flippingCoins={new Set()}
         illegalMoveCoin={null}
         highlightedCoins={new Set()}
       />,

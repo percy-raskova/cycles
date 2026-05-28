@@ -21,7 +21,6 @@ import {
 import { createLogger } from "@ui/lib/logger";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { BotStrategyUI, GameSetupOptions, OpponentType } from "../types/setup";
-import { findFlippedCoins } from "./useGameSession";
 
 const log = createLogger("bot-game");
 
@@ -29,7 +28,6 @@ const log = createLogger("bot-game");
 const AUTO_PASS_MS = 1000;
 /** Default bot "think" delay (ms); tests inject `botDelayMs: 0` for instant play. */
 const BOT_THINK_MS = 2000;
-const EMPTY_FLIPPED: ReadonlySet<string> = new Set();
 
 export interface UseBotGameOptions extends GameSetupOptions {
   readonly botDelayMs?: number;
@@ -46,8 +44,6 @@ export interface UseBotGameReturn {
   readonly canUndo: boolean;
   readonly finalScore: FinalScore | null;
   readonly botThinking: boolean;
-  /** Coins flipped by the most recent applied move (for flip animation). */
-  readonly lastFlipped: ReadonlySet<string>;
   /** Forced-pass notice shown during the auto-pass delay, else null. */
   readonly notice: string | null;
 }
@@ -130,20 +126,15 @@ function buildAgents(
 
 function applyUpdate(
   update: DriverUpdate,
-  prevRef: { current: GameSession },
   setSession: (s: GameSession) => void,
   setNotice: (n: string | null) => void,
-  setLastFlipped: (f: ReadonlySet<string>) => void,
 ): void {
   if (update.kind === "applied") {
-    setLastFlipped(findFlippedCoins(prevRef.current, update.session));
     setNotice(null);
-    prevRef.current = update.session;
     setSession(update.session);
     return;
   }
   if (update.kind === "start" || update.kind === "end") {
-    prevRef.current = update.session;
     setSession(update.session);
   }
 }
@@ -151,14 +142,12 @@ function applyUpdate(
 export function useBotGame(options: UseBotGameOptions): UseBotGameReturn {
   const [session, setSession] = useState<GameSession>(() => initialFor(options));
   const [notice, setNotice] = useState<string | null>(null);
-  const [lastFlipped, setLastFlipped] = useState<ReadonlySet<string>>(EMPTY_FLIPPED);
   const [runId, setRunId] = useState(0);
 
   const optionsRef = useRef(options);
   optionsRef.current = options;
   const sessionRef = useRef(session);
   sessionRef.current = session;
-  const prevRef = useRef(session);
   // A reset/undo sets the next run's start session; null ⇒ start fresh from options.
   const targetRef = useRef<GameSession | null>(null);
 
@@ -174,16 +163,14 @@ export function useBotGame(options: UseBotGameOptions): UseBotGameReturn {
     const controller = new AbortController();
     const start = targetRef.current ?? initialFor(optionsRef.current);
     targetRef.current = null;
-    prevRef.current = start;
     setSession(start);
     setNotice(null);
-    setLastFlipped(EMPTY_FLIPPED);
 
     void driveGame({
       initialSession: start,
       agents,
       signal: controller.signal,
-      onUpdate: (u) => applyUpdate(u, prevRef, setSession, setNotice, setLastFlipped),
+      onUpdate: (u) => applyUpdate(u, setSession, setNotice),
       hooks: {
         beforeForcedPass: (slot, signal) => {
           setNotice(`${slot} has no legal moves — passing`);
@@ -236,7 +223,6 @@ export function useBotGame(options: UseBotGameOptions): UseBotGameReturn {
     canUndo: session.history.length > 0,
     finalScore: session.isTerminal ? computeFinalScore(session) : null,
     botThinking,
-    lastFlipped,
     notice,
   };
 }

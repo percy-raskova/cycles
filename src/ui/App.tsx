@@ -36,7 +36,7 @@ function App() {
   const [setupOptions, setSetupOptions] = useState<GameSetupOptions | null>(getInitialSetupOptions);
 
   // One driver-backed game for every mode (human-vs-human, vs Random, vs Strategic).
-  const { session, submitMove, lastFlipped, notice, reset, undo, canUndo } = useBotGame(
+  const { session, submitMove, notice, reset, undo, canUndo } = useBotGame(
     setupOptions ?? { opponent: "human", playerRole: "HEADS", humanFirst: true },
   );
 
@@ -111,7 +111,6 @@ function App() {
           <GamePage
             session={session}
             submitMove={submitMove}
-            lastFlipped={lastFlipped}
             notice={notice}
             onReset={handleReset}
             moveLog={log}
@@ -136,13 +135,7 @@ function App() {
       {modal && <Modal initialPanel={modal.panel} onClose={() => setModal(null)} />}
 
       {/* Mobile PWA layout — shown/hidden via CSS media query */}
-      <MobileApp
-        session={session}
-        submitMove={submitMove}
-        lastFlipped={lastFlipped}
-        onReset={handleReset}
-        moveLog={log}
-      />
+      <MobileApp session={session} submitMove={submitMove} onReset={handleReset} moveLog={log} />
 
       {isBot && (
         <div className="setup-return">

@@ -8,15 +8,7 @@ describe("CoinView", () => {
       position: { row: 0, col: 0 },
       face: "heads" as const,
     };
-    render(
-      <CoinView
-        coin={coin}
-        isSelected={false}
-        isHighlighted={false}
-        isFlipping={false}
-        isIllegal={false}
-      />,
-    );
+    render(<CoinView coin={coin} isSelected={false} isHighlighted={false} isIllegal={false} />);
 
     const group = screen.getByTestId("coin-0-0");
     const circle = group.querySelector("circle");
@@ -36,15 +28,7 @@ describe("CoinView", () => {
       position: { row: 1, col: 1 },
       face: "tails" as const,
     };
-    render(
-      <CoinView
-        coin={coin}
-        isSelected={false}
-        isHighlighted={false}
-        isFlipping={false}
-        isIllegal={false}
-      />,
-    );
+    render(<CoinView coin={coin} isSelected={false} isHighlighted={false} isIllegal={false} />);
 
     const group = screen.getByTestId("coin-1-1");
     const circle = group.querySelector("circle");
@@ -60,15 +44,7 @@ describe("CoinView", () => {
       position: { row: 0, col: 0 },
       face: "heads" as const,
     };
-    render(
-      <CoinView
-        coin={coin}
-        isSelected={true}
-        isHighlighted={false}
-        isFlipping={false}
-        isIllegal={false}
-      />,
-    );
+    render(<CoinView coin={coin} isSelected={true} isHighlighted={false} isIllegal={false} />);
 
     const group = screen.getByTestId("coin-0-0");
     expect(group.getAttribute("class")).toContain("coin-selected");
@@ -79,36 +55,9 @@ describe("CoinView", () => {
       position: { row: 0, col: 0 },
       face: "heads" as const,
     };
-    render(
-      <CoinView
-        coin={coin}
-        isSelected={false}
-        isHighlighted={false}
-        isFlipping={false}
-        isIllegal={true}
-      />,
-    );
+    render(<CoinView coin={coin} isSelected={false} isHighlighted={false} isIllegal={true} />);
 
     const group = screen.getByTestId("coin-0-0");
     expect(group.getAttribute("class")).toContain("coin-illegal");
-  });
-
-  it("applies coin-flipping class when isFlipping is true", () => {
-    const coin = {
-      position: { row: 0, col: 0 },
-      face: "heads" as const,
-    };
-    render(
-      <CoinView
-        coin={coin}
-        isSelected={false}
-        isHighlighted={false}
-        isFlipping={true}
-        isIllegal={false}
-      />,
-    );
-
-    const group = screen.getByTestId("coin-0-0");
-    expect(group.getAttribute("class")).toContain("coin-flipping");
   });
 });

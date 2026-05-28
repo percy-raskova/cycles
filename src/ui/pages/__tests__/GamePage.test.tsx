@@ -6,21 +6,13 @@ import { useBotGame } from "../../hooks/useBotGame";
 import { GamePage } from "../GamePage";
 
 function GamePageWrapper() {
-  const { session, submitMove, lastFlipped, notice, reset } = useBotGame({
+  const { session, submitMove, notice, reset } = useBotGame({
     opponent: "human",
     playerRole: "HEADS",
     humanFirst: true,
     botDelayMs: 0,
   });
-  return (
-    <GamePage
-      session={session}
-      submitMove={submitMove}
-      lastFlipped={lastFlipped}
-      notice={notice}
-      onReset={reset}
-    />
-  );
+  return <GamePage session={session} submitMove={submitMove} notice={notice} onReset={reset} />;
 }
 
 function getDotAt(row: number, col: number): Element | undefined {
@@ -250,43 +242,7 @@ describe("GamePage — Theme Interaction (US2)", () => {
   });
 });
 
-describe("GamePage — Coin Flip Animation (US4)", () => {
-  async function placeCoinAt(row: number, col: number, face: "heads" | "tails") {
-    const dot = getDotAt(row, col);
-    if (dot) {
-      await userEvent.click(dot);
-    }
-    const selector = face === "heads" ? "face-selector-heads" : "face-selector-tails";
-    await userEvent.click(screen.getByTestId(selector));
-  }
-
-  function getCoinAt(row: number, col: number): Element | undefined {
-    try {
-      return screen.getByTestId(`coin-${row}-${col}`);
-    } catch {
-      return undefined;
-    }
-  }
-
-  it("applies coin-flipping class to coins that flipped after a JOIN", async () => {
-    render(<GamePageWrapper />);
-
-    // Place two coins and join them — both endpoint coins will flip
-    await placeCoinAt(0, 0, "heads");
-    await placeCoinAt(0, 2, "tails");
-
-    const coin00 = getCoinAt(0, 0);
-    const coin02 = getCoinAt(0, 2);
-
-    if (coin00) {
-      await userEvent.click(coin00);
-    }
-    if (coin02) {
-      await userEvent.click(coin02);
-    }
-
-    // Both coins should have the flipping animation class
-    expect(coin00?.getAttribute("class") ?? "").toContain("coin-flipping");
-    expect(coin02?.getAttribute("class") ?? "").toContain("coin-flipping");
-  });
-});
+// "GamePage — Coin Flip Animation (US4)" suite removed along with the
+// coin-flipping CSS class. Coins now change face in place; the engine-level
+// flip behavior (cycle closure → face inversion of enclosed coins) is covered
+// by src/core/__tests__/behavior/cycle-closure.test.ts.

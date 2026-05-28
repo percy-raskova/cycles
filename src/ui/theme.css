@@ -1023,7 +1023,9 @@ body.no-scan .scanlines {
 
 .dot {
   fill: var(--orchid);
-  filter: drop-shadow(0 0 2px rgba(218, 112, 214, 0.35));
+  /* Halved the neon glow on every dot — applied to all 49 intersections, the old
+     0.35 was eye-strain on mobile and a meaningful paint cost on every move. */
+  filter: drop-shadow(0 0 2px rgba(218, 112, 214, 0.2));
   transition:
     r 120ms,
     fill 120ms;
@@ -1031,12 +1033,12 @@ body.no-scan .scanlines {
 
 .dot.legal {
   fill: var(--cyan);
-  filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.45));
+  filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.25));
 }
 
 .dot.hovered {
   fill: var(--neon-magenta);
-  filter: drop-shadow(0 0 3px rgba(255, 57, 212, 0.5));
+  filter: drop-shadow(0 0 3px rgba(255, 57, 212, 0.3));
 }
 
 .touch {
@@ -1078,31 +1080,21 @@ body.no-scan .scanlines {
 .coin-group.selected .coin-body {
   stroke: var(--neon-magenta);
   stroke-width: 3;
-  filter: drop-shadow(0 0 3px rgba(255, 57, 212, 0.5));
+  /* Glow softened: stroke still signals selection clearly; the halo no longer
+     dominates the coin. */
+  filter: drop-shadow(0 0 3px rgba(255, 57, 212, 0.28));
 }
 
 .coin-group.target .coin-body {
   stroke: var(--cyan);
   stroke-width: 2.5;
-  filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.4));
+  filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.22));
 }
 
-.coin-group.flipping .coin-body {
-  animation: flip 500ms ease;
-}
-
-@keyframes flip {
-  0% {
-    transform: scaleX(1);
-  }
-  50% {
-    transform: scaleX(0.05);
-    filter: brightness(1.15);
-  }
-  100% {
-    transform: scaleX(1);
-  }
-}
+/* Flip animation removed — coins now change face in place. The face-data swap
+   (heads ↔ tails) on `state.coins` is the visual signal; no keyframe needed.
+   Removing this also lets the whole flippingCoins / animation / ANIMATION_END
+   plumbing collapse out of the React tree. */
 
 .coin-group.illegal {
   animation: shake 280ms ease-in-out;
@@ -1125,7 +1117,9 @@ body.no-scan .scanlines {
   stroke: var(--orchid-light);
   stroke-width: 4;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 2px rgba(244, 184, 240, 0.35));
+  /* Per-edge filter is per-element paint cost; halved the alpha for clarity
+     and to ease the visual stack on a graph with many edges. */
+  filter: drop-shadow(0 0 2px rgba(244, 184, 240, 0.2));
 }
 
 .edge.preview {

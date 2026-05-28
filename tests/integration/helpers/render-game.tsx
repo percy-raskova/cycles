@@ -5,7 +5,7 @@ import { useBotGame } from "@ui/hooks/useBotGame";
 import { GamePage } from "@ui/pages/GamePage";
 
 function GamePageWrapper({ initialSession }: { readonly initialSession?: GameSession }) {
-  const { session, submitMove, lastFlipped, notice, reset } = useBotGame({
+  const { session, submitMove, notice, reset } = useBotGame({
     opponent: "human",
     playerRole: "HEADS",
     humanFirst: true,
@@ -13,15 +13,7 @@ function GamePageWrapper({ initialSession }: { readonly initialSession?: GameSes
     ...(initialSession ? { initialSession } : {}),
   });
 
-  return (
-    <GamePage
-      session={session}
-      submitMove={submitMove}
-      lastFlipped={lastFlipped}
-      notice={notice}
-      onReset={reset}
-    />
-  );
+  return <GamePage session={session} submitMove={submitMove} notice={notice} onReset={reset} />;
 }
 
 interface RenderGameOptions {

@@ -19,9 +19,6 @@ import {
 
 const log = createLogger("ui:board");
 
-/** Empty-set singleton so equality stays stable across renders when nothing is flipping. */
-const EMPTY_FLIPPING: ReadonlySet<string> = new Set();
-
 /** Coins joinable from `first` — i.e. the second-coin candidates highlighted on the board. */
 function buildHighlightedCoins(state: GameSession["state"], movePhase: Phase): ReadonlySet<string> {
   const highlighted = new Set<string>();
@@ -60,10 +57,15 @@ function isLegalPlacement(state: GameSession["state"], position: Position): bool
 /**
  * Everything a board-rendering layout needs to drive the engine.
  *
- * The hook owns the ephemeral UI reducer + its lifecycle effects + the click handlers +
- * the memoized derived sets. Layouts (GamePage, MobileApp) keep only their layout-specific
- * concerns (chrome, drawers, new-game orchestration). The ask→validate→pass loop itself
- * lives in the driver (SC-004), not here.
+ * Owns the ephemeral UI reducer + its lifecycle effects + the click handlers +
+ * the memoized derived sets. Layouts (GamePage, MobileApp) keep only their
+ * layout-specific concerns (chrome, drawers, new-game orchestration). The
+ * ask→validate→pass loop itself lives in the driver (SC-004), not here.
+ *
+ * Flip animation is intentionally NOT modeled — when a JOIN closes a cycle and
+ * flips coins, the new face values in `state.coins` re-render the affected
+ * `<CoinView>` leaves in place. No `flippingCoins` set, no `ANIMATION_END`
+ * timer, no `isAnimating` gate.
  */
 export interface BoardInteraction {
   /** Ref forwarded to the BoardView so floating popups can measure board coordinates. */
@@ -74,12 +76,8 @@ export interface BoardInteraction {
   readonly hoveredPosition: Position | null;
   /** Coin briefly flagged after an illegal click, for the shake animation. */
   readonly illegalMoveCoin: Position | null;
-  /** Coins currently in the flip animation (post-move). */
-  readonly flippingCoins: ReadonlySet<string>;
   /** First coin of an in-progress JOIN (null when not joining). */
   readonly selectedCoin: Position | null;
-  /** True while the flip animation is running — used to gate further input. */
-  readonly isAnimating: boolean;
   /** Set of positionKeys that are legal placements right now (memoized). */
   readonly legalPlacementSet: ReadonlySet<string>;
   /** Positions joinable from the first selected coin (memoized). */
@@ -100,41 +98,31 @@ export interface BoardInteraction {
 }
 
 /**
- * Wire the four lifecycle effects (history-growth ↔ animation, Escape, illegal-clear).
- * Split out of `useBoardInteraction` to keep that function under Biome's 100-line cap;
- * the behavior is identical to having them inlined.
+ * Wire the three remaining lifecycle effects:
+ *   1. History shrinks (undo/reset) ⇒ clear ephemeral UI via RESET_UI.
+ *      (History growth, formerly a MOVE_RESOLVED trigger, is now a no-op —
+ *       phase is already IDLE via CANCEL_PHASE inside handleFaceSelect.)
+ *   2. Escape cancels any pending phase, anywhere on the page.
+ *   3. Clear the illegal-move highlight after its shake-animation duration.
+ *
+ * Split out of `useBoardInteraction` to keep that function under Biome's
+ * 100-line cap; the behavior is identical to having them inlined.
  */
 function useBoardLifecycle(
   session: GameSession,
-  lastFlipped: ReadonlySet<string>,
   illegalMoveCoin: Position | null,
-  isAnimating: boolean,
   dispatch: Dispatch<GamePageAction>,
 ): void {
   const prevHistoryLength = useRef(session.history.length);
 
-  // History growth ⇒ a move was applied (animate `lastFlipped`); shrink ⇒ undo/reset
-  // (clear ephemeral UI). The ask→validate→pass loop itself lives in the driver (SC-004).
   useEffect(() => {
     const current = session.history.length;
-    const previous = prevHistoryLength.current;
-    if (current > previous) {
-      dispatch({ type: "MOVE_RESOLVED", flipped: lastFlipped });
-    } else if (current < previous) {
+    if (current < prevHistoryLength.current) {
       dispatch({ type: "RESET_UI" });
     }
     prevHistoryLength.current = current;
-  }, [session.history.length, lastFlipped, dispatch]);
+  }, [session.history.length, dispatch]);
 
-  // End the flip animation after its CSS duration.
-  useEffect(() => {
-    if (isAnimating) {
-      const timer = setTimeout(() => dispatch({ type: "ANIMATION_END" }), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnimating, dispatch]);
-
-  // Escape cancels any pending phase, anywhere on the page.
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -145,7 +133,6 @@ function useBoardLifecycle(
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [dispatch]);
 
-  // Clear the illegal-move highlight after its shake-animation duration.
   useEffect(() => {
     if (illegalMoveCoin) {
       const timer = setTimeout(() => dispatch({ type: "CLEAR_ILLEGAL" }), 300);
@@ -155,10 +142,10 @@ function useBoardLifecycle(
 }
 
 /**
- * Memoize the three sets derived from `state + movePhase + hoveredPosition`. Split out
- * so `useBoardInteraction` stays under Biome's per-function line cap; behavior identical
- * to having the useMemos inlined. Also fixes the prior GamePage missing-memo regression
- * (previous GamePage recomputed `legalPlacements` every render).
+ * Memoize the three sets derived from `state + movePhase + hoveredPosition`.
+ * Behavior identical to inline useMemos; split out to fit the per-function
+ * line cap. Also fixes the prior GamePage missing-memo regression (previously
+ * recomputed `legalPlacements` every render).
  */
 function useBoardDerived(
   state: GameSession["state"],
@@ -180,34 +167,40 @@ function useBoardDerived(
   return { legalPlacementSet, highlightedCoins, previewEdge };
 }
 
-export function useBoardInteraction(
-  session: GameSession,
-  submitMove: (move: Move) => void,
-  lastFlipped: ReadonlySet<string>,
-): BoardInteraction {
-  const [ui, dispatch] = useReducer(gamePageReducer, initialGamePageState);
-  const { phase: movePhase, hovered: hoveredPosition, illegalMoveCoin } = ui;
-  const isAnimating = ui.animation !== null;
-  const flippingCoins = ui.animation?.flipping ?? EMPTY_FLIPPING;
-  const svgRef = useRef<SVGSVGElement>(null);
+/** Snapshot of live state read by stable handlers via a ref. */
+interface HandlersLatest {
+  readonly session: GameSession;
+  readonly movePhase: Phase;
+  readonly submitMove: (move: Move) => void;
+}
 
-  useBoardLifecycle(session, lastFlipped, illegalMoveCoin, isAnimating, dispatch);
-  const { legalPlacementSet, highlightedCoins, previewEdge } = useBoardDerived(
-    session.state,
-    movePhase,
-    hoveredPosition,
-  );
-
+/**
+ * Stable click/hover handlers — reference-identical across renders.
+ *
+ * Without this, every PLACE changed `session.state` → every `useCallback`'s
+ * deps changed → every leaf (`CoinView`, `EdgeView`, `GridDot`) saw a new
+ * `onClick`/`onMouseEnter` prop → `React.memo`'s shallow compare bailed →
+ * ~74 leaves re-rendered per move despite identical output. By reading live
+ * state through a ref instead of closures, the handlers stay reference-stable
+ * and the memos actually skip.
+ */
+function useStableHandlers(
+  // Concrete shape (not RefObject<T>, which types .current as T | null) so
+  // handlers can read `.current` without a redundant null-guard branch.
+  latest: { readonly current: HandlersLatest },
+  dispatch: Dispatch<GamePageAction>,
+) {
   const handleIntersectionHover = useCallback(
     (position: Position | null) => dispatch({ type: "HOVER", position }),
-    [],
+    [dispatch],
   );
 
   const handleIntersectionClick = useCallback(
     (position: Position) => {
+      const { session, movePhase } = latest.current;
       log.debug("intersection click", position);
-      if (session.isTerminal || isAnimating) {
-        log.debug("intersection ignored", { isTerminal: session.isTerminal, isAnimating });
+      if (session.isTerminal) {
+        log.debug("intersection ignored — terminal");
         return;
       }
       if (movePhase.kind === "SELECTING_SECOND_COIN") {
@@ -219,7 +212,6 @@ export function useBoardInteraction(
         log.debug("intersection ignored — busy phase", movePhase.kind);
         return;
       }
-
       const key = positionKey(position);
       if (session.state.coins.has(key)) {
         log.debug("intersection ignored — occupied", position);
@@ -229,27 +221,24 @@ export function useBoardInteraction(
         log.debug("intersection ignored — blocked by edge", position);
         return;
       }
-
       dispatch({ type: "SELECT_INTERSECTION", position });
     },
-    [session.isTerminal, isAnimating, movePhase.kind, session.state.coins, session.state.edges],
+    [latest, dispatch],
   );
 
   const handleCoinClick = useCallback(
     (position: Position) => {
+      const { session, movePhase, submitMove } = latest.current;
       log.debug("coin click", position);
-      if (session.isTerminal || isAnimating) {
-        log.debug("coin ignored", { isTerminal: session.isTerminal, isAnimating });
+      if (session.isTerminal) {
+        log.debug("coin ignored — terminal");
         return;
       }
-
       if (movePhase.kind === "SELECTING_SECOND_COIN") {
-        // Self-click cancels the in-progress JOIN.
         if (movePhase.first.row === position.row && movePhase.first.col === position.col) {
           dispatch({ type: "CANCEL_PHASE" });
           return;
         }
-        // Gate JOIN via the engine query only (Constitution III: no inline rule logic).
         if (!canJoin(session.state, movePhase.first, position)) {
           log.warn("join rejected (pre-validation)", { from: movePhase.first, to: position });
           dispatch({ type: "ILLEGAL_MOVE", position });
@@ -259,42 +248,67 @@ export function useBoardInteraction(
         submitMove({ type: "JOIN", a: movePhase.first, b: position });
         return;
       }
-
       if (movePhase.kind !== "IDLE") {
         log.debug("coin ignored — busy phase", movePhase.kind);
         return;
       }
-
       dispatch({ type: "BEGIN_JOIN", first: position });
     },
-    [session.isTerminal, isAnimating, movePhase, session.state, submitMove],
+    [latest, dispatch],
   );
 
   const handleFaceSelect = useCallback(
     (face: CoinFace) => {
-      if (session.isTerminal || isAnimating) return;
+      const { session, movePhase, submitMove } = latest.current;
+      if (session.isTerminal) return;
       if (movePhase.kind !== "SELECTING_FACE") return;
       const position = movePhase.position;
-
-      // Position was gated for occupancy/edges on selection; confirm a legal placement
-      // via the engine query before submitting (Constitution III).
       if (!isLegalPlacement(session.state, position)) {
-        // Legacy behavior: a non-placeable spot just closes the selector.
         log.warn("place rejected (pre-validation)", position);
         dispatch({ type: "CANCEL_PHASE" });
         return;
       }
-
       dispatch({ type: "CANCEL_PHASE" });
       submitMove({ type: "PLACE", position, face });
     },
-    [session.isTerminal, isAnimating, movePhase, session.state, submitMove],
+    [latest, dispatch],
   );
 
-  // `handleFaceCancel` and `cancelPhase` are intentionally the same function — both
-  // dispatch CANCEL_PHASE; merging them avoids redundant useCallback identities.
-  const cancelPhase = useCallback(() => dispatch({ type: "CANCEL_PHASE" }), []);
-  const resetUi = useCallback(() => dispatch({ type: "RESET_UI" }), []);
+  // CANCEL_PHASE and RESET_UI are bare dispatches; one identity each, no state read.
+  const cancelPhase = useCallback(() => dispatch({ type: "CANCEL_PHASE" }), [dispatch]);
+  const resetUi = useCallback(() => dispatch({ type: "RESET_UI" }), [dispatch]);
+
+  return {
+    handleIntersectionHover,
+    handleIntersectionClick,
+    handleCoinClick,
+    handleFaceSelect,
+    cancelPhase,
+    resetUi,
+  };
+}
+
+export function useBoardInteraction(
+  session: GameSession,
+  submitMove: (move: Move) => void,
+): BoardInteraction {
+  const [ui, dispatch] = useReducer(gamePageReducer, initialGamePageState);
+  const { phase: movePhase, hovered: hoveredPosition, illegalMoveCoin } = ui;
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  // Latest-ref pattern: handlers read live state here so their useCallback
+  // deps stay empty (modulo dispatch) and their identities stay stable across
+  // moves. Writing to .current during render is React-supported for refs.
+  const latest = useRef<HandlersLatest>({ session, movePhase, submitMove });
+  latest.current = { session, movePhase, submitMove };
+
+  useBoardLifecycle(session, illegalMoveCoin, dispatch);
+  const { legalPlacementSet, highlightedCoins, previewEdge } = useBoardDerived(
+    session.state,
+    movePhase,
+    hoveredPosition,
+  );
+  const handlers = useStableHandlers(latest, dispatch);
 
   const selectedCoin: Position | null =
     movePhase.kind === "SELECTING_SECOND_COIN" ? movePhase.first : null;
@@ -304,19 +318,17 @@ export function useBoardInteraction(
     movePhase,
     hoveredPosition,
     illegalMoveCoin,
-    flippingCoins,
     selectedCoin,
-    isAnimating,
     legalPlacementSet,
     highlightedCoins,
     previewEdge,
-    handleIntersectionClick,
-    handleIntersectionHover,
-    handleCoinClick,
-    handleFaceSelect,
-    handleFaceCancel: cancelPhase,
-    resetUi,
-    cancelPhase,
+    handleIntersectionClick: handlers.handleIntersectionClick,
+    handleIntersectionHover: handlers.handleIntersectionHover,
+    handleCoinClick: handlers.handleCoinClick,
+    handleFaceSelect: handlers.handleFaceSelect,
+    handleFaceCancel: handlers.cancelPhase,
+    resetUi: handlers.resetUi,
+    cancelPhase: handlers.cancelPhase,
     dispatch,
   };
 }

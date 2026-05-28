@@ -1,6 +1,7 @@
 import type { GameSession, Move } from "@core";
 import { hasLegalMoves } from "@core";
 import { useBoardInteraction } from "@ui/hooks/useBoardInteraction";
+import { useIsMobile } from "@ui/hooks/useIsMobile";
 import { useCallback, useState } from "react";
 import { BottomSheet } from "./BottomSheet";
 import { Drawer } from "./Drawer";
@@ -16,13 +17,15 @@ import { MobileToolbar } from "./MobileToolbar";
 interface MobileAppProps {
   readonly session: GameSession;
   readonly submitMove: (move: Move) => void;
-  readonly lastFlipped: ReadonlySet<string>;
   readonly onReset: () => void;
   readonly moveLog: readonly { readonly action: string; readonly text: string }[];
 }
 
-export function MobileApp({ session, submitMove, lastFlipped, onReset, moveLog }: MobileAppProps) {
-  const board = useBoardInteraction(session, submitMove, lastFlipped);
+export function MobileApp({ session, submitMove, onReset, moveLog }: MobileAppProps) {
+  const board = useBoardInteraction(session, submitMove);
+  // Skip the face-popup's useLayoutEffect (3× getBoundingClientRect) when the
+  // desktop shell owns the viewport — GamePage renders FaceSelector instead.
+  const isMobile = useIsMobile();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sheet, setSheet] = useState<{ open: boolean; tab: string }>({ open: false, tab: "log" });
@@ -77,12 +80,11 @@ export function MobileApp({ session, submitMove, lastFlipped, onReset, moveLog }
             selectedCoin={board.selectedCoin}
             highlightedCoins={board.highlightedCoins}
             previewEdge={board.previewEdge}
-            flippingCoins={board.flippingCoins}
             illegalMoveCoin={board.illegalMoveCoin}
             onIntersectionClick={board.handleIntersectionClick}
             onCoinClick={board.handleCoinClick}
           />
-          {board.movePhase.kind === "SELECTING_FACE" && !session.isTerminal && (
+          {isMobile && board.movePhase.kind === "SELECTING_FACE" && !session.isTerminal && (
             <MobileFacePopup
               position={board.movePhase.position}
               svgRef={board.svgRef}

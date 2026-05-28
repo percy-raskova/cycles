@@ -16,7 +16,6 @@ interface BoardViewProps {
   readonly hoveredPosition: Position | null;
   readonly previewEdge: { readonly from: Position; readonly to: Position } | null;
   readonly legalPlacements: ReadonlySet<string>;
-  readonly flippingCoins: ReadonlySet<string>;
   readonly illegalMoveCoin: Position | null;
   readonly highlightedCoins: ReadonlySet<string>;
 }
@@ -32,7 +31,6 @@ function BoardViewImpl(
     hoveredPosition,
     previewEdge,
     legalPlacements,
-    flippingCoins,
     illegalMoveCoin,
     highlightedCoins,
   }: BoardViewProps,
@@ -67,20 +65,11 @@ function BoardViewImpl(
             onHover={onCoinHover}
             isSelected={isSelected}
             isHighlighted={isHighlighted}
-            isFlipping={flippingCoins.has(posKey)}
             isIllegal={isIllegal}
           />
         );
       }),
-    [
-      state.coins,
-      selectedCoin,
-      illegalMoveCoin,
-      highlightedCoins,
-      flippingCoins,
-      onCoinClick,
-      onCoinHover,
-    ],
+    [state.coins, selectedCoin, illegalMoveCoin, highlightedCoins, onCoinClick, onCoinHover],
   );
 
   return (

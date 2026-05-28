@@ -13,7 +13,6 @@ describe("gamePageReducer", () => {
       phase: { kind: "IDLE" },
       hovered: null,
       illegalMoveCoin: null,
-      animation: null,
       notice: null,
     });
   });
@@ -24,6 +23,15 @@ describe("gamePageReducer", () => {
       position: { row: 3, col: 4 },
     });
     expect(next.hovered).toEqual({ row: 3, col: 4 });
+  });
+
+  it("HOVER on the same cell returns state unchanged (reference equality)", () => {
+    const seeded = gamePageReducer(initialGamePageState, {
+      type: "HOVER",
+      position: { row: 3, col: 4 },
+    });
+    const again = gamePageReducer(seeded, { type: "HOVER", position: { row: 3, col: 4 } });
+    expect(again).toBe(seeded);
   });
 
   it("SELECT_INTERSECTION enters SELECTING_FACE with the position", () => {
@@ -47,25 +55,9 @@ describe("gamePageReducer", () => {
     expect(next.phase).toEqual({ kind: "IDLE" });
   });
 
-  it("MOVE_RESOLVED with flips goes IDLE and starts an animation", () => {
-    const flipped = new Set(["0,0", "1,1"]);
-    const next = gamePageReducer(SELECTING_SECOND, { type: "MOVE_RESOLVED", flipped });
-    expect(next.phase).toEqual({ kind: "IDLE" });
-    expect(next.animation).toEqual({ flipping: flipped });
-  });
-
-  it("MOVE_RESOLVED with no flips goes IDLE with no animation", () => {
-    const next = gamePageReducer(SELECTING_SECOND, { type: "MOVE_RESOLVED", flipped: new Set() });
-    expect(next.phase).toEqual({ kind: "IDLE" });
-    expect(next.animation).toBeNull();
-  });
-
-  it("ANIMATION_END clears the animation", () => {
-    const animating: GamePageState = {
-      ...initialGamePageState,
-      animation: { flipping: new Set(["0,0"]) },
-    };
-    expect(gamePageReducer(animating, { type: "ANIMATION_END" }).animation).toBeNull();
+  it("CANCEL_PHASE when already IDLE is a no-op (reference equality)", () => {
+    const again = gamePageReducer(initialGamePageState, { type: "CANCEL_PHASE" });
+    expect(again).toBe(initialGamePageState);
   });
 
   it("ILLEGAL_MOVE flags the coin WITHOUT leaving the join phase", () => {
@@ -88,18 +80,16 @@ describe("gamePageReducer", () => {
     expect(gamePageReducer(set, { type: "SET_NOTICE", notice: null }).notice).toBeNull();
   });
 
-  it("RESET_UI clears phase/illegal/animation/notice but PRESERVES hovered (rewind semantics)", () => {
+  it("RESET_UI clears phase/illegal/notice but PRESERVES hovered (rewind semantics)", () => {
     const messy: GamePageState = {
       phase: { kind: "SELECTING_FACE", position: { row: 0, col: 0 } },
       hovered: { row: 5, col: 5 },
       illegalMoveCoin: { row: 1, col: 1 },
-      animation: { flipping: new Set(["0,0"]) },
       notice: "passing",
     };
     const next = gamePageReducer(messy, { type: "RESET_UI" });
     expect(next.phase).toEqual({ kind: "IDLE" });
     expect(next.illegalMoveCoin).toBeNull();
-    expect(next.animation).toBeNull();
     expect(next.notice).toBeNull();
     expect(next.hovered).toEqual({ row: 5, col: 5 });
   });

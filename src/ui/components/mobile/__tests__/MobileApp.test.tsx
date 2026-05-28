@@ -7,15 +7,7 @@ import { MobileApp } from "../MobileApp";
 
 function TestWrapper() {
   const session = createSession({ firstPlayer: "HEADS" });
-  return (
-    <MobileApp
-      session={session}
-      submitMove={() => {}}
-      lastFlipped={new Set()}
-      onReset={() => {}}
-      moveLog={[]}
-    />
-  );
+  return <MobileApp session={session} submitMove={() => {}} onReset={() => {}} moveLog={[]} />;
 }
 
 describe("MobileApp", () => {

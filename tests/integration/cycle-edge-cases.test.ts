@@ -1,17 +1,16 @@
 import { createInitialState, placeCoin } from "@core";
 import { joinCoins } from "@core/state";
 // @vitest-environment jsdom
-import { act, fireEvent } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { makeCycleBoardState } from "./helpers/fixtures";
 import { renderGame } from "./helpers/render-game";
-import { getCoinAt, getDotAt, getEdgeBetween, getFaceSelector } from "./helpers/selectors";
+import { getCoinAt, getEdgeBetween } from "./helpers/selectors";
+
+// "blocks input during the 500ms flip animation" was deleted along with the flip
+// animation itself — coins change face in place via a normal re-render, and there
+// is no longer an animation window during which input is gated.
 
 describe("Cycle Edge Cases", () => {
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   it("cycle closure flips interior coin", async () => {
     const state = makeCycleBoardState();
     const { user } = renderGame({
@@ -63,43 +62,5 @@ describe("Cycle Edge Cases", () => {
 
     // Boundary coin on the line should NOT be flipped
     expect(getCoinAt(1, 0).querySelector("text")?.textContent).toBe("H");
-  });
-
-  it("blocks input during the 500ms flip animation", async () => {
-    vi.useFakeTimers();
-    const state = makeCycleBoardState();
-    renderGame({
-      initialSession: {
-        state,
-        history: [],
-        isTerminal: false,
-        winner: null,
-      },
-    });
-
-    // Close the cycle to trigger animation (use fireEvent because fake timers are active)
-    fireEvent.click(getCoinAt(4, 2));
-    fireEvent.click(getCoinAt(2, 2));
-    await act(async () => {}); // flush the driver step: the move applies + animation starts
-
-    // Animation is running
-    expect(getCoinAt(4, 2).classList.contains("coin-flipping")).toBe(true);
-
-    // Clicks during animation should be ignored
-    const emptyDot = getDotAt(0, 0);
-    fireEvent.click(emptyDot);
-    expect(getFaceSelector(0, 0)).toBeNull();
-
-    const coin = getCoinAt(2, 4);
-    fireEvent.click(coin);
-    expect(coin.classList.contains("coin-selected")).toBe(false);
-
-    // After animation completes, input should work again
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(500);
-    });
-
-    fireEvent.click(emptyDot);
-    expect(getFaceSelector(0, 0)).not.toBeNull();
   });
 });
